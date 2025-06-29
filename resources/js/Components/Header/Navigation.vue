@@ -4,6 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import AquatrackLogo from '../AquatrackLogo.vue';
 import AddReportModal from '../Modals/AddReportModal.vue';
 
+
 defineProps({
     canLogin: {
         type: Boolean,
@@ -21,6 +22,7 @@ const showReportModal = ref(false);
 
 <template>
     <div>
+
         <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100">
             <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex h-24 items-center justify-between">
@@ -34,17 +36,17 @@ const showReportModal = ref(false);
                     <!-- Desktop navigation -->
                     <div class="hidden md:flex md:items-center md:space-x-4">
                         <Link href="/"
-                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium transition-colors">
                         <v-icon name="bi-house" scale="0.9" />
                         Home
                         </Link>
                         <Link :href="route('reports.index')"
-                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium transition-colors">
                         <v-icon name="bi-flag" scale="0.9" />
                         Reports
                         </Link>
                         <button @click="showReportModal = true"
-                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-md font-medium transition-colors">
                             <v-icon name="bi-plus-circle" scale="0.9" />
                             Add Report
                         </button>
@@ -53,7 +55,7 @@ const showReportModal = ref(false);
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
                         <Link v-if="canLogin" :href="route('login')"
-                            class="hidden md:flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-lg font-medium text-white shadow-sm hover:from-blue-700 hover:to-blue-600 transition-all">
+                            class="hidden md:flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-md font-medium text-white shadow-sm hover:from-blue-700 hover:to-blue-600 transition-all">
 
                         Log In
                         <v-icon name="bi-box-arrow-in-right" scale="1.2" />

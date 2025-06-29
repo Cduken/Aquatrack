@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/vue3';
 import AquatrackLogo from '../AquatrackLogo.vue';
 import Modal from '@/Components/Modal.vue';
+import Swal from 'sweetalert2';
 const emit = defineEmits(['close']);
 
 defineProps({
@@ -66,6 +67,18 @@ const submitReport = () => {
             form.reset();
             form.photo_previews.forEach(url => URL.revokeObjectURL(url));
             form.photo_previews = [];
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end', // top-right corner
+                icon: 'success',
+                title: 'Report Submitted!',
+                text: 'Thank you for reporting the issue.',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            })
+
         }
     });
 };

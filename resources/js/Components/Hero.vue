@@ -1,23 +1,32 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+
+defineProps(
+    {
+        mainText: {
+            type:String,
+            default: 'Track Your Water Usage with'
+        }
+    }
+);
 </script>
 
 <template>
     <main class="pt-16 w-full">
         <div class="w-full flex flex-col items-center text-center px-4 sm:px-6">
             <div class="w-full">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900">
-                    Track Your Water Usage with AquaTrack
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-gray-900">
+                    {{ mainText }} <span class="text-blue-600">AquaTrack</span>
                 </h1>
 
-                <p class="mt-6 max-w-5xl mx-auto text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600">
+                <p class="mt-6 max-w-5xl mx-auto text-base sm:text-md md:text-lg lg:text-xl text-gray-600">
                     Modern water management system for residential customers. Monitor usage, pay bills, and report
                     issues all in one convenient platform.
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                     <Link :href="route('login')"
-                        class="inline-flex items-center text-center gap-2 rounded-md bg-blue-600 px-8 py-4 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
+                        class="inline-flex items-center text-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
                     Log in to Your Account
                     <v-icon name="hi-solid-user" scale="1.3"></v-icon>
                     </Link>

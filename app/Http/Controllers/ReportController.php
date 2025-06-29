@@ -64,7 +64,7 @@ class ReportController extends Controller
             ]);
         }
 
-        return redirect()->route('reports.index')->with('success', 'Report created successfully!');
+        return redirect()->route('reports.index')->with('success', 'Report submitted successfully!');
     }
 
     public function index()

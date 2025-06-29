@@ -1,6 +1,7 @@
 import "../css/app.css";
 import "./bootstrap";
 
+import Swal from 'sweetalert2' // Add this at the top
 
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
@@ -71,7 +72,7 @@ createInertiaApp({
             .use(ZiggyVue)
             .component("v-icon", OhVueIcon)
 
-
+        app.config.globalProperties.$swal = Swal
         return app.mount(el);
     },
     progress: {

@@ -2,15 +2,15 @@
     <section id="features" class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1500px] mx-auto">
             <div class="text-center mb-8 sm:mb-12">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">Why Choose
+                <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Why Choose
                     AquaTrack?</h2>
-                <p class="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+                <p class="text-base sm:text-md lg:text-lg text-gray-600 max-w-3xl mx-auto">
                     Everything you need to manage your water consumption efficiently
                 </p>
             </div>
 
             <div class="grid gap-6 sm:gap-8 md:gap-[60px] sm:grid-cols-2 lg:grid-cols-4">
-                <!-- Real-time Monitoring -->
+
                 <div
                     class="flex flex-col items-center rounded-xl border border-blue-300 bg-white p-4 sm:p-6 md:p-8 shadow-md transition-all hover:shadow-lg hover:-translate-y-1">
                     <div

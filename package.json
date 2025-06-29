@@ -23,6 +23,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.0.14",
         "@vitejs/plugin-vue": "^5.2.4",
-        "oh-vue-icons": "^1.0.0-rc3"
+        "oh-vue-icons": "^1.0.0-rc3",
+        "sweetalert2": "^11.22.1"
     }
 }
