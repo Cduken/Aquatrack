@@ -8,6 +8,7 @@ import About from '@/Components/About.vue';
 import CallToAction from '@/Components/CallToAction.vue';
 import Footer from '@/Components/Footer.vue';
 
+
 defineProps({
     canLogin: {
         type: Boolean,
@@ -28,20 +29,24 @@ defineProps({
 
 <template>
 
-    <Head title="Welcome" />
-    <Navigation :can-login="canLogin" :can-register="canRegister" />
 
 
-    <div class="bg-blue-50">
-        <Hero />
+        <Head title="Welcome" />
+        <Navigation :can-login="canLogin" :can-register="canRegister" />
 
-        <Features />
 
-        <About />
+        <div class="bg-blue-50">
+            <Hero />
 
-        <CallToAction />
+            <Features />
 
-        <Footer />
+            <About />
 
-    </div>
+            <CallToAction />
+
+            <Footer />
+
+
+        </div>
+
 </template>

@@ -1,13 +1,19 @@
 import "../css/app.css";
 import "./bootstrap";
 
+
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
+
+// Import individual icons
 import { MdStartTwotone } from "oh-vue-icons/icons";
 import { HiSolidUser } from "oh-vue-icons/icons";
+import { BiX, BiCheckCircle } from "oh-vue-icons/icons/bi"; // Added BiCheckCircle
+import { BiHouse } from "oh-vue-icons/icons/bi";
+import { BiPlusCircle } from "oh-vue-icons/icons/bi";
 import {
     BiSpeedometer2,
     BiBellFill,
@@ -16,7 +22,7 @@ import {
     BiXLg,
     BiShieldLock,
     BiFlag,
-    BiGraphUp
+    BiGraphUp,
 } from "oh-vue-icons/icons/bi";
 import { OiGraph } from "oh-vue-icons/icons/oi";
 import {
@@ -45,6 +51,11 @@ addIcons(
     FaUtensils,
     MdStartTwotone,
     HiSolidUser,
+    BiX,
+    BiHouse,
+    BiPlusCircle,
+    BiFlag,
+    BiCheckCircle // Added for notification checkmark
 );
 
 createInertiaApp({
@@ -58,7 +69,8 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .component("v-icon", OhVueIcon);
+            .component("v-icon", OhVueIcon)
+
 
         return app.mount(el);
     },

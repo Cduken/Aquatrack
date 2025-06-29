@@ -1,123 +1,63 @@
-<script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+<!-- resources/js/Components/Modal.vue -->
+<template>
+    <Transition name="modal">
+        <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75" @click="close"></div>
+                </div>
 
-const props = defineProps({
-    show: {
-        type: Boolean,
-        default: false,
-    },
-    maxWidth: {
-        type: String,
-        default: '2xl',
-    },
-    closeable: {
-        type: Boolean,
-        default: true,
-    },
+                <!-- Modal container -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                    <!-- Modal header - Updated for mobile layout -->
+                    <div class="bg-blue-600 px-4 py-3 sm:px-6 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <slot name="title"></slot>
+                        </div>
+                        <button @click="close" class="text-white hover:text-gray-200 focus:outline-none">
+                            <v-icon name="bi-x" scale="1.5" />
+                        </button>
+                    </div>
+
+                    <!-- Modal content -->
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <slot></slot>
+                    </div>
+
+                    <!-- Modal footer (optional) -->
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse" v-if="$slots.footer">
+                        <slot name="footer"></slot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Transition>
+</template>
+
+<script setup>
+defineProps({
+    show: Boolean
 });
 
 const emit = defineEmits(['close']);
-const dialog = ref();
-const showSlot = ref(props.show);
-
-watch(
-    () => props.show,
-    () => {
-        if (props.show) {
-            document.body.style.overflow = 'hidden';
-            showSlot.value = true;
-
-            dialog.value?.showModal();
-        } else {
-            document.body.style.overflow = '';
-
-            setTimeout(() => {
-                dialog.value?.close();
-                showSlot.value = false;
-            }, 200);
-        }
-    },
-);
 
 const close = () => {
-    if (props.closeable) {
-        emit('close');
-    }
+    emit('close');
 };
-
-const closeOnEscape = (e) => {
-    if (e.key === 'Escape') {
-        e.preventDefault();
-
-        if (props.show) {
-            close();
-        }
-    }
-};
-
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
-
-onUnmounted(() => {
-    document.removeEventListener('keydown', closeOnEscape);
-
-    document.body.style.overflow = '';
-});
-
-const maxWidthClass = computed(() => {
-    return {
-        sm: 'sm:max-w-sm',
-        md: 'sm:max-w-md',
-        lg: 'sm:max-w-lg',
-        xl: 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
-    }[props.maxWidth];
-});
 </script>
 
-<template>
-    <dialog
-        class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent"
-        ref="dialog"
-    >
-        <div
-            class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
-            scroll-region
-        >
-            <Transition
-                enter-active-class="ease-out duration-300"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="ease-in duration-200"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div
-                    v-show="show"
-                    class="fixed inset-0 transform transition-all"
-                    @click="close"
-                >
-                    <div
-                        class="absolute inset-0 bg-gray-500 opacity-75"
-                    />
-                </div>
-            </Transition>
+<style>
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.3s ease;
+}
 
-            <Transition
-                enter-active-class="ease-out duration-300"
-                enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-                leave-active-class="ease-in duration-200"
-                leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-                leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
-                <div
-                    v-show="show"
-                    class="mb-6 transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full"
-                    :class="maxWidthClass"
-                >
-                    <slot v-if="showSlot" />
-                </div>
-            </Transition>
-        </div>
-    </dialog>
-</template>
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+</style>

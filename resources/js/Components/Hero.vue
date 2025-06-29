@@ -17,7 +17,7 @@ import { Link } from '@inertiajs/vue3';
 
                 <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                     <Link :href="route('login')"
-                        class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-8 py-4 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
+                        class="inline-flex items-center text-center gap-2 rounded-md bg-blue-600 px-8 py-4 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
                     Log in to Your Account
                     <v-icon name="hi-solid-user" scale="1.3"></v-icon>
                     </Link>

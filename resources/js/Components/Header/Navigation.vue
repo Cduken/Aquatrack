@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import AquatrackLogo from '../AquatrackLogo.vue';
+import AddReportModal from '../Modals/AddReportModal.vue';
 
 defineProps({
     canLogin: {
@@ -14,79 +16,87 @@ defineProps({
 });
 
 const isMobileMenuOpen = ref(false);
+const showReportModal = ref(false);
 </script>
 
 <template>
-    <header class="sticky top-0 z-50 bg-white/50 backdrop-blur-lg shadow-lg">
-        <div class="mx-auto p-2 px-6 sm:px-8 md:px-12">
-            <div class="flex items-center justify-between">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <Link href="/" class="flex items-center group">
-                    <img src="/images/MainLogo.png" alt="AquaTrack Logo"
-                        class="h-14 w-14 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain rounded-full" />
-                    <span
-                        class="ml-2 text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
-                        AquaTrack
-                    </span>
-                    </Link>
+    <div>
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100">
+            <div class="mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex h-24 items-center justify-between">
+                    <!-- Logo with fixed width -->
+                    <div class="flex-shrink-0">
+                        <Link href="/">
+                        <AquatrackLogo class="h-10" />
+                        </Link>
+                    </div>
+
+                    <!-- Desktop navigation -->
+                    <div class="hidden md:flex md:items-center md:space-x-4">
+                        <Link href="/"
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                        <v-icon name="bi-house" scale="0.9" />
+                        Home
+                        </Link>
+                        <Link :href="route('reports.index')"
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                        <v-icon name="bi-flag" scale="0.9" />
+                        Reports
+                        </Link>
+                        <button @click="showReportModal = true"
+                            class="flex items-center gap-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium transition-colors">
+                            <v-icon name="bi-plus-circle" scale="0.9" />
+                            Add Report
+                        </button>
+                    </div>
+
+                    <!-- Right section -->
+                    <div class="flex items-center gap-4">
+                        <Link v-if="canLogin" :href="route('login')"
+                            class="hidden md:flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-lg font-medium text-white shadow-sm hover:from-blue-700 hover:to-blue-600 transition-all">
+
+                        Log In
+                        <v-icon name="bi-box-arrow-in-right" scale="1.2" />
+                        </Link>
+
+                        <!-- Mobile menu button -->
+                        <button @click="isMobileMenuOpen = !isMobileMenuOpen"
+                            class="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none">
+                            <v-icon :name="isMobileMenuOpen ? 'bi-x-lg' : 'bi-list'" scale="1.25" />
+                        </button>
+                    </div>
                 </div>
+            </div>
 
-
-                <div class="flex items-center gap-6">
-
-
-
-                    <Link v-if="canLogin" :href="route('login')" class="hidden sm:flex items-center justify-center gap-2 rounded-md bg-blue-600
-                        px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition-all
-                        sm:px-4 sm:py-2 sm:text-base
-                        md:px-6 md:py-3 md:text-lg
-                        hover:shadow-lg hover:-translate-y-0.5 transform">
-                    Log In
-                    <v-icon name="bi-box-arrow-in-right" scale="1"
-                        class="sm:scale-110 md:scale-125 transition-transform group-hover:translate-x-1" />
+            <!-- Mobile menu -->
+            <div v-show="isMobileMenuOpen" class="md:hidden bg-white border-t border-gray-200">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <Link href="/" @click="isMobileMenuOpen = false"
+                        class="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
+                    <v-icon name="bi-house" scale="0.9" />
+                    Home
                     </Link>
-
-
-                    <button @click="isMobileMenuOpen = !isMobileMenuOpen"
-                        class="md:hidden text-blue-700 focus:outline-none transition-transform duration-300"
-                        :class="{ 'rotate-90': isMobileMenuOpen }">
-                        <v-icon :name="isMobileMenuOpen ? 'bi-x-lg' : 'bi-list'" scale="1.5"
-                            class="w-8 h-8 transition-all duration-300" />
+                    <Link :href="route('reports.index')" @click="isMobileMenuOpen = false"
+                        class="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
+                    <v-icon name="bi-flag" scale="0.9" />
+                    Reports
+                    </Link>
+                    <button @click="showReportModal = true; isMobileMenuOpen = false"
+                        class="flex items-center gap-3 w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
+                        <v-icon name="bi-plus-circle" scale="0.9" />
+                        Add Report
                     </button>
-                </div>
-            </div>
-
-
-            <div v-show="isMobileMenuOpen" class="md:hidden origin-top transition-all duration-300 ease-out"
-                :class="isMobileMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'">
-                <div class="space-y-4 py-4 text-center">
-                    <Link href="#features" class="block text-lg text-blue-900 hover:text-blue-600 py-2 transition-all duration-300
-                          hover:bg-blue-50 rounded-lg hover:scale-105 transform">
-                    Features
-                    </Link>
-                    <Link href="#solutions" class="block text-lg text-blue-900 hover:text-blue-600 py-2 transition-all duration-300
-                          hover:bg-blue-50 rounded-lg hover:scale-105 transform">
-                    Solutions
-                    </Link>
-                    <Link href="#pricing" class="block text-lg text-blue-900 hover:text-blue-600 py-2 transition-all duration-300
-                          hover:bg-blue-50 rounded-lg hover:scale-105 transform">
-                    Pricing
-                    </Link>
-                    <Link href="#contact" class="block text-lg text-blue-900 hover:text-blue-600 py-2 transition-all duration-300
-                          hover:bg-blue-50 rounded-lg hover:scale-105 transform">
-                    Contact
-                    </Link>
-
-                    <Link v-if="canLogin" :href="route('login')" class="mt-4 inline-flex items-center justify-center gap-2 rounded-md bg-blue-600
-                        px-6 py-3 text-lg font-medium text-white hover:bg-blue-700 transition-all
-                        hover:shadow-lg hover:-translate-y-0.5 transform">
+                    <Link v-if="canLogin" :href="route('login')" @click="isMobileMenuOpen = false"
+                        class="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-100">
+                    <v-icon name="bi-box-arrow-in-right" scale="0.9" />
                     Log In
-                    <v-icon name="bi-box-arrow-in-right" scale="1.2"
-                        class="transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
+
+        <AddReportModal :show="showReportModal" @close="showReportModal = false" />
+
+        <slot></slot>
+    </div>
 </template>
