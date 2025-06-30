@@ -13,8 +13,10 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
-    public function store(Request $request)
-    {
+
+public function store(Request $request)
+{
+    try {
         $validated = $request->validate([
             'municipality' => 'required|string|max:255',
             'province' => 'required|string|max:255',
@@ -23,23 +25,20 @@ class ReportController extends Controller
             'description' => 'required|string',
             'photos' => 'required|array|min:1',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
-            // Add these if you want to collect guest information
             'guest_name' => 'nullable|string|max:255',
             'guest_email' => 'nullable|email|max:255',
             'guest_phone' => 'nullable|string|max:20',
         ]);
 
-        // Create report
         $reportData = [
             'municipality' => $validated['municipality'],
             'province' => $validated['province'],
             'barangay' => $validated['barangay'],
             'purok' => $validated['purok'],
             'description' => $validated['description'],
-            'user_id' => Auth::id(), // Will be null for guests
+            'user_id' => Auth::id(),
         ];
 
-        // Add guest information if available
         if (!Auth::check()) {
             $reportData['guest_name'] = $validated['guest_name'] ?? null;
             $reportData['guest_email'] = $validated['guest_email'] ?? null;
@@ -48,7 +47,6 @@ class ReportController extends Controller
 
         $report = Report::create($reportData);
 
-        // Store photos
         foreach ($request->file('photos') as $photo) {
             $originalName = $photo->getClientOriginalName();
             $extension = $photo->getClientOriginalExtension();
@@ -65,7 +63,10 @@ class ReportController extends Controller
         }
 
         return redirect()->route('reports.index')->with('success', 'Report submitted successfully!');
+    } catch (\Exception $e) {
+        return redirect()->back()->withInput()->with('error', 'Failed to submit report. Please try again.');
     }
+}
 
     public function index()
     {
@@ -77,7 +78,7 @@ class ReportController extends Controller
 
     public function show(Report $report)
     {
-        $report->load(['photos', 'user']); // Eager load relationships
+        $report->load(['photos', 'user']);
 
         return Inertia::render('Reports/Show', [
             'report' => $report

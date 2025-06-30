@@ -1,4 +1,3 @@
-<!-- resources/js/Components/Modal.vue -->
 <template>
     <Transition name="modal">
         <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
@@ -12,8 +11,8 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                    <!-- Modal header - Updated for mobile layout -->
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl w-full">
+                    <!-- Modal header -->
                     <div class="bg-blue-600 px-4 py-3 sm:px-6 flex items-center justify-between">
                         <div class="flex items-center">
                             <slot name="title"></slot>

@@ -1,6 +1,5 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import AquatrackLogo from '../AquatrackLogo.vue';
 import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
 const emit = defineEmits(['close']);
@@ -20,46 +19,90 @@ const form = useForm({
 });
 
 const barangays = [
-    "Bacani",
-    "Bool",
-    "Buenavista",
-    "Bunga",
-    "Caboy",
-    "Cagawasan",
-    "Caluwasan",
-    "Candajec",
-    "Cantoyoc",
-    "Comaang",
-    "Danahao",
-    "Katipunan",
-    "Lajog",
-    "Mataub",
-    "Nahawan",
-    "Poblacion Centro",
-    "Poblacion Norte",
-    "Poblacion Sur",
-    "Tontunan",
-    "Tubod",
-    "Villaflor"
+    "Bacani", "Bogtongbod", "Bonbon", "Bontud", "Buacao",
+    "Buangan", "Cabog", "Caboy", "Caluwasan",
+    "Candajec", "Cantoyoc", "Comaang", "Danahao", "Katipunan",
+    "Lajog	", "Mataub", "Nahawan",
+    "Poblacion Centro", "Poblacion Norte", "Poblacion Sur", "Tangaran",
+    "Tontunan", "Tubod", "Villaflor"
 ];
+
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const handleFileUpload = (event) => {
     const files = event.target.files;
-    form.photos = Array.from(files);
-    form.photo_previews = [];
+
+    if (form.photos.length + files.length > MAX_FILES) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Too Many Files',
+            html: `You can upload a maximum of ${MAX_FILES} files.<br>You currently have ${form.photos.length} files selected.`,
+            confirmButtonColor: '#3085d6',
+        });
+        event.target.value = '';
+        return;
+    }
+
+    const validFiles = [];
+    const invalidFiles = [];
+    const invalidTypeFiles = [];
 
     Array.from(files).forEach(file => {
-        form.photo_previews.push(URL.createObjectURL(file));
+        if (!file.type.match('image.*')) {
+            invalidTypeFiles.push(file.name);
+        } else if (file.size > MAX_FILE_SIZE) {
+            invalidFiles.push(file.name);
+        } else {
+            validFiles.push(file);
+        }
     });
+
+    if (invalidTypeFiles.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid File Type',
+            html: `The following files are not images:<br><strong>${invalidTypeFiles.join('<br>')}</strong><br><br>Please select only image files.`,
+            confirmButtonColor: '#3085d6',
+        });
+    }
+
+    if (invalidFiles.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'File Size Exceeded',
+            html: `The following files exceed 10MB limit:<br><strong>${invalidFiles.join('<br>')}</strong><br><br>Please select smaller files.`,
+            confirmButtonColor: '#3085d6',
+        });
+    }
+
+    if (validFiles.length > 0) {
+        form.photos = [...form.photos, ...validFiles];
+        validFiles.forEach(file => {
+            form.photo_previews.push(URL.createObjectURL(file));
+        });
+    }
+
+    event.target.value = '';
 };
 
 const removePhoto = (index) => {
+    URL.revokeObjectURL(form.photo_previews[index]);
     form.photos.splice(index, 1);
     form.photo_previews.splice(index, 1);
-    URL.revokeObjectURL(form.photo_previews[index]);
 };
 
 const submitReport = () => {
+    if (form.photos.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Photos Required',
+            text: 'Please upload at least one photo for your report.',
+            confirmButtonColor: '#3085d6',
+        });
+        return;
+    }
+
     form.post(route('reports.store'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -70,15 +113,22 @@ const submitReport = () => {
 
             Swal.fire({
                 toast: true,
-                position: 'top-end', // top-right corner
+                position: 'top-end',
                 icon: 'success',
                 title: 'Report Submitted!',
                 text: 'Thank you for reporting the issue.',
                 showConfirmButton: false,
                 timer: 3000,
                 timerProgressBar: true,
-            })
-
+            });
+        },
+        onError: (errors) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Submission Failed',
+                text: 'There was an error submitting your report. Please try again.',
+                confirmButtonColor: '#3085d6',
+            });
         }
     });
 };
@@ -87,94 +137,169 @@ const submitReport = () => {
 <template>
     <Modal :show="show" @close="$emit('close')">
         <template #title>
-            <AquatrackLogo>
-                Add Report
-            </AquatrackLogo>
+            <div class="flex items-center space-x-2">
+                <v-icon name="bi-file-earmark-text" class="text-white" />
+                <span class="text-white font-medium">Add Water Quality Report</span>
+            </div>
         </template>
 
         <form @submit.prevent="submitReport" class="space-y-4">
             <!-- Location Section -->
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <!-- Fixed Municipality and Province -->
+                <!-- Municipality -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Municipality</label>
-                    <input type="text" value="Clarin" readonly
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 sm:text-sm p-2 border">
+                    <label class="block text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-building" class="mr-1 text-blue-500" /> Municipality
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-geo-alt" class="text-gray-400" />
+                        </div>
+                        <input type="text" value="Clarin" readonly
+                            class="block w-full pl-10 rounded-md border-gray-300 bg-gray-100 sm:text-sm p-2 border">
+                    </div>
                 </div>
+
+                <!-- Province -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Province</label>
-                    <input type="text" value="Bohol" readonly
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 sm:text-sm p-2 border">
+                    <label class="block text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-map" class="mr-1 text-blue-500" /> Province
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-geo" class="text-gray-400" />
+                        </div>
+                        <input type="text" value="Bohol" readonly
+                            class="block w-full pl-10 rounded-md border-gray-300 bg-gray-100 sm:text-sm p-2 border">
+                    </div>
                 </div>
 
                 <!-- Barangay Dropdown -->
                 <div class="sm:col-span-2">
-                    <label for="barangay" class="block text-sm font-medium text-gray-700">Barangay</label>
-                    <select id="barangay" v-model="form.barangay" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
-                        <option value="" disabled selected>Select Barangay</option>
-                        <option v-for="barangay in barangays" :key="barangay" :value="barangay">
-                            {{ barangay }}
-                        </option>
-                    </select>
+                    <label for="barangay" class="block text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-signpost" class="mr-1 text-blue-500" /> Barangay
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-info-circle" class="text-gray-400" />
+                        </div>
+                        <select id="barangay" v-model="form.barangay" required
+                            class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                            <option value="" disabled selected>Select Barangay</option>
+                            <option v-for="barangay in barangays" :key="barangay" :value="barangay">
+                                {{ barangay }}
+                            </option>
+                        </select>
+                    </div>
+                    <p v-if="form.errors.barangay" class="mt-1 text-sm text-red-600">{{ form.errors.barangay }}</p>
                 </div>
 
                 <!-- Purok Input -->
                 <div class="sm:col-span-2">
-                    <label for="purok" class="block text-sm font-medium text-gray-700">Purok/Street</label>
-                    <input type="text" id="purok" v-model="form.purok" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                        placeholder="Enter purok number or street name">
-                </div>
-            </div>
-
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea id="description" v-model="form.description" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Upload Photos</label>
-                <div class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                    <div class="space-y-1 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                            viewBox="0 0 48 48" aria-hidden="true">
-                            <path
-                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <div class="flex text-sm text-gray-600">
-                            <label for="file-upload"
-                                class="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none hover:text-blue-500">
-                                <span>Upload files</span>
-                                <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple
-                                    accept="image/*" @change="handleFileUpload">
-                            </label>
-                            <p class="pl-1">or drag and drop</p>
+                    <label for="purok" class="block text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-tag" class="mr-1 text-blue-500" /> Purok/Street
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-house" class="text-gray-400" />
                         </div>
-                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                        <input type="text" id="purok" v-model="form.purok" required
+                            class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                            placeholder="Enter purok number or street name">
                     </div>
+                    <p v-if="form.errors.purok" class="mt-1 text-sm text-red-600">{{ form.errors.purok }}</p>
                 </div>
-                <div v-if="form.photo_previews.length > 0" class="mt-2 grid grid-cols-3 gap-2">
-                    <div v-for="(preview, index) in form.photo_previews" :key="index" class="relative">
-                        <img :src="preview" class="h-24 w-full object-cover rounded" />
-                        <button @click="removePhoto(index)"
-                            class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1">
-                            <v-icon name="bi-x-lg" scale="0.8" />
-                        </button>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 flex items-center">
+                    <v-icon name="bi-card-text" class="mr-1 text-blue-500" /> Description
+                </label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
+                        <v-icon name="bi-file-earmark-text" class="text-gray-400" />
+                    </div>
+                    <textarea id="description" v-model="form.description" rows="3" required
+                        class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                        placeholder="Describe the water quality issue"></textarea>
+                </div>
+                <p v-if="form.errors.description" class="mt-1 text-sm text-red-600">{{ form.errors.description }}</p>
+            </div>
+
+            <!-- Photo Upload -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 flex items-center">
+                    <v-icon name="bi-images" class="mr-1 text-blue-500" /> Upload Photos
+                </label>
+                <div class="mt-1">
+                    <label for="file-upload" class="cursor-pointer">
+                        <div
+                            class="flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6 hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                            <div class="space-y-1 text-center">
+                                <v-icon name="bi-images" class="mx-auto h-12 w-12 text-gray-400" />
+                                <div class="flex text-sm text-gray-600 justify-center">
+                                    <span class="relative font-medium text-blue-600 hover:text-blue-500">
+                                        Click to upload files
+                                    </span>
+                                    <input id="file-upload" name="photos" type="file" class="sr-only" multiple
+                                        accept="image/*" @change="handleFileUpload">
+                                </div>
+                                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each (max {{ MAX_FILES }}
+                                    files)</p>
+                                <p v-if="form.photos.length > 0" class="text-xs text-blue-500">
+                                    {{ form.photos.length }} of {{ MAX_FILES }} files selected
+                                </p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                <p v-if="form.errors.photos" class="mt-1 text-sm text-red-600">{{ form.errors.photos }}</p>
+
+                <!-- Photo Previews -->
+                <div v-if="form.photo_previews.length > 0" class="mt-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div v-for="(preview, index) in form.photo_previews" :key="index" class="relative group">
+                            <img :src="preview" class="h-24 w-full object-cover rounded border border-gray-200" />
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200">
+                                <button @click="removePhoto(index)" type="button"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">
+                                    <v-icon name="bi-x-lg" scale="0.8" />
+                                </button>
+                                <div
+                                    class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                                    {{ (form.photos[index].size / 1024 / 1024).toFixed(2) }} MB
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Form Actions -->
             <div class="flex justify-end space-x-3 pt-4">
                 <button type="button" @click="$emit('close')"
-                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                     Cancel
                 </button>
-                <button type="submit"
-                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Submit Report
+                <button type="submit" :disabled="form.processing"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-75 disabled:cursor-not-allowed transition-colors">
+                    <span v-if="form.processing" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Processing...
+                    </span>
+                    <span v-else class="flex items-center">
+                        <v-icon name="bi-check-circle" class="mr-2" />
+                        Submit Report
+                    </span>
                 </button>
             </div>
         </form>

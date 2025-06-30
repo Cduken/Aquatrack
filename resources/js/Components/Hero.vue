@@ -24,14 +24,15 @@ defineProps(
                     issues all in one convenient platform.
                 </p>
 
-                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="mt-8">
                     <Link :href="route('login')"
                         class="inline-flex items-center text-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
                     Log in to Your Account
                     <v-icon name="hi-solid-user" scale="1.3"></v-icon>
                     </Link>
+                    </div>
 
-                </div>
+
 
                 <!-- Full width water wave illustration with rounded corners -->
                 <div class="w-full mt-12 overflow-hidden">

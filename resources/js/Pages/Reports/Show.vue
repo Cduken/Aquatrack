@@ -16,18 +16,6 @@ defineProps({
         <Head :title="`Report #${report.id}`" />
 
 
-        <!-- <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Report Details
-                </h2>
-                <Link :href="route('reports.index')"
-                      class="text-sm text-blue-600 hover:text-blue-900">
-                    Back to Reports
-                </Link>
-            </div>
-        </template> -->
-
         <div class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- Report Details Card -->
