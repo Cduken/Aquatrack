@@ -3,7 +3,7 @@
         <div class="flex items-center group">
             <!-- Responsive logo image -->
             <img src="/images/MainLogo.png" alt="AquaTrack Logo"
-                class="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-18 lg:w-18 object-contain rounded-full" />
+                class="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 object-contain rounded-full" />
 
             <!-- Text container with responsive breakpoints -->
             <span v-if="$slots.default"
