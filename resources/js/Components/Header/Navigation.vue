@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import AquatrackLogo from '../AquatrackLogo.vue';
 import AddReportModal from '../Modals/AddReportModal.vue';
+
+const page = usePage();
 
 defineProps({
     canLogin: {
@@ -21,6 +23,31 @@ const showReportModal = ref(false);
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
+
+const isActive = (href) => {
+  const current = page.url;
+
+  // Handle route objects (from route() helper)
+  if (typeof href === 'object' && href.route) {
+    const routePath = new URL(router.url(href.route)).pathname;
+    const currentPath = new URL(current, window.location.origin).pathname;
+
+    if (href.route === 'reports.index') {
+      return currentPath === routePath; // Exact match for reports
+    }
+    return currentPath.startsWith(routePath); // Partial match for others
+  }
+
+  // Handle string paths
+  const currentPath = new URL(current, window.location.origin).pathname;
+  const targetPath = new URL(href, window.location.origin).pathname;
+
+  if (targetPath === '/') {
+    return currentPath === targetPath; // Exact match for home
+  }
+  return currentPath.startsWith(targetPath); // Partial match for others
+};
+
 </script>
 
 <template>
@@ -37,8 +64,6 @@ const toggleSidebar = () => {
 
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
-
-
                         <!-- Sidebar Toggle Button -->
                         <button @click="toggleSidebar"
                             class="p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-colors">
@@ -62,7 +87,7 @@ const toggleSidebar = () => {
             <div class="h-full flex flex-col">
                 <!-- Sidebar Header -->
                 <div class="flex items-center justify-between p-4 border-b">
-                    <AquatrackLogo></AquatrackLogo>
+                    <AquatrackLogo class="h-14 w-14"></AquatrackLogo>
                     <button @click="toggleSidebar" class="p-1 rounded-full hover:bg-gray-100">
                         <v-icon name="bi-x-lg" />
                     </button>
@@ -71,13 +96,15 @@ const toggleSidebar = () => {
                 <!-- Sidebar Content -->
                 <div class="flex-1 overflow-y-auto p-4 space-y-2">
                     <Link href="/" @click="toggleSidebar"
-                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
+                        :class="isActive('/') ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'">
                     <v-icon name="bi-house" scale="0.9" />
                     <span>Home</span>
                     </Link>
 
                     <Link :href="route('reports.index')" @click="toggleSidebar"
-                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
+                        :class="isActive(route('reports.index')) ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'">
                     <v-icon name="bi-flag" scale="0.9" />
                     <span>Reports</span>
                     </Link>
@@ -91,7 +118,8 @@ const toggleSidebar = () => {
                     <div class="border-t border-gray-200 my-2"></div>
 
                     <Link v-if="canLogin" :href="route('login')" @click="toggleSidebar"
-                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
+                        :class="isActive(route('login')) ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'">
                     <v-icon name="bi-box-arrow-in-right" scale="0.9" />
                     <span>Log In</span>
                     </Link>

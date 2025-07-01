@@ -41,6 +41,7 @@ addIcons(
     BiIcons.BiImages,
     BiIcons.BiZoomIn,
     BiIcons.BiEye,
+    BiIcons.BiEyeSlash,  // Added eye-slash icon
     BiIcons.BiX,
     BiIcons.BiHouse,
     BiIcons.BiPlusCircle,
@@ -50,7 +51,7 @@ addIcons(
     BiIcons.BiPlus,
     BiIcons.BiXLg,
     BiIcons.BiX,
-    BiIcons.BiCloudUpload,  // Added the missing icon
+    BiIcons.BiCloudUpload,
 
     // Font Awesome (fa)
     FaIcons.FaBuilding,
