@@ -15,14 +15,16 @@ const form = useForm({
     purok: "",
     description: "",
     photos: [],
-    photo_previews: []
+    photo_previews: [],
+    reporter_name: "", // Required reporter name
+    reporter_phone: "" // Optional phone
 });
 
 const barangays = [
     "Bacani", "Bogtongbod", "Bonbon", "Bontud", "Buacao",
     "Buangan", "Cabog", "Caboy", "Caluwasan",
     "Candajec", "Cantoyoc", "Comaang", "Danahao", "Katipunan",
-    "Lajog	", "Mataub", "Nahawan",
+    "Lajog", "Mataub", "Nahawan",
     "Poblacion Centro", "Poblacion Norte", "Poblacion Sur", "Tangaran",
     "Tontunan", "Tubod", "Villaflor"
 ];
@@ -148,7 +150,7 @@ const submitReport = () => {
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <!-- Municipality -->
                 <div>
-                    <label class=" text-sm font-medium text-gray-700 flex items-center">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-building" class="mr-1 text-blue-500" /> Municipality
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -162,7 +164,7 @@ const submitReport = () => {
 
                 <!-- Province -->
                 <div>
-                    <label class=" text-sm font-medium text-gray-700 flex items-center">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-map" class="mr-1 text-blue-500" /> Province
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -174,9 +176,47 @@ const submitReport = () => {
                     </div>
                 </div>
 
+                <!-- Reporter Name -->
+                <div>
+                    <label for="reporter_name" class="text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-person-badge" class="mr-1 text-blue-500" />
+                        Reporter's Full Name <span class="text-red-500 ml-1">*</span>
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-person" class="text-gray-400" />
+                        </div>
+                        <input type="text" id="reporter_name" v-model="form.reporter_name" required
+                            class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                            placeholder="Enter your full name"
+
+                    </div>
+                    <p v-if="form.errors.reporter_name" class="mt-1 text-sm text-red-600">{{ form.errors.reporter_name
+                        }}</p>
+                </div>
+
+                <!-- Reporter Phone -->
+                <div>
+                    <label for="reporter_phone" class="text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-telephone" class="mr-1 text-blue-500" />
+                        Phone Number/Contact Number
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-phone" class="text-gray-400" />
+                        </div>
+                        <input type="tel" id="reporter_phone" v-model="form.reporter_phone"
+                            class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                            placeholder="Enter phone number (Optional)">
+
+                    </div>
+                    <p v-if="form.errors.reporter_phone" class="mt-1 text-sm text-red-600">{{ form.errors.reporter_phone
+                        }}</p>
+                </div>
+
                 <!-- Barangay Dropdown -->
                 <div class="sm:col-span-2">
-                    <label for="barangay" class=" text-sm font-medium text-gray-700 flex items-center">
+                    <label for="barangay" class="text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-signpost" class="mr-1 text-blue-500" /> Barangay
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -196,7 +236,7 @@ const submitReport = () => {
 
                 <!-- Purok Input -->
                 <div class="sm:col-span-2">
-                    <label for="purok" class=" text-sm font-medium text-gray-700 flex items-center">
+                    <label for="purok" class="text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-tag" class="mr-1 text-blue-500" /> Purok/Street
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -213,7 +253,7 @@ const submitReport = () => {
 
             <!-- Description -->
             <div>
-                <label for="description" class=" text-sm font-medium text-gray-700 flex items-center">
+                <label for="description" class="text-sm font-medium text-gray-700 flex items-center">
                     <v-icon name="bi-card-text" class="mr-1 text-blue-500" /> Description
                 </label>
                 <div class="mt-1 relative rounded-md shadow-sm">
@@ -229,7 +269,7 @@ const submitReport = () => {
 
             <!-- Photo Upload -->
             <div>
-                <label class=" text-sm font-medium text-gray-700 flex items-center">
+                <label class="text-sm font-medium text-gray-700 flex items-center">
                     <v-icon name="bi-images" class="mr-1 text-blue-500" /> Upload Photos
                 </label>
                 <div class="mt-1">

@@ -21,9 +21,8 @@ return new class extends Migration
             $table->text('description');
 
             // Remove the 'after' clauses for create table
-            $table->string('guest_name')->nullable();
-            $table->string('guest_email')->nullable();
-            $table->string('guest_phone')->nullable();
+            $table->string('reporter_name')->nullable();
+            $table->string('reporter_phone')->nullable();
 
             $table->timestamps();
         });

@@ -18,9 +18,8 @@ class Report extends Model
         'purok',
         'description',
         'user_id',
-        'guest_name',
-        'guest_email',
-        'guest_phone'
+        'reporter_name',
+        'reporter_phone',
     ];
 
     /**
@@ -52,6 +51,20 @@ class Report extends Model
      */
     public function getReporterNameAttribute(): string
     {
-        return $this->user_id ? $this->user->name : ($this->guest_name ?? 'Anonymous');
+        // Access the raw attribute value
+        $reporterName = $this->attributes['reporter_name'] ?? null;
+
+        // First try the explicitly provided reporter name
+        if ($reporterName) {
+            return $reporterName;
+        }
+
+        // Then fall back to user name if available
+        if ($this->user_id) {
+            return $this->user->name;
+        }
+
+        // Finally fall back to Guest
+        return 'Guest';
     }
 }

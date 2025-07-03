@@ -24,10 +24,9 @@ public function store(Request $request)
             'purok' => 'required|string|max:255',
             'description' => 'required|string',
             'photos' => 'required|array|min:1',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
-            'guest_name' => 'nullable|string|max:255',
-            'guest_email' => 'nullable|email|max:255',
-            'guest_phone' => 'nullable|string|max:20',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'reporter_name' => 'required|string|max:255', // Required reporter name
+            'reporter_phone' => 'nullable|string|max:11',
         ]);
 
         $reportData = [
@@ -36,13 +35,15 @@ public function store(Request $request)
             'barangay' => $validated['barangay'],
             'purok' => $validated['purok'],
             'description' => $validated['description'],
+            'reporter_name' => $validated['reporter_name'], // Required reporter name
+            'reporter_phone' => $validated['reporter_phone'] ?? null,
             'user_id' => Auth::id(),
         ];
 
         if (!Auth::check()) {
-            $reportData['guest_name'] = $validated['guest_name'] ?? null;
-            $reportData['guest_email'] = $validated['guest_email'] ?? null;
-            $reportData['guest_phone'] = $validated['guest_phone'] ?? null;
+            $reportData['reporter_name'] = $validated['reporter_name'] ?? null;
+
+            $reportData['reporter_phone'] = $validated['reporter_phone'] ?? null;
         }
 
         $report = Report::create($reportData);

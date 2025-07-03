@@ -18,8 +18,7 @@ const emit = defineEmits(['close']);
     <transition name="modal">
         <div v-if="show" class="fixed inset-0 z-40 overflow-hidden">
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/50 transition-opacity duration-300"
-                @click="emit('close')"></div>
+            <div class="absolute inset-0 bg-black/50 transition-opacity duration-300" @click="emit('close')"></div>
 
             <!-- Sliding panel container -->
             <div class="fixed inset-y-0 right-0 w-full max-w-md flex">
@@ -78,6 +77,37 @@ const emit = defineEmits(['close']);
                                     </div>
                                 </div>
 
+                                <!-- Reporter Information -->
+                                <div class="bg-gray-100 border border-gray-200 p-4 rounded-lg">
+                                    <h3 class="text-md font-medium text-gray-900 mb-3 flex items-center">
+                                        <v-icon name="bi-person" class="mr-2 text-blue-600" />
+                                        Reporter Information
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="flex items-start">
+                                            <v-icon name="bi-person-badge" class="mr-2 mt-0.5 text-gray-500" />
+                                            <div>
+                                                <p class="text-xs text-gray-500">Reporter Name</p>
+                                                <p class="font-medium">{{ report.reporter_name }}</p>
+                                            </div>
+                                        </div>
+                                        <div v-if="report.reporter_phone" class="flex items-start">
+                                            <v-icon name="bi-telephone" class="mr-2 mt-0.5 text-gray-500" />
+                                            <div>
+                                                <p class="text-xs text-gray-500">Phone Number</p>
+                                                <p class="font-medium">{{ report.reporter_phone }}</p>
+                                            </div>
+                                        </div>
+                                        <div v-if="report.user" class="flex items-start">
+                                            <v-icon name="bi-person-check" class="mr-2 mt-0.5 text-gray-500" />
+                                            <div>
+                                                <p class="text-xs text-gray-500">Registered User</p>
+                                                <p class="font-medium">{{ report.user.name }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Report Metadata -->
                                 <div class="bg-gray-100 border border-gray-200 p-4 rounded-lg">
                                     <h3 class="text-md font-medium text-gray-900 mb-3 flex items-center">
@@ -96,14 +126,16 @@ const emit = defineEmits(['close']);
                                             <v-icon name="bi-calendar" class="mr-2 mt-0.5 text-gray-500" />
                                             <div>
                                                 <p class="text-xs text-gray-500">Submitted</p>
-                                                <p class="font-medium">{{ new Date(report.created_at).toLocaleString() }}</p>
+                                                <p class="font-medium">{{ new Date(report.created_at).toLocaleString()
+                                                    }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-start">
                                             <v-icon name="bi-check-circle" class="mr-2 mt-0.5 text-gray-500" />
                                             <div>
                                                 <p class="text-xs text-gray-500">Status</p>
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                <span
+                                                    class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                                     Verified
                                                 </span>
                                             </div>
@@ -121,7 +153,8 @@ const emit = defineEmits(['close']);
                                 </div>
 
                                 <!-- Photos Section -->
-                                <div v-if="report.photos && report.photos.length" class="bg-gray-100 border border-gray-200 p-4 rounded-lg">
+                                <div v-if="report.photos && report.photos.length"
+                                    class="bg-gray-100 border border-gray-200 p-4 rounded-lg">
                                     <h3 class="text-md font-medium text-gray-900 mb-3 flex items-center">
                                         <v-icon name="bi-images" class="mr-2 text-blue-600" />
                                         Photos

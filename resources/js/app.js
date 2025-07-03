@@ -52,6 +52,10 @@ addIcons(
     BiIcons.BiXLg,
     BiIcons.BiX,
     BiIcons.BiCloudUpload,
+    BiIcons.BiTelephone,
+    BiIcons.BiPersonBadge,
+    BiIcons.BiPerson,
+    BiIcons.BiPhone,
 
     // Font Awesome (fa)
     FaIcons.FaBuilding,
