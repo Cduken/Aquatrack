@@ -36,15 +36,17 @@ const submit = () => {
         <Head title="Register" />
 
         <div
-            class="max-w-4xl w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row">
+            class="max-w-4xl w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-full md:h-auto">
             <!-- Left Side - Logo -->
             <div
                 class="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300">
-                <ApplicationLogo :size="32" class="fill-current text-white" />
+                <img src="/images/MainLogo.png" class="max-w-full max-h-full h-[300px] w-[300px] object-contain" alt="">
+
                 <h1 class="text-white text-3xl font-bold mt-6">AquaTrack</h1>
                 <p class="text-blue-100 mt-2 text-center text-lg">
                     Smart Water Management System
                 </p>
+
             </div>
 
             <!-- Right Side - Form -->

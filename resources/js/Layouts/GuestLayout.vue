@@ -6,7 +6,7 @@ import Navbar from '@/Components/Header/Navigation.vue';
 
 <template>
     <Navbar>
-        <div class="flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <slot />
         </div>
     </Navbar>

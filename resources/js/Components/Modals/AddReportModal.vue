@@ -16,8 +16,8 @@ const form = useForm({
     description: "",
     photos: [],
     photo_previews: [],
-    reporter_name: "", // Required reporter name
-    reporter_phone: "" // Optional phone
+    reporter_name: "",
+    reporter_phone: ""
 });
 
 const barangays = [

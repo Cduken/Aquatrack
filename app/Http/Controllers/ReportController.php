@@ -25,7 +25,7 @@ public function store(Request $request)
             'description' => 'required|string',
             'photos' => 'required|array|min:1',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
-            'reporter_name' => 'required|string|max:255', // Required reporter name
+            'reporter_name' => 'required|string|max:255',
             'reporter_phone' => 'nullable|string|max:11',
         ]);
 
@@ -35,7 +35,7 @@ public function store(Request $request)
             'barangay' => $validated['barangay'],
             'purok' => $validated['purok'],
             'description' => $validated['description'],
-            'reporter_name' => $validated['reporter_name'], // Required reporter name
+            'reporter_name' => $validated['reporter_name'],
             'reporter_phone' => $validated['reporter_phone'] ?? null,
             'user_id' => Auth::id(),
         ];

@@ -8,7 +8,7 @@ import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 
-// Import icon sets in bulk
+
 import * as BiIcons from "oh-vue-icons/icons/bi";
 import * as FaIcons from "oh-vue-icons/icons/fa";
 import * as OiIcons from "oh-vue-icons/icons/oi";
@@ -17,9 +17,9 @@ import * as HiIcons from "oh-vue-icons/icons/hi";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
-// Add all icons you need
+
 addIcons(
-    // Bootstrap Icons (bi)
+
     BiIcons.BiSpeedometer2,
     BiIcons.BiBellFill,
     BiIcons.BiBoxArrowInRight,
@@ -41,7 +41,7 @@ addIcons(
     BiIcons.BiImages,
     BiIcons.BiZoomIn,
     BiIcons.BiEye,
-    BiIcons.BiEyeSlash,  // Added eye-slash icon
+    BiIcons.BiEyeSlash,
     BiIcons.BiX,
     BiIcons.BiHouse,
     BiIcons.BiPlusCircle,
@@ -57,19 +57,19 @@ addIcons(
     BiIcons.BiPerson,
     BiIcons.BiPhone,
 
-    // Font Awesome (fa)
+
     FaIcons.FaBuilding,
     FaIcons.FaLeaf,
     FaIcons.FaIndustry,
     FaIcons.FaUtensils,
 
-    // Octicons (oi)
     OiIcons.OiGraph,
 
-    // Material Design (md)
-    MdIcons.MdStartTwotone,
 
-    // Heroicons (hi)
+    MdIcons.MdStartTwotone,
+    MdIcons.MdLoginOutlined,
+
+
     HiIcons.HiSolidUser
 );
 
