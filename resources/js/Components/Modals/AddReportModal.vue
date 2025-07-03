@@ -148,7 +148,7 @@ const submitReport = () => {
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <!-- Municipality -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 flex items-center">
+                    <label class=" text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-building" class="mr-1 text-blue-500" /> Municipality
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -162,7 +162,7 @@ const submitReport = () => {
 
                 <!-- Province -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 flex items-center">
+                    <label class=" text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-map" class="mr-1 text-blue-500" /> Province
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -176,7 +176,7 @@ const submitReport = () => {
 
                 <!-- Barangay Dropdown -->
                 <div class="sm:col-span-2">
-                    <label for="barangay" class="block text-sm font-medium text-gray-700 flex items-center">
+                    <label for="barangay" class=" text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-signpost" class="mr-1 text-blue-500" /> Barangay
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -196,7 +196,7 @@ const submitReport = () => {
 
                 <!-- Purok Input -->
                 <div class="sm:col-span-2">
-                    <label for="purok" class="block text-sm font-medium text-gray-700 flex items-center">
+                    <label for="purok" class=" text-sm font-medium text-gray-700 flex items-center">
                         <v-icon name="bi-tag" class="mr-1 text-blue-500" /> Purok/Street
                     </label>
                     <div class="mt-1 relative rounded-md shadow-sm">
@@ -213,7 +213,7 @@ const submitReport = () => {
 
             <!-- Description -->
             <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 flex items-center">
+                <label for="description" class=" text-sm font-medium text-gray-700 flex items-center">
                     <v-icon name="bi-card-text" class="mr-1 text-blue-500" /> Description
                 </label>
                 <div class="mt-1 relative rounded-md shadow-sm">
@@ -229,7 +229,7 @@ const submitReport = () => {
 
             <!-- Photo Upload -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 flex items-center">
+                <label class=" text-sm font-medium text-gray-700 flex items-center">
                     <v-icon name="bi-images" class="mr-1 text-blue-500" /> Upload Photos
                 </label>
                 <div class="mt-1">
