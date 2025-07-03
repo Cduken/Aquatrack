@@ -6,17 +6,8 @@ import Navbar from '@/Components/Header/Navigation.vue';
 
 <template>
     <Navbar>
-
-
-        <div class="min-h-screen flex flex-col items-center justify-center">
-            <div class="w-full max-w-md bg-white rounded-lg shadow-lg border border-gray-300 p-8">
-                <div class="text-center mb-6">
-
-                    <ApplicationLogo class="h-20 w-20 fill-current text-blue-600 mx-auto" />
-
-                </div>
-                <slot />
-            </div>
+        <div class="flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <slot />
         </div>
     </Navbar>
 </template>
