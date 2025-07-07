@@ -8,11 +8,11 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Menu'
+    default: 'AquaTrack'
   },
   bgColor: {
     type: String,
-    default: '#2c3e50'
+    default: '#1e88e5' // Primary blue color
   },
   textColor: {
     type: String,
@@ -30,14 +30,20 @@ const props = defineProps({
   links: {
     type: Array,
     default: () => [
-      { name: 'Home', url: '#', icon: '🏠' },
-      { name: 'About', url: '#', icon: 'ℹ️' },
-      { name: 'Contact', url: '#', icon: '✉️' }
+      { name: 'Dashboard', url: '#', icon: '📊', active: false },
+      { name: 'Manage Users', url: '#', icon: '👥', active: true },
+      { name: 'Manage Staff', url: '#', icon: '👔', active: false },
+      { name: 'Reports', url: '#', icon: '📄', active: false },
+      { name: 'Analytics', url: '#', icon: '📈', active: false }
     ]
   },
   useRouterLinks: {
     type: Boolean,
     default: false
+  },
+  showLogout: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -51,6 +57,8 @@ const toggleSidebar = () => {
 defineExpose({
   toggleSidebar
 });
+
+const emit = defineEmits(['logout']);
 </script>
 
 <template>
@@ -87,13 +95,9 @@ defineExpose({
         <div v-if="logo || $slots.logo" class="sidebar-logo">
           <slot name="logo">
             <img :src="logo" alt="Logo" class="logo-image" v-if="logo">
+            <h1 v-else class="text-2xl font-bold">{{ title }}</h1>
           </slot>
         </div>
-
-        <!-- Header Section -->
-        <slot name="header">
-          <h2 class="sidebar-title">{{ title }}</h2>
-        </slot>
 
         <!-- Navigation Links -->
         <nav class="sidebar-nav">
@@ -105,10 +109,12 @@ defineExpose({
                 :key="index"
                 :to="link.url"
                 class="sidebar-link"
+                :class="{ 'active-link': link.active }"
                 active-class="active-link"
               >
                 <span class="link-icon" v-if="link.icon">{{ link.icon }}</span>
                 {{ link.name }}
+                <span v-if="link.active" class="checkmark">✓</span>
               </router-link>
             </template>
             <template v-else>
@@ -117,17 +123,29 @@ defineExpose({
                 :key="index"
                 :href="link.url"
                 class="sidebar-link"
+                :class="{ 'active-link': link.active }"
               >
                 <span class="link-icon" v-if="link.icon">{{ link.icon }}</span>
                 {{ link.name }}
+                <span v-if="link.active" class="checkmark">✓</span>
               </a>
             </template>
           </slot>
         </nav>
 
         <!-- Footer Section -->
-        <div class="sidebar-footer">
-          <slot name="footer"></slot>
+        <div class="sidebar-footer" v-if="showLogout">
+          <slot name="footer">
+            <button
+              @click="emit('logout')"
+              class="logout-button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              Logout
+            </button>
+          </slot>
         </div>
       </div>
     </aside>
@@ -139,21 +157,6 @@ defineExpose({
       @click="toggleSidebar"
     ></div>
   </div>
-
-  <div class="sidebar-footer">
-  <slot name="footer">
-    <!-- Default footer content with logout button -->
-    <button
-      @click="$emit('logout')"
-      class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center justify-center gap-2"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
-      </svg>
-      Logout
-    </button>
-  </slot>
-</div>
 </template>
 
 <style scoped>
@@ -167,15 +170,17 @@ defineExpose({
   z-index: 1001;
   color: v-bind(textColor);
   border: none;
-  padding: 10px;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1.2rem;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-toggle:hover {
   opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .sidebar {
@@ -186,6 +191,7 @@ defineExpose({
   z-index: 1000;
   overflow-y: auto;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to bottom, #1e88e5, #0d47a1);
 }
 
 .sidebar-left {
@@ -214,8 +220,8 @@ defineExpose({
 .sidebar-logo {
   padding: 20px 0;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 30px;
 }
 
 .logo-image {
@@ -224,16 +230,10 @@ defineExpose({
   object-fit: contain;
 }
 
-.sidebar-title {
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   flex-grow: 1;
 }
 
@@ -245,26 +245,64 @@ defineExpose({
   transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-size: 0.95rem;
+  position: relative;
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .active-link {
-  background: rgba(255, 255, 255, 0.2);
-  font-weight: bold;
+  background: rgba(255, 255, 255, 0.25);
+  font-weight: 500;
+}
+
+.active-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: white;
+  border-radius: 0 4px 4px 0;
 }
 
 .link-icon {
   font-size: 1.1em;
 }
 
+.checkmark {
+  margin-left: auto;
+  font-weight: bold;
+}
+
 .sidebar-footer {
   margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-button {
+  width: 100%;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-overlay {
