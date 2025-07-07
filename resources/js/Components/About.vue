@@ -1,7 +1,7 @@
 <template>
     <section id="about" class="py-4 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1500px] mx-auto">
-            <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-[80px]">
                 <!-- Left Column - Text Content -->
                 <div class="lg:w-1/2">
                     <h2
@@ -23,7 +23,7 @@
                                     class="flex-shrink-0 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 border-blue-500 flex items-center justify-center mr-3 mt-0.5">
                                     <div class="h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-blue-500"></div>
                                 </div>
-                                <p class="text-base sm:text-md lg:text-lg text-gray-600">24/7 Real-time Water Usage
+                                <p class="text-base sm:text-md lg:text-lg text-gray-600">Water Usage
                                     Monitoring</p>
                             </div>
                             <div class="flex items-start">
@@ -34,13 +34,13 @@
                                 <p class="text-base sm:text-md lg:text-lg text-gray-600">Instant Issue Reporting &
                                     Tracking</p>
                             </div>
-                            <div class="flex items-start">
+                            <!-- <div class="flex items-start">
                                 <div
                                     class="flex-shrink-0 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 border-blue-500 flex items-center justify-center mr-3 mt-0.5">
                                     <div class="h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-blue-500"></div>
                                 </div>
                                 <p class="text-base sm:text-md lg:text-lg text-gray-600">Digital Bill Management</p>
-                            </div>
+                            </div> -->
                             <div class="flex items-start">
                                 <div
                                     class="flex-shrink-0 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 border-blue-500 flex items-center justify-center mr-3 mt-0.5">
@@ -53,7 +53,7 @@
                 </div>
 
                 <!-- Right Column - Image Placeholder -->
-                <div class="lg:w-1/2 hidden lg:block">
+                <div class="lg:w-[600px] hidden lg:block">
                     <div class="rounded-xl h-full flex items-center justify-center">
                         <img src="/images/MainLogo.png" alt="AquaTrack Logo"
                             class="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-300 cursor-pointer">

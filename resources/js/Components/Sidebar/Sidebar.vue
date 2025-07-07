@@ -69,6 +69,12 @@ const handleAddReport = () => emit('addReport');
                         <span>Home</span>
                         </Link>
 
+                        <button @click="handleAddReport"
+                            class="flex items-center gap-3 w-full text-left px-3 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                            <v-icon name="bi-plus-circle" scale="0.9" />
+                            <span>Add Report</span>
+                        </button>
+
                         <Link :href="route('reports.index')" @click="handleClose"
                             class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors"
                             :class="isActive(route('reports.index')) ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'">
@@ -76,11 +82,7 @@ const handleAddReport = () => emit('addReport');
                         <span>Reports</span>
                         </Link>
 
-                        <button @click="handleAddReport"
-                            class="flex items-center gap-3 w-full text-left px-3 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            <v-icon name="bi-plus-circle" scale="0.9" />
-                            <span>Add Report</span>
-                        </button>
+
 
                         <div class="border-t border-gray-200 my-2"></div>
 

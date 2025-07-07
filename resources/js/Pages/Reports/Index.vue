@@ -118,7 +118,7 @@ const closeModal = () => {
                         </table>
                     </div>
 
-                    <!-- Pagination -->
+
                     <div v-if="reports.meta && reports.meta.last_page > 1"
                         class="bg-white px-6 py-3 flex items-center justify-between border-t border-gray-200">
                         <div class="flex-1 flex justify-between sm:hidden">
