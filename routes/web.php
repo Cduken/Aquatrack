@@ -45,11 +45,19 @@ Route::get('/customer/dashboard', function () {
     return Inertia::render('Customer/Dashboard');
 })->middleware(['auth', 'role:customer'])->name('customer.dashboard');
 
-
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
 
+
+//customer side
+use App\Http\Controllers\CustomerDashboardController;
+
+Route::get('/customer-dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+
+Route::get('/report', function () {
+    return Inertia::render('Customer/ReportProblem');
+});
 
 require __DIR__ . '/auth.php';
