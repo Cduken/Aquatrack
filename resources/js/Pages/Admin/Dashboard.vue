@@ -1,10 +1,13 @@
 <template>
     <MainLayout>
         <DashboardSidebar @logout="logout" :links="adminLinks" :useRouterLinks="true" :defaultOpen="true">
+            <template #logo>
+                <AquatrackLogo class="h-12 w-auto" />
+            </template>
+
             <template #default>
                 <div class="flex flex-col items-center pt-10">
                     <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
-
                 </div>
             </template>
 
@@ -31,6 +34,7 @@ import { useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import MainLayout from '@/Layouts/MainLayout.vue';
 import DashboardSidebar from '@/Components/Sidebar/DashboardSidebar.vue';
+import AquatrackLogo from '@/Components/AquatrackLogo.vue'; // Import your logo component
 
 import { ref } from 'vue';
 
@@ -42,7 +46,6 @@ const adminLinks = ref([
     { name: 'Settings', url: '/admin/settings', icon: 'bi-gear' },
     { name: 'Reports', url: '/admin/reports', icon: 'bi-file-earmark-text' }
 ]);
-
 
 const logout = () => {
     Swal.fire({

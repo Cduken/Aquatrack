@@ -93,7 +93,7 @@ const activeLinks = computed(() => {
         color: textColor
     }">
             <div class="sidebar-content">
-                <div v-if="logo || $slots.logo" class="sidebar-logo">
+                 <div v-if="logo || $slots.logo" class="sidebar-logo">
                     <slot name="logo">
                         <img :src="logo" alt="Logo" class="logo-image" v-if="logo">
                         <h1 v-else class="text-2xl font-bold">{{ title }}</h1>
@@ -300,4 +300,6 @@ const activeLinks = computed(() => {
     opacity: 1;
     visibility: visible;
 }
+
+
 </style>
