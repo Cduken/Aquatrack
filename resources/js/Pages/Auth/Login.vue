@@ -4,6 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { OhVueIcon } from 'oh-vue-icons';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import Swal from 'sweetalert2';
 
 const showPassword = ref(false);
 const togglePasswordVisibility = () => {
@@ -29,13 +30,48 @@ const submit = () => {
     // Show loading state immediately
     form.processing = true;
 
-    // Add 3-second delay before actual submission
-    setTimeout(() => {
-        form.post(route('login'), {
-            onFinish: () => form.reset('password'),
-        });
-    }, 1500);
-};
+    form.post(route('login'), {
+        onFinish: () => form.reset('password'),
+        onSuccess: () => {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Login successful!',
+                showConfirmButton: false,
+                text: 'Welcome back to AquaTrack',
+                toast: true,
+                timer: 2000,
+                timerProgressBar: true,
+                background: '#f8f9fa',
+                backdrop: false,
+                width: '400px',
+                customClass: {
+                    title: 'text-lg font-medium'
+                }
+            });
+        },
+        onError: (errors) => {
+            form.processing = false;
+            if (errors.email || errors.password) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Invalid credentials',
+                    text: 'Please check your email and password',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    toast: true,
+                    background: '#f8f9fa',
+                    backdrop: false,
+                    width: '400px',
+                    customClass: {
+                        title: 'text-lg font-medium'
+                    }
+                });
+            }
+        }
+    });
+}
 </script>
 
 <template>
@@ -173,5 +209,19 @@ input {
     to {
         transform: rotate(360deg);
     }
+}
+
+:deep(.swal2-container) {
+    padding: 10px 10px 0 0;
+}
+
+:deep(.swal2-popup) {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.swal2-title) {
+    font-size: 1.1rem;
+    color: #333;
 }
 </style>

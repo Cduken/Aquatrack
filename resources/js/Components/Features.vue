@@ -20,7 +20,7 @@
                     <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-blue-800 mb-2 text-center">Real-time
                         Monitoring</h3>
                     <p class="text-sm sm:text-base text-gray-600 mt-2 sm:mt-4 text-center">
-                        Track your water usage in real-time with detailed consumption analytics and trends.
+                        Track your water usage with detailed consumption analytics and trends.
                     </p>
                 </div>
 
@@ -71,5 +71,5 @@
 </template>
 
 <script setup>
-// No need to import VIcon here since it's registered globally in app.js
+
 </script>

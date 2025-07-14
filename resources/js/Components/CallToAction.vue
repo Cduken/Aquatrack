@@ -12,7 +12,7 @@ import { Link } from '@inertiajs/vue3';
                 Join hundreds of organizations using AquaTrack to save water and reduce costs
             </p>
             <div class="mt-6 sm:mt-8">
-                <Link :href="route('register')"
+                <Link :href="route('login')"
                     class="inline-flex items-center gap-2 rounded-md bg-white px-4 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-medium text-blue-600 shadow transition hover:bg-blue-50">
                 Start Now
                 <v-icon name="md-start-twotone" scale="1.3" />
