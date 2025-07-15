@@ -75,15 +75,18 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
 
-        <Head title="Sign in" />
 
-        <div
-            class="max-w-4xl w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-full md:h-auto">
-            <!-- Left Side - Logo -->
+    <Head title="Sign in" />
+    <div class="h-screen ">
+
+        <div class=" bg-white relative w-full h-screen shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row">
+
+            <Link href="/">
+            <v-icon name="bi-arrow-left" class="absolute z-100 cursor-pointer top-6 left-6 text-3xl transition-all duration-300 hover:text-black hover:bg-blue-300 rounded-sm text-white"></v-icon>
+            </Link>
             <div
-                class="hidden md:flex md:w-1/2 flex-col items-center justify-center p-12 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300">
+                class="hidden md:flex md:w-1/2 flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300">
                 <img src="/images/MainLogo.png" class="max-w-full max-h-full h-[300px] w-[300px] object-contain" alt="">
                 <h1 class="text-white text-3xl font-bold mt-6">AquaTrack</h1>
                 <p class="text-blue-100 mt-2 text-center text-lg">
@@ -92,7 +95,7 @@ const submit = () => {
             </div>
 
             <!-- Right Side - Form -->
-            <div class="w-full md:w-1/2 py-10 px-6 md:px-12">
+            <div class="w-full md:w-1/2 py-10 px-6 md:px-12 h-[100vh] flex flex-col justify-center bg-white">
                 <div class="md:hidden mb-8 flex flex-col items-center">
                     <img src="/images/MainLogo.png" class="h-[150px] w-[150px] object-contain" alt="">
                     <h1 class="text-2xl sm:text-3xl font-md text-gray-800 mt-4">Welcome Back!</h1>
@@ -105,7 +108,7 @@ const submit = () => {
                     <h2 class="text-2xl font-md text-gray-800">Welcome Back!</h2>
                 </div>
 
-                <form @submit.prevent="submit" class="w-full">
+                <form @submit.prevent="submit" class="w-full px-16 py-8 bg-white ">
                     <!-- Email Field with Floating Label -->
                     <div class="relative mb-6">
                         <input id="email" name="email" type="email"
@@ -176,7 +179,8 @@ const submit = () => {
                 </div>
             </div>
         </div>
-    </GuestLayout>
+    </div>
+
 </template>
 
 <style scoped>

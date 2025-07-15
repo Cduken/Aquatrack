@@ -64,6 +64,7 @@ addIcons(
     BiIcons.BiGeo,
     BiIcons.BiSignpost,
     BiIcons.BiImages,
+    BiIcons. BiArrowLeft,
 
     // Heroicons
     HiIcons.HiSolidUser,
