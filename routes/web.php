@@ -65,13 +65,6 @@ Route::get('/customer-dashboard', [CustomerDashboardController::class, 'index'])
 //     return Inertia::render('Customer/ReportProblem');
 // });
 
-//customer side
-use App\Http\Controllers\CustomerDashboardController;
 
-Route::get('/customer-dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-
-// Route::get('/report', function () {
-//     return Inertia::render('Customer/ReportProblem');
-// });
 
 require __DIR__ . '/auth.php';
