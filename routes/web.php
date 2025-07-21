@@ -17,8 +17,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/CustomerDashboard');
+    return Inertia::render('Dashboard/CustomerCustomerDashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/report', function () {
+    return Inertia::render('Dashboard/ReportProblem');
+});
 Route::get('/report', function () {
     return Inertia::render('Dashboard/ReportProblem');
 });
@@ -28,7 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 // Add these new routes
 Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 'redirectToDashboard'])
     ->middleware(['auth', 'verified'])
@@ -53,6 +55,15 @@ Route::post('/reports', [ReportController::class, 'store'])->name('reports.store
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
 
+
+//customer side
+use App\Http\Controllers\CustomerDashboardController;
+
+Route::get('/customer-dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+
+// Route::get('/report', function () {
+//     return Inertia::render('Customer/ReportProblem');
+// });
 
 //customer side
 use App\Http\Controllers\CustomerDashboardController;

@@ -61,3 +61,27 @@
     </main>
   </div>
 </template>
+
+<script setup>
+import CustomerLayout from '@/Layouts/CustomerLayout.vue'
+import { Gauge } from 'lucide-vue-next'
+import { AlertTriangle } from 'lucide-vue-next'
+import { Bell } from 'lucide-vue-next'
+import { FileText } from 'lucide-vue-next'
+
+defineOptions({
+  layout: CustomerLayout
+})
+// import { ref } from 'vue'
+// import ReportProblemForm from '@/Components/ReportProblemForm.vue'
+
+// const showReportForm = ref(false)
+
+// function toggleReportForm() {
+//   showReportForm.value = !showReportForm.value
+// }
+import { router } from '@inertiajs/vue3'
+function goToReport() {
+  router.visit('/report')
+}
+</script>
