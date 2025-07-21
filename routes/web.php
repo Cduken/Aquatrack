@@ -16,8 +16,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Dashboard');
+    return Inertia::render('Dashboard/CustomerDashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/report', function () {
+    return Inertia::render('Dashboard/ReportProblem');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -36,8 +39,8 @@ use App\Http\Controllers\CustomerDashboardController;
 
 Route::get('/customer-dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
-Route::get('/report', function () {
-    return Inertia::render('Customer/ReportProblem');
-});
+// Route::get('/report', function () {
+//     return Inertia::render('Customer/ReportProblem');
+// });
 
 require __DIR__ . '/auth.php';

@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
     <!-- 🔙 Back Link -->
     <div class="max-w-3xl mx-auto mt-6 px-4">
     <a
-        href="/customer-dashboard"
+        href="/dashboard"
         class="inline-flex items-center text-blue-600 hover:underline text-sm font-medium transition"
     >
         ← Back to Dashboard
