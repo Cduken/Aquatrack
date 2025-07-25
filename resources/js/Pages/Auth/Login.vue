@@ -27,7 +27,6 @@ const form = useForm({
 });
 
 const submit = () => {
-    // Show loading state immediately
     form.processing = true;
 
     form.post(route('login'), {

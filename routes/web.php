@@ -31,10 +31,32 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
     ->middleware(['auth', 'verified'])
     ->name('redirect-to-dashboard');
 
-Route::get('/admin/dashboard', function () {
-    return Inertia::render('Admin/Dashboard', [
-    ]);
-})->middleware(['auth', 'role:admin'])->name('admin.dashboard');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return Inertia::render('Admin/Dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/admin/reports', function () {
+        return Inertia::render('Admin/Reports');
+    })->name('admin.reports');
+
+    Route::get('/admin/users', function () {
+        return Inertia::render('Admin/Users');
+    })->name('admin.users');
+
+    Route::get('/admin/records', function () {
+        return Inertia::render('Admin/Records');
+    })->name('admin.records');
+
+    Route::get('/admin/announcements', function () {
+        return Inertia::render('Admin/Announcements');
+    })->name('admin.announcements');
+
+    Route::get('/admin/staff', function () {
+        return Inertia::render('Admin/Staff');
+    })->name('admin.staff');
+});
 
 Route::get('/staff/dashboard', function () {
     return Inertia::render('Staff/Dashboard');

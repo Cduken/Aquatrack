@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Link } from '@inertiajs/vue3'; // Import Inertia's Link component
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     logo: {
@@ -11,13 +11,10 @@ const props = defineProps({
         type: String,
         default: 'Dashboard'
     },
-    bgColor: {
-        type: String,
-        default: '#1e88e5'
-    },
+
     textColor: {
         type: String,
-        default: 'white'
+        default: '#1e293b'
     },
     width: {
         type: String,
@@ -58,10 +55,11 @@ const isOpen = ref(props.defaultOpen);
 
 const toggleSidebar = () => {
     isOpen.value = !isOpen.value;
+    emit('toggle', isOpen.value);
 };
 
 defineExpose({ toggleSidebar });
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['logout', 'toggle']);
 
 const activeLinks = computed(() => {
     if (!props.useRouterLinks) return props.links;
@@ -78,7 +76,6 @@ const activeLinks = computed(() => {
         <button class="sidebar-toggle" @click="toggleSidebar" :style="{
             left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
             right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
-            backgroundColor: bgColor
         }">
             <v-icon :name="isOpen ? 'bi-x' : 'bi-list'" />
         </button>
@@ -88,46 +85,37 @@ const activeLinks = computed(() => {
             'sidebar-left': position === 'left',
             'sidebar-right': position === 'right'
         }" :style="{
-        width: width,
-        backgroundColor: bgColor,
-        color: textColor
-    }">
+            width: width,
+
+            color: textColor
+        }">
             <div class="sidebar-content">
-                 <div v-if="logo || $slots.logo" class="sidebar-logo">
+                <div v-if="logo || $slots.logo" class="sidebar-logo">
                     <slot name="logo">
-                        <img :src="logo" alt="Logo" class="logo-image" v-if="logo">
-                        <h1 v-else class="text-2xl font-bold">{{ title }}</h1>
+                        <h1 class="text-2xl font-bold text-gray-800">AquaTrack</h1>
                     </slot>
                 </div>
 
-                <nav class="sidebar-nav">
-                    <slot name="links">
-                        <template v-if="useRouterLinks">
-                            <Link v-for="(link, index) in activeLinks" :key="index" :href="link.url"
-                                class="sidebar-link" :class="{ 'active-link': link.active }">
-                            <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
-                            {{ link.name }}
-                            <span v-if="link.active" class="checkmark">✓</span>
-                            </Link>
-                        </template>
-                        <template v-else>
-                            <a v-for="(link, index) in activeLinks" :key="index" :href="link.url" class="sidebar-link"
-                                :class="{ 'active-link': link.active }">
+                <div class="sidebar-section">
+
+                    <nav class="sidebar-nav">
+                        <slot name="links">
+                            <template v-if="useRouterLinks">
+                                <Link v-for="(link, index) in activeLinks" :key="index" :href="link.url"
+                                    class="sidebar-link" :class="{ 'active-link': link.active }">
                                 <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
                                 {{ link.name }}
-                                <span v-if="link.active" class="checkmark">✓</span>
-                            </a>
-                        </template>
-                    </slot>
-                </nav>
-
-                <div class="sidebar-footer" v-if="showLogout">
-                    <slot name="footer">
-                        <button @click="emit('logout')" class="logout-button">
-                            <v-icon name="BiBoxArrowRight" />
-                            Logout
-                        </button>
-                    </slot>
+                                </Link>
+                            </template>
+                            <template v-else>
+                                <a v-for="(link, index) in activeLinks" :key="index" :href="link.url"
+                                    class="sidebar-link" :class="{ 'active-link': link.active }">
+                                    <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
+                                    {{ link.name }}
+                                </a>
+                            </template>
+                        </slot>
+                    </nav>
                 </div>
             </div>
         </aside>
@@ -137,7 +125,64 @@ const activeLinks = computed(() => {
 </template>
 
 <style scoped>
-/* Your existing styles remain the same */
+.sidebar {
+    background: #282829;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+
+}
+
+.sidebar-logo {
+    padding: 15px 0;
+    text-align: center;
+    margin-bottom: 20px;
+    background: #1c1c1c;
+}
+
+.sidebar-section {
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.sidebar-section-title {
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 0 10px 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sidebar-nav {
+    gap: 5px;
+}
+
+.sidebar-link {
+    padding: 10px 15px;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    margin-top: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
+.sidebar-link:hover {
+    background: rgb(91, 91, 93);
+}
+
+.active-link {
+    background: rgb(91, 91, 93);
+}
+
+.link-icon {
+    color: white;
+
+}
+
 .sidebar-wrapper {
     position: relative;
 }
@@ -146,19 +191,19 @@ const activeLinks = computed(() => {
     position: fixed;
     top: 20px;
     z-index: 1001;
-    color: v-bind(textColor);
+    color: #2b2b2c;
+    background: white;
     border: none;
     padding: 10px 12px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 1.2rem;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-toggle:hover {
-    opacity: 0.9;
-    transform: scale(1.05);
+    background: #f1f5f9;
 }
 
 .sidebar {
@@ -168,8 +213,6 @@ const activeLinks = computed(() => {
     transition: all 0.3s ease;
     z-index: 1000;
     overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to bottom, #1e88e5, #0d47a1);
 }
 
 .sidebar-left {
@@ -189,98 +232,9 @@ const activeLinks = computed(() => {
 }
 
 .sidebar-content {
-    padding: 20px;
     height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.sidebar-logo {
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    margin-bottom: 30px;
-}
-
-.logo-image {
-    max-width: 80%;
-    max-height: 60px;
-    object-fit: contain;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex-grow: 1;
-}
-
-.sidebar-link {
-    color: v-bind(textColor);
-    text-decoration: none;
-    padding: 12px 15px;
-    border-radius: 6px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
-    position: relative;
-}
-
-.sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.active-link {
-    background: rgba(255, 255, 255, 0.25);
-    font-weight: 500;
-}
-
-.active-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: white;
-    border-radius: 0 4px 4px 0;
-}
-
-.link-icon {
-    font-size: 1.1em;
-}
-
-.checkmark {
-    margin-left: auto;
-    font-weight: bold;
-}
-
-.sidebar-footer {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.logout-button {
-    width: 100%;
-    padding: 10px 15px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 0.9rem;
-}
-
-.logout-button:hover {
-    background: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-overlay {
@@ -289,7 +243,7 @@ const activeLinks = computed(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    /* background: rgba(0, 0, 0, 0.1); */
     z-index: 999;
     opacity: 0;
     visibility: hidden;
@@ -300,6 +254,4 @@ const activeLinks = computed(() => {
     opacity: 1;
     visibility: visible;
 }
-
-
 </style>

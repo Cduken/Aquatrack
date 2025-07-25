@@ -1,7 +1,7 @@
 <template>
     <AdminLayout>
         <div class="w-full max-w-4xl bg-white shadow-md rounded p-6">
-            <h2 class="text-lg font-semibold mb-4">Welcome to AquaTrack Admin!</h2>
+            <h2 class="text-lg font-semibold mb-4">Welcome to AquaTrack Records!</h2>
             <p class="mb-2">Here’s a quick overview of the system:</p>
 
             <ul class="list-disc list-inside space-y-2 text-gray-700">
