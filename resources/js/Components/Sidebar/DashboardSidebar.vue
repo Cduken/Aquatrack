@@ -117,6 +117,13 @@ const activeLinks = computed(() => {
                         </slot>
                     </nav>
                 </div>
+                <div class="mt-auto p-4 border-t border-gray-700">
+                    <button @click="emit('logout')"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                        <v-icon name="bi-box-arrow-right" />
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
         </aside>
 
