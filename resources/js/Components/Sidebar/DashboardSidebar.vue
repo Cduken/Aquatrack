@@ -11,14 +11,13 @@ const props = defineProps({
         type: String,
         default: 'Dashboard'
     },
-
     textColor: {
         type: String,
-        default: '#1e293b'
+        default: '#ffffff'
     },
     width: {
         type: String,
-        default: '280px'
+        default: '250px'
     },
     position: {
         type: String,
@@ -52,9 +51,21 @@ const props = defineProps({
 });
 
 const isOpen = ref(props.defaultOpen);
+const isMobile = ref(window.innerWidth <= 640);
+
+const handleResize = () => {
+    isMobile.value = window.innerWidth <= 640;
+    if (isMobile.value) {
+        isOpen.value = true;
+    }
+};
+
+window.addEventListener('resize', handleResize);
 
 const toggleSidebar = () => {
-    isOpen.value = !isOpen.value;
+    if (!isMobile.value) {
+        isOpen.value = !isOpen.value;
+    }
     emit('toggle', isOpen.value);
 };
 
@@ -73,7 +84,7 @@ const activeLinks = computed(() => {
 
 <template>
     <div class="sidebar-wrapper">
-        <button class="sidebar-toggle" @click="toggleSidebar" :style="{
+        <button v-if="!isMobile" class="sidebar-toggle" @click="toggleSidebar" :style="{
             left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
             right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
         }">
@@ -83,82 +94,82 @@ const activeLinks = computed(() => {
         <aside class="sidebar" :class="{
             'sidebar-open': isOpen,
             'sidebar-left': position === 'left',
-            'sidebar-right': position === 'right'
+            'sidebar-right': position === 'right',
+            'sidebar-mobile': isMobile
         }" :style="{
-            width: width,
-
+            width: isMobile ? '100%' : width,
             color: textColor
         }">
             <div class="sidebar-content">
-                <div v-if="logo || $slots.logo" class="sidebar-logo">
+                <div v-if="!isMobile && (logo || $slots.logo)" class="sidebar-logo">
                     <slot name="logo">
-                        <h1 class="text-2xl font-bold text-gray-800">AquaTrack</h1>
+                        <div class="logo-container">
+                            <span class="logo-text">AquaTrack</span>
+                        </div>
                     </slot>
                 </div>
 
                 <div class="sidebar-section">
-
-                    <nav class="sidebar-nav">
+                    <nav class="sidebar-nav" :class="{ 'mobile-nav': isMobile }">
                         <slot name="links">
                             <template v-if="useRouterLinks">
                                 <Link v-for="(link, index) in activeLinks" :key="index" :href="link.url"
                                     class="sidebar-link" :class="{ 'active-link': link.active }">
                                 <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
-                                {{ link.name }}
+                                <span v-if="!isMobile || (isMobile && isOpen)">{{ link.name }}</span>
                                 </Link>
                             </template>
                             <template v-else>
                                 <a v-for="(link, index) in activeLinks" :key="index" :href="link.url"
                                     class="sidebar-link" :class="{ 'active-link': link.active }">
                                     <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
-                                    {{ link.name }}
+                                    <span v-if="!isMobile || (isMobile && isOpen)">{{ link.name }}</span>
                                 </a>
                             </template>
                         </slot>
                     </nav>
                 </div>
-                <div class="mt-auto p-4 border-t border-gray-700">
+                <!-- <div v-if="!isMobile && showLogout" class="mt-auto p-4 border-t border-gray-700">
                     <button @click="emit('logout')"
                         class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
                         <v-icon name="bi-box-arrow-right" />
                         <span>Logout</span>
                     </button>
-                </div>
+                </div> -->
             </div>
         </aside>
 
-        <div class="sidebar-overlay" :class="{ 'overlay-visible': isOpen }" @click="toggleSidebar"></div>
+        <div class="sidebar-overlay" :class="{ 'overlay-visible': isOpen && isMobile }" @click="toggleSidebar"></div>
     </div>
 </template>
 
 <style scoped>
 .sidebar {
-    background: #282829;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-
+    background: #2D3E50;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-logo {
-    padding: 15px 0;
+    padding: 5px;
     text-align: center;
     margin-bottom: 20px;
-    background: #1c1c1c;
+    background: #223241;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-text {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 .sidebar-section {
-    margin-bottom: 20px;
     padding: 0 15px;
-}
-
-.sidebar-section-title {
-    color: #64748b;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0 0 10px 0;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e2e8f0;
 }
 
 .sidebar-nav {
@@ -166,28 +177,29 @@ const activeLinks = computed(() => {
 }
 
 .sidebar-link {
-    padding: 10px 15px;
-    color: #1e293b;
+    padding: 10px 10px;
+    color: #ffffff;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     text-decoration: none;
-    margin-top: 10px;
-    border-radius: 10px;
-    color: white;
+    margin-top: 15px;
+    border-radius: 5px;
+    transition: background 0.3s;
 }
 
 .sidebar-link:hover {
-    background: rgb(91, 91, 93);
+    background: #425262;
 }
 
 .active-link {
-    background: rgb(91, 91, 93);
+    background: #425262;
+    font-weight: 500;
 }
 
 .link-icon {
-    color: white;
-
+    color: #ffffff;
+    font-size: 1.2rem;
 }
 
 .sidebar-wrapper {
@@ -198,8 +210,8 @@ const activeLinks = computed(() => {
     position: fixed;
     top: 20px;
     z-index: 1001;
-    color: #2b2b2c;
-    background: white;
+    color: #1e3a8a;
+    background: #ffffff;
     border: none;
     padding: 10px 12px;
     border-radius: 6px;
@@ -250,7 +262,7 @@ const activeLinks = computed(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    /* background: rgba(0, 0, 0, 0.1); */
+    /* background: rgba(0, 0, 0, 0.5); */
     z-index: 999;
     opacity: 0;
     visibility: hidden;
@@ -260,5 +272,55 @@ const activeLinks = computed(() => {
 .overlay-visible {
     opacity: 1;
     visibility: visible;
+}
+
+/* Mobile styles */
+@media (max-width: 640px) {
+    .sidebar.sidebar-mobile {
+        width: 100% !important;
+        height: auto;
+        bottom: 0;
+        top: auto;
+        left: 0;
+        right: 0;
+        transform: translateY(0);
+        border-radius: 12px 12px 0 0;
+        z-index: 1000;
+    }
+
+    .sidebar-content {
+        padding: 10px;
+        min-height: 80px;
+    }
+
+    .sidebar-nav.mobile-nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 8px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1e3a8a;
+        border-top: 1px solid #3b82f6;
+    }
+
+    .sidebar-link {
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px 12px;
+        margin-top: 0;
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    .sidebar-link span {
+        display: none;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
 }
 </style>

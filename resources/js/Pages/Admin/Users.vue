@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout>
+    <AdminLayout title="Users">
         <div class="w-full max-w-4xl bg-white shadow-md rounded p-6">
             <h2 class="text-lg font-semibold mb-4">Welcome to AquaTrack Users!</h2>
             <p class="mb-2">Here’s a quick overview of the system:</p>

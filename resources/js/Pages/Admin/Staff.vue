@@ -2,13 +2,15 @@
     <AdminLayout title="Staff Members">
         <template #header>
             <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Staff Members</h1>
+                <h1 class="text-2xl font-bold text-gray-800">Staff Members</h1>
                 <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                        Add New Staff
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
+                        <v-icon name="bi-plus" /> Add New Staff
                     </button>
-                    <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                        Export
+                    <button
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition flex items-center gap-2">
+                        <v-icon name="bi-download" /> Export
                     </button>
                 </div>
             </div>
@@ -19,25 +21,28 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
                                 Email
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
+                                Role
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
                                 Status
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="staff in staffMembers" :key="staff.id">
+                        <tr v-for="staff in staffMembers" :key="staff.id" class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ staff.id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ staff.name }}
                             </td>
@@ -49,9 +54,9 @@
                                     {{ staff.status }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex space-x-2">
+                                <v-icon name="bi-pencil" class="text-blue-600 hover:text-blue-900 cursor-pointer" />
+                                <v-icon name="bi-trash" class="text-red-600 hover:text-red-900 cursor-pointer" />
                             </td>
                         </tr>
                     </tbody>
@@ -84,8 +89,30 @@ const staffMembers = [
 
 <style scoped>
 .staff-container {
-    padding: 20px;
+    /* padding: 20px; */
     max-width: 1200px;
     margin: 0 auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+    text-align: left;
+    vertical-align: middle;
+}
+
+button {
+    transition: all 0.3s ease;
+}
+
+tr:hover {
+    background-color: #f9fafb;
 }
 </style>

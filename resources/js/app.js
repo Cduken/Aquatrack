@@ -15,7 +15,6 @@ import * as FaIcons from "oh-vue-icons/icons/fa";
 import * as RiIcons from "oh-vue-icons/icons/ri";
 import * as MdIcons from "oh-vue-icons/icons/md";
 
-
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 // Add icons individually to ensure they're registered
@@ -64,7 +63,14 @@ addIcons(
     BiIcons.BiGeo,
     BiIcons.BiSignpost,
     BiIcons.BiImages,
-    BiIcons. BiArrowLeft,
+    BiIcons.BiArrowLeft,
+    BiIcons.BiPencil, // Added for Edit
+    BiIcons.BiTrash, // Added for Delete
+    BiIcons.BiDownload, // Added for Export
+    BiIcons.BiChevronDown,
+    BiIcons.BiMegaphoneFill,
+    BiIcons.BiFileEarmarkTextFill,
+    BiIcons.BiFlagFill,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -81,6 +87,7 @@ addIcons(
     FaIcons.FaUsers,
     FaIcons.FaChartBar,
     FaIcons.FaCogs,
+    FaIcons.FaUsers,
 
     // Remix Icons
     RiIcons.RiDashboardLine,
@@ -90,10 +97,9 @@ addIcons(
 
     // Material Design
     MdIcons.MdLoginOutlined,
-    MdIcons.MdStartTwotone
+    MdIcons.MdStartTwotone,
+    MdIcons.MdDashboard,
 );
-
-
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
