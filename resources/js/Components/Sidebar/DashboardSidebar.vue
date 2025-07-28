@@ -88,7 +88,7 @@ const activeLinks = computed(() => {
             left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
             right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
         }">
-            <v-icon class="text-white " :name="isOpen ? 'bi-x' : 'bi-list'" />
+            <v-icon class="w-8 h-8 text-white " :name="isOpen ? 'bi-x' : 'bi-list'" />
         </button>
 
         <aside class="sidebar" :class="{
@@ -213,8 +213,10 @@ const activeLinks = computed(() => {
     color: #1e3a8a;
     background: #223241;
     border: none;
-    padding: 10px 12px;
+    padding: 5px;
     border-radius: 6px;
+    display: flex;
+    align-items: center;
     cursor: pointer;
     font-size: 1.2rem;
     transition: all 0.3s ease;

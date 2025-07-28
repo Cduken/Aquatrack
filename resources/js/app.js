@@ -14,6 +14,7 @@ import * as HiIcons from "oh-vue-icons/icons/hi";
 import * as FaIcons from "oh-vue-icons/icons/fa";
 import * as RiIcons from "oh-vue-icons/icons/ri";
 import * as MdIcons from "oh-vue-icons/icons/md";
+import * as SiIcons from "oh-vue-icons/icons/si";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -72,6 +73,29 @@ addIcons(
     BiIcons.BiFileEarmarkTextFill,
     BiIcons.BiFlagFill,
     BiIcons.BiEyeFill,
+    BiIcons.BiClockFill,
+    BiIcons.BiActivity,
+    BiIcons.BiCheckCircleFill,
+    BiIcons.BiExclamationTriangleFill,
+    BiIcons.BiHourglassTop,
+    BiIcons.BiFileEarmarkCheckFill,
+    BiIcons.BiCalendarWeekFill,
+    BiIcons.BiCalendarMonthFill,
+    BiIcons.BiCalendarFill,
+    BiIcons.BiSearch,
+    BiIcons.BiHouseDoorFill,
+    BiIcons.BiWater,
+    BiIcons.BiCashStack,
+    BiIcons.BiBellFill,
+    BiIcons.BiCircleFill,
+    BiIcons.BiArrowUpCircleFill,
+    BiIcons.BiDashCircleFill,
+    BiIcons.BiBarChartFill,
+    BiIcons.BiChatSquareTextFill,
+    BiIcons.BiReceipt,
+    BiIcons.BiTools,
+    BiIcons.BiCreditCard,
+    BiIcons.BiLightbulb,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -90,6 +114,8 @@ addIcons(
     FaIcons.FaCogs,
     FaIcons.FaUsers,
     FaIcons.FaTrash,
+    FaIcons.FaFolderOpen,
+
 
     // Remix Icons
     RiIcons.RiDashboardLine,
@@ -102,6 +128,9 @@ addIcons(
     MdIcons.MdLoginOutlined,
     MdIcons.MdStartTwotone,
     MdIcons.MdDashboard,
+
+    // Simple Icons
+    SiIcons.SiGoogleanalytics,
 );
 
 createInertiaApp({

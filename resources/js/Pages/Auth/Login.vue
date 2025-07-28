@@ -82,7 +82,7 @@ const submit = () => {
         <div class=" bg-white relative w-full h-screen shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row">
 
             <Link href="/">
-            <v-icon name="bi-arrow-left" class="absolute z-100 cursor-pointer top-6 left-6 text-3xl transition-all duration-300 hover:text-black hover:bg-blue-300 rounded-sm text-white"></v-icon>
+            <v-icon name="bi-arrow-left" class="absolute z-100 h-7 w-7 inline-flex items-center cursor-pointer top-6 left-6 text-3xl transition-all duration-200 hover:text-gray-600 hover:bg-blue-300 rounded-sm text-white"></v-icon>
             </Link>
             <div
                 class="hidden md:flex md:w-1/2 flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300">

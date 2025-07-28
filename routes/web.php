@@ -59,15 +59,37 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('admin.staff');
 });
 
-Route::get('/staff/dashboard', function () {
-    return Inertia::render('Staff/Dashboard');
-})->middleware(['auth', 'role:staff'])->name('staff.dashboard');
+//Staff Routes
+Route::middleware(['auth', 'role:staff'])->group(function () {
 
-// Keep your existing dashboard route for customers
-Route::get('/customer/dashboard', function () {
-    return Inertia::render('Customer/Dashboard');
-})->middleware(['auth', 'role:customer'])->name('customer.dashboard');
+    Route::get('/staff/dashboard', function () {
+        return Inertia::render('Staff/Dashboard');
+    })->middleware(['auth', 'role:staff'])->name('staff.dashboard');
 
+    Route::get('/staff/reading', function () {
+        return Inertia::render('Staff/Reading');
+    })->name('staff.reading');
+});
+
+
+//Customer Routes
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/customer/dashboard', function () {
+        return Inertia::render('Customer/Dashboard');
+    })->name('customer.dashboard');
+
+    Route::get('/customer/usage', function () {
+        return Inertia::render('Customer/Usage');
+    })->name('customer.usage');
+
+    Route::get('/customer/reports', function () {
+        return Inertia::render('Customer/Reports');
+    })->name('customer.dashboard');
+
+    Route::get('/customer/announcements', function () {
+        return Inertia::render('Customer/Announcements');
+    })->name('customer.announcements');
+});
 
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');

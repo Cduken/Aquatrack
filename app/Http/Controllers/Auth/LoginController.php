@@ -31,10 +31,13 @@ class LoginController extends Controller
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             } elseif ($user->hasRole('staff')) {
                 return redirect()->intended(route('staff.dashboard', absolute: false));
+            } elseif ($user->hasRole('customer')) {
+                return redirect()->intended(route('customer.dashboard', absolute: false));
+            } else {
+                return redirect()->intended(route('dashboard', absolute: false));
             }
 
-            // Default redirect for customers
-            return redirect()->intended(route('customer.dashboard', absolute: false));
+
         }
 
         return back()->withErrors([
