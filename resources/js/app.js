@@ -71,6 +71,7 @@ addIcons(
     BiIcons.BiMegaphoneFill,
     BiIcons.BiFileEarmarkTextFill,
     BiIcons.BiFlagFill,
+    BiIcons.BiEyeFill,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -88,12 +89,14 @@ addIcons(
     FaIcons.FaChartBar,
     FaIcons.FaCogs,
     FaIcons.FaUsers,
+    FaIcons.FaTrash,
 
     // Remix Icons
     RiIcons.RiDashboardLine,
     RiIcons.RiUserSettingsLine,
     RiIcons.RiTeamLine,
     RiIcons.RiPieChartLine,
+    RiIcons.RiEditBoxFill,
 
     // Material Design
     MdIcons.MdLoginOutlined,

@@ -88,7 +88,7 @@ const activeLinks = computed(() => {
             left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
             right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
         }">
-            <v-icon :name="isOpen ? 'bi-x' : 'bi-list'" />
+            <v-icon class="text-white " :name="isOpen ? 'bi-x' : 'bi-list'" />
         </button>
 
         <aside class="sidebar" :class="{
@@ -211,7 +211,7 @@ const activeLinks = computed(() => {
     top: 20px;
     z-index: 1001;
     color: #1e3a8a;
-    background: #ffffff;
+    background: #223241;
     border: none;
     padding: 10px 12px;
     border-radius: 6px;
@@ -222,7 +222,7 @@ const activeLinks = computed(() => {
 }
 
 .sidebar-toggle:hover {
-    background: #f1f5f9;
+    background: #2D3E50;
 }
 
 .sidebar {
