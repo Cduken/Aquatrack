@@ -37,7 +37,7 @@
             <!-- Last 7 Days -->
             <div class="bg-white shadow-md rounded-lg p-6 flex items-center">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-                    <v-icon name="bi-calendar" scale="1.5" />
+                    <v-icon name="hi-solid-users" scale="1.5" />
                 </div>
                 <div>
                     <h2 class="text-lg font-semibold">Customers</h2>

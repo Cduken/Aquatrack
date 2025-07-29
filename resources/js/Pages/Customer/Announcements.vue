@@ -3,60 +3,33 @@
         <div class="w-full bg-white rounded-lg">
             <!-- Header Section -->
             <div class="border-b p-6">
-                <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <v-icon name="bi-droplet" class="text-blue-500" /> AquaTrack
-                </h1>
-
+                <h1 class="text-2xl font-bold text-gray-800">Announcements</h1>
             </div>
 
             <!-- Main Content -->
             <div class="p-6">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <v-icon name="bi-megaphone-fill" /> Announcements
-                </h2>
+                <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+                    <v-icon name="bi-bell-fill" scale="1.5" class="text-blue-500" /> Latest Announcements</h2>
 
                 <!-- Announcements List -->
                 <div class="space-y-6">
-                    <!-- Announcement 1 -->
-                    <div class="border-b pb-6">
-                        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
-                            <v-icon name="bi-tools" class="text-yellow-500" /> Scheduled Maintenance
-                        </h3>
-                        <p class="text-gray-700 mb-3">
-                            There will be scheduled maintenance on June 15th from 2AM to 4AM. Water supply might be
-                            interrupted during this period.
-                        </p>
-                        <p class="text-sm text-gray-500 flex items-center gap-1">
-                            <v-icon name="bi-calendar" class="text-gray-400" /> Posted: 2023-06-01
-                        </p>
+                    <!-- Announcement Item -->
+                    <div v-for="announcement in announcements" :key="announcement.id" class="border-b pb-6 last:border-b-0">
+                        <h3 class="text-lg font-semibold mb-2">{{ announcement.title }}</h3>
+                        <p class="text-gray-700 mb-3">{{ announcement.content }}</p>
+                        <p class="text-sm text-gray-500">Posted From: {{ announcement.start_date }} To: {{ announcement.end_date }}</p>
+                        <span :class="{
+                            'text-green-500': announcement.status === 'Active',
+                            'text-red-500': announcement.status === 'Inactive'
+                        }" class="text-sm font-medium">
+                            {{ announcement.status }}
+                        </span>
+
                     </div>
 
-                    <!-- Announcement 2 -->
-                    <div class="border-b pb-6">
-                        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
-                            <v-icon name="bi-credit-card" class="text-blue-500" /> New Billing System
-                        </h3>
-                        <p class="text-gray-700 mb-3">
-                            We've upgraded our billing system with new features. You can now view detailed usage history
-                            and set up automatic payments.
-                        </p>
-                        <p class="text-sm text-gray-500 flex items-center gap-1">
-                            <v-icon name="bi-calendar" class="text-gray-400" /> Posted: 2023-05-20
-                        </p>
-                    </div>
-
-                    <!-- Announcement 3 -->
-                    <div class="pb-6">
-                        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
-                            <v-icon name="bi-lightbulb" class="text-green-500" /> Water Conservation Tips
-                        </h3>
-                        <p class="text-gray-700 mb-3">
-                            With summer approaching, here are some tips to reduce your water consumption: Fix leaks
-                            promptly, water plants early morning or late evening, and take shorter showers.
-                        </p>
-                        <p class="text-sm text-gray-500 flex items-center gap-1">
-                            <v-icon name="bi-calendar" class="text-gray-400" /> Posted: 2023-05-05
-                        </p>
+                    <!-- Empty State -->
+                    <div v-if="announcements.length === 0" class="text-center py-8">
+                        <p class="text-gray-500">No announcements available at this time.</p>
                     </div>
                 </div>
             </div>
@@ -66,8 +39,16 @@
 
 <script setup>
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+
+const props = defineProps({
+    announcements: {
+        type: Array,
+        required: true,
+        default: () => []
+    }
+});
 </script>
 
 <style scoped>
-/* Custom styles if needed */
+/* Add any custom styles here if needed */
 </style>

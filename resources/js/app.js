@@ -102,6 +102,7 @@ addIcons(
     HiIcons.HiUser,
     HiIcons.HiUserGroup,
     HiIcons.HiCog,
+    HiIcons.HiSolidUsers,
 
     // Font Awesome
     FaIcons.FaBuilding,

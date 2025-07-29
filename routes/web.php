@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AdminDashhboardController;
-use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
@@ -19,9 +19,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard/Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard/Dashboard');
+// })->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -50,9 +50,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return Inertia::render('Admin/Records');
     })->name('admin.records');
 
-    Route::get('/admin/announcements', function () {
-        return Inertia::render('Admin/Announcements');
-    })->name('admin.announcements');
+    Route::get('/admin/announcements', [AnnouncementsController::class, 'index'])->name('announcements');
+    Route::post('/admin/announcements', [AnnouncementsController::class, 'store'])->name('announcements.store');
+    Route::put('/admin/announcements/{announcement}', [AnnouncementsController::class, 'update'])->name('announcements.update');
+    Route::delete('/admin/announcements/{announcement}', [AnnouncementsController::class, 'destroy'])->name('announcements.destroy');
 
     Route::get('/admin/staff', function () {
         return Inertia::render('Admin/Staff');
@@ -86,9 +87,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
         return Inertia::render('Customer/Reports');
     })->name('customer.dashboard');
 
-    Route::get('/customer/announcements', function () {
-        return Inertia::render('Customer/Announcements');
-    })->name('customer.announcements');
+    Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
 
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
