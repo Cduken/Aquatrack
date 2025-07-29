@@ -8,7 +8,7 @@
                 </div>
                 <div>
                     <h2 class="text-lg font-semibold">Total Users</h2>
-                    <div class="text-2xl font-bold">2</div>
+                    <div class="text-2xl font-bold">{{ totalUsers }}</div>
                 </div>
             </div>
 
@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <h2 class="text-lg font-semibold">Active Staff</h2>
-                    <div class="text-2xl font-bold">5</div>
+                    <div class="text-2xl font-bold">{{ totalStaffs }}</div>
                 </div>
             </div>
 
@@ -29,8 +29,8 @@
                     <v-icon name="bi-flag-fill" scale="1.5" />
                 </div>
                 <div>
-                    <h2 class="text-lg font-semibold">Pending Reports</h2>
-                    <div class="text-2xl font-bold">3</div>
+                    <h2 class="text-lg font-semibold">Reports</h2>
+                    <div class="text-2xl font-bold">{{ totalReports }}</div>
                 </div>
             </div>
 
@@ -40,8 +40,8 @@
                     <v-icon name="bi-calendar" scale="1.5" />
                 </div>
                 <div>
-                    <h2 class="text-lg font-semibold">Last 7 Days</h2>
-                    <div class="text-2xl font-bold">12</div>
+                    <h2 class="text-lg font-semibold">Customers</h2>
+                    <div class="text-2xl font-bold">{{ totalCustomers }}</div>
                 </div>
             </div>
         </div>
@@ -62,9 +62,17 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import Chart from 'chart.js/auto';
 
 const waterChart = ref(null);
+
+const page = usePage();
+const totalUsers = page.props.total_users ?? 0;
+const totalStaffs = page.props.total_staffs ?? 0;
+const totalReports = page.props.total_reports ?? 0;
+const totalCustomers = page.props.total_customers ?? 0;
+
 
 onMounted(() => {
     // Water Consumption Chart

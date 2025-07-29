@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class AdminDashhboard extends Controller
+class AdminReportsController extends Controller
 {
-    public function index() {
-        return Inertia::render('Admin/Dashboard');
-    }
 
+
+    public function index() {
+        return Inertia::render('Admin/Reports', [
+
+        ]);
+    }
 }
