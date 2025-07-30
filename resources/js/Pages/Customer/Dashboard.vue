@@ -35,7 +35,7 @@
             <h3 class="text-gray-500 mb-2 flex items-center gap-2">
               <v-icon name="bi-bell-fill" /> Unread Announcements
             </h3>
-            <p class="text-3xl font-bold">2</p>
+            <p class="text-3xl font-bold">{{ announcements }}</p>
           </div>
         </div>
 
@@ -94,7 +94,11 @@
 <script setup>
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import Chart from 'chart.js/auto';
+
+const page = usePage();
+const announcements = page.props.announcements ?? 0;
 
 const waterChart = ref(null);
 const yieldChart = ref(null);

@@ -145,7 +145,7 @@ const activeLinks = computed(() => {
 
 <style scoped>
 .sidebar {
-    background: #2D3E50;
+    background: linear-gradient(to bottom, #2D3E50, #1a1f24 90%);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
+use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
@@ -75,9 +76,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
 //Customer Routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/customer/dashboard', function () {
-        return Inertia::render('Customer/Dashboard');
-    })->name('customer.dashboard');
+    Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
     Route::get('/customer/usage', function () {
         return Inertia::render('Customer/Usage');
