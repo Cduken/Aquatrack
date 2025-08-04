@@ -11,16 +11,21 @@ class Report extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'municipality',
-        'province',
-        'barangay',
-        'purok',
-        'description',
-        'user_id',
-        'reporter_name',
-        'reporter_phone',
-    ];
+protected $fillable = [
+    'problem_type',
+    'municipality',
+    'province',
+    'barangay',
+    'purok',
+    'description',
+    'reporter_name',
+    'reporter_phone',
+    'user_id',
+    'status',
+    'priority'
+];
+
+
 
     /**
      * Get all photos for this report

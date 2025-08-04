@@ -7,6 +7,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // Import ALL icons directly from their sets
 import * as BiIcons from "oh-vue-icons/icons/bi";

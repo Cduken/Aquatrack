@@ -14,7 +14,22 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->string('phone')->nullable();
+            $table->string('account_number');
+            $table->string('address')->nullable();
+            $table->date('date_installed')->nullable();
+            $table->string('meter_brand')->nullable();
+            $table->string('meter_serial_number')->nullable();
+            $table->integer('meter_size')->nullable(); // in mm
+            $table->decimal('last_reading', 8, 2)->nullable();
+            $table->decimal('last_consumption', 8, 2)->nullable();
+            $table->decimal('last_amount_due', 10, 2)->nullable();
+            $table->date('last_reading_date')->nullable();
+            $table->decimal('consumption', 8, 2)->nullable();
+            $table->decimal('amount_due', 10, 2)->nullable();
+            $table->date('due_date')->nullable();
+            $table->enum('payment_status', ['Paid', 'Pending', 'Overdue'])->default('Pending');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

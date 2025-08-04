@@ -14,15 +14,18 @@ return new class extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('problem_type'); // ✅ Renamed from 'type'
             $table->string('municipality');
             $table->string('province');
             $table->string('barangay');
             $table->string('purok');
             $table->text('description');
-
-            // Remove the 'after' clauses for create table
             $table->string('reporter_name')->nullable();
             $table->string('reporter_phone')->nullable();
+
+            // ✅ New fields for admin functionality
+            $table->string('status')->default('Pending'); // Tracks report progress
+            $table->string('priority')->nullable();       // Optional priority label
 
             $table->timestamps();
         });

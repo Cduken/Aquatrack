@@ -2,10 +2,17 @@
   <CustomerLayout title="Dashboard">
     <div class="w-full bg-white rounded-lg">
       <!-- Header Section -->
-      <div class="border-b p-6">
+      <div class="flex items-center justify-between border-b p-6">
         <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
           <v-icon name="bi-droplet" class="text-blue-500" /> AquaTrack
         </h1>
+
+
+          <button @click="showModal = true"
+            class="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition">
+            📝 Report Issue
+          </button>
+
 
       </div>
 
@@ -88,18 +95,20 @@
         </div>
       </div>
     </div>
+        <ReportIssueModal :show="showModal" @close="showModal = false" />
   </CustomerLayout>
 </template>
 
 <script setup>
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import ReportIssueModal from '@/Components/Modals/ReportIssueModal.vue'
 import { ref, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import Chart from 'chart.js/auto';
 
 const page = usePage();
 const announcements = page.props.announcements ?? 0;
-
+const showModal = ref(false)
 const waterChart = ref(null);
 const yieldChart = ref(null);
 

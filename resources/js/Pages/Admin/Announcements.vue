@@ -148,13 +148,14 @@ const statusClasses = (status) => {
 };
 
 const createAnnouncement = () => {
-    form.post(route('announcements.store')), {
+    form.post(route('announcements.store'), {
         onSuccess: () => {
             showModal.value = false;
             form.reset();
         }
-    };
+    });
 };
+
 
 const editAnnouncement = (announcement) => {
     editing.value = true;

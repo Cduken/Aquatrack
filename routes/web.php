@@ -7,6 +7,7 @@ use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,13 +40,27 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/admin/reports', function () {
-        return Inertia::render('Admin/Reports');
-    })->name('admin.reports');
+    // Route::get('/admin/reports', function () {
+    //     return Inertia::render('Admin/Reports');
+    // })->name('admin.reports');
+    //Reports na side
+    Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
+    Route::put('/admin/reports/{report}', [ReportController::class, 'updateAdmin'])->name('admin.reports.update');
+
+    Route::delete('/admin/reports/{report}', [ReportController::class, 'destroy'])->name('admin.reports.destroy');
 
     Route::get('/admin/users', function () {
         return Inertia::render('Admin/Users');
     })->name('admin.users');
+    //User na Side
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
+
+Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+
+
+    // Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    // Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/records', function () {
         return Inertia::render('Admin/Records');
@@ -82,9 +97,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
         return Inertia::render('Customer/Usage');
     })->name('customer.usage');
 
-    Route::get('/customer/reports', function () {
-        return Inertia::render('Customer/Reports');
-    })->name('customer.dashboard');
+    // Route::get('/customer/reports', function () {
+    //     return Inertia::render('Customer/Reports');
+    // })->name('customer.dashboard');
+//     Route::get('/customer/reports', function () {
+//     return Inertia::render('Customer/Reports');
+// });
+Route::get('/customer/reports', [ReportController::class, 'index'])->name('customer.reports');
+
 
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
