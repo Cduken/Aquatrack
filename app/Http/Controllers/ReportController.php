@@ -58,14 +58,15 @@ class ReportController extends Controller
                 ]);
             }
 
-            // Redirect based on user role
-            if (Auth::user()->hasRole('admin')) {
-                return redirect()->route('admin.reports')->with('success', 'Report submitted successfully!');
-            } elseif (Auth::user()->hasRole('customer')) {
-                return redirect()->route('customer.reports')->with('success', 'Report submitted successfully!');
-            } else {
-                return redirect()->route('reports.index')->with('success', 'Report submitted successfully!');
+            $user = Auth::user();
+            if ($user) {
+                if ($user->hasRole('admin')) {
+                    return redirect()->route('admin.reports')->with('success', 'Report submitted successfully!');
+                } elseif ($user->hasRole('customer')) {
+                    return redirect()->route('customer.reports')->with('success', 'Report submitted successfully!');
+                }
             }
+            return redirect()->route('reports.index')->with('success', 'Report submitted successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to submit report. Please try again.');
         }
