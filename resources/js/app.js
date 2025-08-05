@@ -96,6 +96,24 @@ addIcons(
     BiIcons.BiTools,
     BiIcons.BiCreditCard,
     BiIcons.BiLightbulb,
+    BiIcons.BiPlusCircleFill,
+    BiIcons.BiCardHeading,
+    BiIcons.BiTextareaT,
+    BiIcons.BiCalendarDate,
+    BiIcons.BiCalendar3,
+    BiIcons.BiToggleOn,
+    BiIcons.BiXCircle,
+    BiIcons.BiSaveFill,
+    BiIcons.BiToggleOff,
+    BiIcons.BiHash,
+    BiIcons.BiGearFill,
+    BiIcons.BiXCircleFill,
+    BiIcons.BiExclamationCircle,
+    BiIcons.BiPlusLg,
+    BiIcons.BiFileEarmarkExcel,
+    BiIcons.BiPersonCheck,
+
+
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -103,6 +121,7 @@ addIcons(
     HiIcons.HiUserGroup,
     HiIcons.HiCog,
     HiIcons.HiSolidUsers,
+    HiIcons.HiSolidSpeakerphone,
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -124,6 +143,8 @@ addIcons(
     RiIcons.RiTeamLine,
     RiIcons.RiPieChartLine,
     RiIcons.RiEditBoxFill,
+    RiIcons.RiSave3Fill,
+
 
     // Material Design
     MdIcons.MdLoginOutlined,

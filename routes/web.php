@@ -39,9 +39,9 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/admin/reports', function () {
-        return Inertia::render('Admin/Reports');
-    })->name('admin.reports');
+    Route::get('/admin/reports', [ReportController::class, 'adminIndex'])
+        ->middleware(['auth', 'role:admin'])
+        ->name('admin.reports');
 
     Route::get('/admin/users', function () {
         return Inertia::render('Admin/Users');
@@ -50,6 +50,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/records', function () {
         return Inertia::render('Admin/Records');
     })->name('admin.records');
+
 
     Route::get('/admin/announcements', [AnnouncementsController::class, 'index'])->name('announcements');
     Route::post('/admin/announcements', [AnnouncementsController::class, 'store'])->name('announcements.store');
@@ -74,22 +75,18 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 });
 
 
-//Customer Routes
+// Customer Routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-
     Route::get('/customer/usage', function () {
         return Inertia::render('Customer/Usage');
     })->name('customer.usage');
-
-    Route::get('/customer/reports', function () {
-        return Inertia::render('Customer/Reports');
-    })->name('customer.dashboard');
-
+    Route::get('/customer/reports', [ReportController::class, 'customerIndex'])->name('customer.reports');
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
 
-Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+// Public report routes (accessible to guests)
+Route::get('/reports', [ReportController::class, 'publicIndex'])->name('reports.index');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 

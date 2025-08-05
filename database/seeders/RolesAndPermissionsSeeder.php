@@ -47,6 +47,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'email' => 'customer@email.com',
             'password' => Hash::make('customer123'),
         ]);
+
+        $customer2 = User::create([
+            'name' => 'Customer2',
+            'email' => 'customer2@email.com',
+            'password' => Hash::make('customer123'),
+        ]);
+
+        $customer2->assignRole('customer');
         $customer->assignRole('customer');
     }
 }

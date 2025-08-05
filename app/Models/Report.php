@@ -20,6 +20,15 @@ class Report extends Model
         'user_id',
         'reporter_name',
         'reporter_phone',
+        'status' // Add this line
+    ];
+
+    protected $attributes = [
+        'status' => 'pending' // Default value
+    ];
+
+    protected $casts = [
+        'status' => 'string'
     ];
 
     /**
