@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
@@ -43,9 +44,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->middleware(['auth', 'role:admin'])
         ->name('admin.reports');
 
-    Route::get('/admin/users', function () {
-        return Inertia::render('Admin/Users');
-    })->name('admin.users');
+    Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
+    Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/records', function () {
         return Inertia::render('Admin/Records');

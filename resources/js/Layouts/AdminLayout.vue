@@ -1,29 +1,3 @@
-<template>
-    <div class="admin-layout">
-        <!-- Sidebar -->
-        <DashboardSidebar @logout="logout" @toggle="sidebarOpen = $event" :links="adminLinks" :useRouterLinks="true"
-            :defaultOpen="true" :textColor="'#ffffff'">
-            <template #logo>
-                <div class="flex items-center p-[6.6px]">
-                    <img src="/images/MainLogo.png"
-                        class="h-[70px] w-[70px] min-w-[50px] min-h-[50px] object-contain object-center" alt="">
-                    <h1 class="text-white text-[22px] font-bold">AquaTrack</h1>
-                </div>
-            </template>
-        </DashboardSidebar>
-
-        <!-- Main Content -->
-        <main :class="['main-content', { 'sidebar-open': sidebarOpen }]">
-            <!-- Navbar Component -->
-            <MainContentNavbar :title="title" @logout="logout" />
-
-            <div class="content-container p-6 w-full">
-                <slot></slot>
-            </div>
-        </main>
-    </div>
-</template>
-
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
@@ -94,6 +68,35 @@ const logout = () => {
 };
 </script>
 
+<template>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <DashboardSidebar @logout="logout" @toggle="sidebarOpen = $event" :links="adminLinks" :useRouterLinks="true"
+            :defaultOpen="true" :textColor="'#ffffff'">
+            <template #logo>
+                <div class="flex items-center p-[6.6px]">
+                    <img src="/images/MainLogo.png"
+                        class="h-[70px] w-[70px] min-w-[50px] min-h-[50px] object-contain object-center" alt="">
+                    <h1 class="text-white text-[22px] font-bold">AquaTrack</h1>
+                </div>
+            </template>
+        </DashboardSidebar>
+
+        <!-- Main Content -->
+        <main :class="['main-content', { 'sidebar-open': sidebarOpen }]">
+            <!-- Water background effect -->
+            <div class="water-bg"></div>
+
+            <!-- Navbar Component -->
+            <MainContentNavbar :title="title" @logout="logout" />
+
+            <div class="content-container p-6 w-full relative z-10">
+                <slot></slot>
+            </div>
+        </main>
+    </div>
+</template>
+
 <style scoped>
 .admin-layout {
     display: flex;
@@ -106,15 +109,29 @@ const logout = () => {
     flex-grow: 1;
     transition: all 0.3s ease;
     width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 .main-content.sidebar-open {
     margin-left: 0;
 }
 
+.water-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50vh;
+    background: linear-gradient(135deg, #e0f7fa 0%, #80deea 50%, #4dd0e1 100%);
+    z-index: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+}
+
 .content-container {
     width: 100%;
     padding: 1.5rem;
+    position: relative;
 }
 
 @media (min-width: 641px) {
@@ -127,6 +144,11 @@ const logout = () => {
 @media (max-width: 640px) {
     .main-content {
         margin-bottom: 60px;
+    }
+
+    .water-bg {
+        height: 40vh;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
     }
 }
 </style>

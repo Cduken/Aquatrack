@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-white shadow-md border-b px-4 py-[30.5px] flex justify-between items-center">
+    <nav class="sticky top-0 z-50 bg-white shadow-md border-b px-4 py-[30.5px] flex justify-between items-center">
         <h1 class="text-lg font-semibold text-gray-800 ml-14">{{ title }}</h1>
         <div class="flex items-center space-x-4">
             <button class="relative text-gray-600 hover:text-gray-900">

@@ -112,6 +112,15 @@ addIcons(
     BiIcons.BiPlusLg,
     BiIcons.BiFileEarmarkExcel,
     BiIcons.BiPersonCheck,
+    BiIcons.BiArrowDown,
+    BiIcons.BiPeople,
+    BiIcons.BiArrowUp,
+    BiIcons.BiPersonLinesFill,
+    BiIcons.BiDropletHalf,
+    BiIcons.BiDash,
+    BiIcons.BiExclamationTriangle,
+    BiIcons.BiChevronLeft,
+    BiIcons.BiArrowRight,
 
 
 
