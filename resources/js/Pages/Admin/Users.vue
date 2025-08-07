@@ -5,7 +5,7 @@
                 <div class="flex justify-between items-center border-b pb-4">
                     <h1 class="text-2xl font-bold text-gray-800">Users</h1>
                     <div class="flex space-x-4">
-                        <button @click="showCreateModal = true"
+                        <button @click="createUser"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
                             <v-icon name="bi-plus" class="w-5 h-5" /> Add New User
                         </button>
@@ -102,7 +102,8 @@
                                         }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.phone || ' - ' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.phone || ' - '
+                                    }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span :class="roleClasses(user.role)">
                                             {{ user.role }}
@@ -134,68 +135,18 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="text-sm text-gray-700">
-                            Showing <span class="font-medium">{{ users.from }}</span> to <span class="font-medium">{{
-                                users.to }}</span> of <span class="font-medium">{{ users.total }}</span> users
-                        </div>
-                        <div class="flex space-x-2">
-                            <button @click="prevPage" :disabled="!users.prev_page_url"
-                                :class="{ 'opacity-50 cursor-not-allowed': !users.prev_page_url }"
-                                class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
-                                Previous
-                            </button>
-                            <button @click="nextPage" :disabled="!users.next_page_url"
-                                :class="{ 'opacity-50 cursor-not-allowed': !users.next_page_url }"
-                                class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
-                                Next
-                            </button>
-                        </div>
-                    </div>
+                    <Pagination :items="users" item-name="users" previous-text="Previous" next-text="Next" />
                 </div>
             </div>
         </div>
 
-        <!-- Create User Modal -->
-        <Modal :show="showCreateModal" @close="showCreateModal = false">
-            <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Create New User</h2>
-                <form @submit.prevent="createUser">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input v-model="newUser.name" type="text" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input v-model="newUser.email" type="email" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                        <input v-model="newUser.phone" type="tel"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" @click="showCreateModal = false"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                            Create User
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </Modal>
+
     </AdminLayout>
 </template>
 
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import Modal from '@/Components/Modal.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { pickBy } from 'lodash';
@@ -308,8 +259,88 @@ const confirmDelete = (user) => {
 };
 
 const createUser = () => {
-    // We'll leave this empty for now as per your request
-    showCreateModal.value = false;
+    Swal.fire({
+        title: 'Create New User',
+        html: `
+            <div class="text-left space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input id="swal-name" type="text" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input id="swal-email" type="email" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input id="swal-phone" type="tel"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select id="swal-role"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="customer">Customer</option>
+                        <option value="staff">Staff</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Create User',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            popup: 'rounded-lg shadow-xl',
+            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition',
+            cancelButton: 'px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition mr-2',
+            actions: 'mt-4 flex justify-end space-x-3'
+        },
+        preConfirm: () => {
+            return {
+                name: document.getElementById('swal-name').value,
+                email: document.getElementById('swal-email').value,
+                phone: document.getElementById('swal-phone').value,
+                role: document.getElementById('swal-role').value
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const userData = result.value;
+            // Submit the form via Inertia
+            router.post('/admin/users', userData, {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'User created successfully',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+                        }
+                    });
+                },
+                onError: (errors) => {
+                    let errorMessage = 'Failed to create user.';
+                    if (errors.email) errorMessage = errors.email;
+                    if (errors.name) errorMessage = errors.name;
+
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 const roleClasses = (role) => {

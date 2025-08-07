@@ -1,32 +1,36 @@
 <template>
-    <nav class="sticky top-0 z-50 bg-white shadow-md border-b px-4 py-[30.5px] flex justify-between items-center">
-        <h1 class="text-lg font-semibold text-gray-800 ml-14">{{ title }}</h1>
-        <div class="flex items-center space-x-4">
-            <button class="relative text-gray-600 hover:text-gray-900">
-                <v-icon name="bi-bell-fill" class="text-xl" />
-                <span
-                    class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">3</span>
-            </button>
-            <div class="relative">
-                <button @click.stop="toggleDropdown"
-                    class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none">
-                    <span class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                        {{ userInitials }}
-                    </span>
-                    <span class="hidden md:inline">{{ userDisplayName }}</span>
-                    <v-icon name="bi-chevron-down" class="text-sm" />
+    <!-- Add a wrapper div with relative positioning -->
+    <div class="relative">
+        <nav
+            class="sticky top-0 z-[100] bg-white shadow-md border-b px-4 py-[30.5px] flex justify-between items-center">
+            <h1 class="text-lg font-semibold text-gray-800 ml-14">{{ title }}</h1>
+            <div class="flex items-center space-x-4">
+                <button class="relative text-gray-600 hover:text-gray-900">
+                    <v-icon name="bi-bell-fill" class="text-xl" />
+                    <span
+                        class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">3</span>
                 </button>
-                <transition name="dropdown">
-                    <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
-                        class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                        <a @click.prevent="handleLogout"
-                            class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer">Logout</a>
-                    </div>
-                </transition>
+                <div class="relative">
+                    <button @click.stop="toggleDropdown"
+                        class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <span class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            {{ userInitials }}
+                        </span>
+                        <span class="hidden md:inline">{{ userDisplayName }}</span>
+                        <v-icon name="bi-chevron-down" class="text-sm" />
+                    </button>
+                    <transition name="dropdown">
+                        <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
+                            class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a @click.prevent="handleLogout"
+                                class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer">Logout</a>
+                        </div>
+                    </transition>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </div>
 </template>
 
 <script setup>

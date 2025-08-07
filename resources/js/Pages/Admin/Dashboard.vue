@@ -3,72 +3,132 @@
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <!-- Total Users -->
-            <div class="bg-white rounded-2xl p-5 shadow-2xl border border-gray-100 hover:shadow-sm transition-all duration-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-xl bg-blue-50 text-blue-600">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+                <!-- Indicator line -->
+
+
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-xl bg-blue-50 text-blue-600 shadow-inner">
                         <v-icon name="bi-people" class="w-6 h-6" />
                     </div>
                     <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium">Total Users</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Total Users</p>
                         <div class="flex items-end justify-between">
                             <span class="text-2xl font-bold text-gray-800">{{ totalUsers }}</span>
-                            <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1">
-                                <v-icon name="bi-arrow-up" class="w-3 h-3" /> 4.5%
-                            </span>
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
+                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 4.5%
+                                </span>
+                                <p class="text-[10px] text-gray-400">vs last month</p>
+                            </div>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="mt-3">
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full" style="width: 72%"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1">72% of monthly target</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Active Staff -->
-            <div class="bg-white rounded-2xl p-5 shadow-2xl border border-gray-100 hover:shadow-sm transition-all duration-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-xl bg-green-50 text-green-600">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+                <!-- Indicator line -->
+
+
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-xl bg-green-50 text-green-600 shadow-inner">
                         <v-icon name="bi-person-badge" class="w-6 h-6" />
                     </div>
                     <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium">Active Staff</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Active Staff</p>
                         <div class="flex items-end justify-between">
                             <span class="text-2xl font-bold text-gray-800">{{ totalStaffs }}</span>
-                            <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1">
-                                <v-icon name="bi-arrow-up" class="w-3 h-3" /> 2.3%
-                            </span>
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
+                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 2.3%
+                                </span>
+                                <p class="text-[10px] text-gray-400">vs last month</p>
+                            </div>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="mt-3">
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 rounded-full" style="width: 85%"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1">85% of capacity</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Reports -->
-            <div class="bg-white rounded-2xl p-5 shadow-2xl border border-gray-100 hover:shadow-sm transition-all duration-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+                <!-- Indicator line -->
+
+
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600 shadow-inner">
                         <v-icon name="bi-flag" class="w-6 h-6" />
                     </div>
                     <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium">Reports</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Reports</p>
                         <div class="flex items-end justify-between">
                             <span class="text-2xl font-bold text-gray-800">{{ totalReports }}</span>
-                            <span class="text-xs px-2 py-1 rounded-full bg-red-50 text-red-600 flex items-center gap-1">
-                                <v-icon name="bi-arrow-down" class="w-3 h-3" /> 1.2%
-                            </span>
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-xs px-2 py-1 rounded-full bg-red-50 text-red-600 flex items-center gap-1 mb-1">
+                                    <v-icon name="bi-arrow-down" class="w-3 h-3" /> 1.2%
+                                </span>
+                                <p class="text-[10px] text-gray-400">vs last month</p>
+                            </div>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="mt-3">
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-amber-500 rounded-full" style="width: 42%"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1">42% resolved</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Customers -->
-            <div class="bg-white rounded-2xl p-5 shadow-2xl border border-gray-100 hover:shadow-sm transition-all duration-200">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-xl bg-purple-50 text-purple-600">
+            <div
+                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+                <!-- Indicator line -->
+
+
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-xl bg-purple-50 text-purple-600 shadow-inner">
                         <v-icon name="bi-person-lines-fill" class="w-6 h-6" />
                     </div>
                     <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium">Customers</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Customers</p>
                         <div class="flex items-end justify-between">
                             <span class="text-2xl font-bold text-gray-800">{{ totalCustomers }}</span>
-                            <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1">
-                                <v-icon name="bi-arrow-up" class="w-3 h-3" /> 8.7%
-                            </span>
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
+                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 8.7%
+                                </span>
+                                <p class="text-[10px] text-gray-400">vs last quarter</p>
+                            </div>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="mt-3">
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-purple-500 rounded-full" style="width: 63%"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1">63% growth target</p>
                         </div>
                     </div>
                 </div>
@@ -111,7 +171,8 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-blue-600 font-medium">Current Month</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">52 <span class="text-sm text-gray-500">m³</span></p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">52 <span
+                                            class="text-sm text-gray-500">m³</span></p>
                                 </div>
                                 <div class="text-green-500 bg-white rounded-full p-2">
                                     <v-icon name="bi-arrow-up" class="w-4 h-4" />
@@ -124,7 +185,8 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-600 font-medium">Average</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">45 <span class="text-sm text-gray-500">m³</span></p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">45 <span
+                                            class="text-sm text-gray-500">m³</span></p>
                                 </div>
                                 <div class="text-gray-500 bg-white rounded-full p-2">
                                     <v-icon name="bi-dash" class="w-4 h-4" />
@@ -137,7 +199,8 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-600 font-medium">Peak Usage</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">68 <span class="text-sm text-gray-500">m³</span></p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">68 <span
+                                            class="text-sm text-gray-500">m³</span></p>
                                 </div>
                                 <div class="text-amber-500 bg-white rounded-full p-2">
                                     <v-icon name="bi-exclamation-triangle" class="w-4 h-4" />
@@ -203,7 +266,7 @@ onMounted(() => {
                     usePointStyle: true,
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return `${context.parsed.y} m³`;
                         }
                     }
@@ -218,7 +281,7 @@ onMounted(() => {
                     },
                     ticks: {
                         color: '#9ca3af',
-                        callback: function(value) {
+                        callback: function (value) {
                             return value + ' m³';
                         }
                     }

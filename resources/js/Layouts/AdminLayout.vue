@@ -87,10 +87,13 @@ const logout = () => {
             <!-- Water background effect -->
             <div class="water-bg"></div>
 
-            <!-- Navbar Component -->
-            <MainContentNavbar :title="title" @logout="logout" />
+            <!-- Sticky Navbar Container -->
+            <div class="sticky-nav-container">
+                <MainContentNavbar :title="title" @logout="logout" />
+            </div>
 
-            <div class="content-container p-6 w-full relative z-10">
+            <!-- Scrollable Content Area -->
+            <div class="content-container">
                 <slot></slot>
             </div>
         </main>
@@ -106,15 +109,32 @@ const logout = () => {
 }
 
 .main-content {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    height: 100vh;
+    overflow: hidden;
     transition: all 0.3s ease;
     width: 100%;
     position: relative;
-    overflow: hidden;
 }
 
 .main-content.sidebar-open {
     margin-left: 0;
+}
+
+.sticky-nav-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.content-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    position: relative;
 }
 
 .water-bg {
@@ -126,12 +146,6 @@ const logout = () => {
     background: linear-gradient(135deg, #e0f7fa 0%, #80deea 50%, #4dd0e1 100%);
     z-index: 0;
     clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
-}
-
-.content-container {
-    width: 100%;
-    padding: 1.5rem;
-    position: relative;
 }
 
 @media (min-width: 641px) {
