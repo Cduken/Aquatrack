@@ -32,7 +32,7 @@ class ReportController extends Controller
             // Generate tracking code (AQT-yyyymmdd-4random)
             $datePart = now()->format('Ymd');
             $randomPart = substr(md5(uniqid()), 0, 4);
-            $trackingCode = 'AQT-' . $datePart . '-' . strtoupper($randomPart);
+            $trackingCode = 'AQT' . $datePart . '-' . strtoupper($randomPart);
 
             $reportData = [
                 'municipality' => $validated['municipality'],

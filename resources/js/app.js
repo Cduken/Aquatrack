@@ -145,6 +145,7 @@ addIcons(
     FaIcons.FaUsers,
     FaIcons.FaTrash,
     FaIcons.FaFolderOpen,
+    FaIcons.FaWater,
 
 
     // Remix Icons
@@ -166,6 +167,7 @@ addIcons(
 
     //Ionic Icons
     IoIcons.IoDesktop,
+    IoIcons.IoSearch,
 );
 
 createInertiaApp({
