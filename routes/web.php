@@ -8,6 +8,7 @@ use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Roles\SelectRolesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -73,6 +74,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/reports', [ReportController::class, 'customerIndex'])->name('customer.reports');
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
+
+//Select Roles
+Route::get('/select-roles', [SelectRolesController::class, 'index'])->name('select-roles');
 
 // Report Routes (Public and Authenticated)
 Route::get('/reports', [ReportController::class, 'publicIndex'])->name('reports.index');

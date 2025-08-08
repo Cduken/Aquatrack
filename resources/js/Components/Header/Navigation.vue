@@ -45,8 +45,8 @@ const handleAddReport = () => {
 
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
-                        <!-- Login Button (replaces burger icon) -->
-                        <Link v-if="canLogin && !$page.props.auth.user" :href="route('login')"
+                        <!-- Login Button -->
+                        <Link :href="route('select-roles')"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                         <v-icon name="bi-box-arrow-in-right" class="mr-2" />
                         Log in
