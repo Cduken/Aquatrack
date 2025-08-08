@@ -15,6 +15,7 @@ import * as FaIcons from "oh-vue-icons/icons/fa";
 import * as RiIcons from "oh-vue-icons/icons/ri";
 import * as MdIcons from "oh-vue-icons/icons/md";
 import * as SiIcons from "oh-vue-icons/icons/si";
+import * as IoIcons from "oh-vue-icons/icons/io";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -162,6 +163,9 @@ addIcons(
 
     // Simple Icons
     SiIcons.SiGoogleanalytics,
+
+    //Ionic Icons
+    IoIcons.IoDesktop,
 );
 
 createInertiaApp({

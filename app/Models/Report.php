@@ -20,7 +20,8 @@ class Report extends Model
         'user_id',
         'reporter_name',
         'reporter_phone',
-        'status' // Add this line
+        'status',
+        'tracking_code',
     ];
 
     protected $attributes = [

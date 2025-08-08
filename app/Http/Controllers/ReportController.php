@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\ReportPhoto;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,6 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
-
     public function store(Request $request)
     {
         try {
@@ -29,6 +29,11 @@ class ReportController extends Controller
                 'reporter_phone' => 'nullable|string|max:11',
             ]);
 
+            // Generate tracking code (AQT-yyyymmdd-4random)
+            $datePart = now()->format('Ymd');
+            $randomPart = substr(md5(uniqid()), 0, 4);
+            $trackingCode = 'AQT-' . $datePart . '-' . strtoupper($randomPart);
+
             $reportData = [
                 'municipality' => $validated['municipality'],
                 'province' => $validated['province'],
@@ -39,10 +44,12 @@ class ReportController extends Controller
                 'reporter_phone' => $validated['reporter_phone'] ?? null,
                 'user_id' => Auth::id(),
                 'status' => 'pending',
+                'tracking_code' => $trackingCode,
             ];
 
             $report = Report::create($reportData);
 
+            // Handle photo uploads
             foreach ($request->file('photos') as $photo) {
                 $originalName = $photo->getClientOriginalName();
                 $extension = $photo->getClientOriginalExtension();
@@ -58,18 +65,27 @@ class ReportController extends Controller
                 ]);
             }
 
-            $user = Auth::user();
-            if ($user) {
-                if ($user->hasRole('admin')) {
-                    return redirect()->route('admin.reports')->with('success', 'Report submitted successfully!');
-                } elseif ($user->hasRole('customer')) {
-                    return redirect()->route('customer.reports')->with('success', 'Report submitted successfully!');
-                }
-            }
-            return redirect()->route('reports.index')->with('success', 'Report submitted successfully!');
+            // Redirect to success page with tracking information
+            return redirect()->route('reports.success')->with([
+                'trackingCode' => $trackingCode,
+                'dateSubmitted' => Carbon::now()->toDateTimeString(),
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to submit report. Please try again.');
         }
+    }
+
+    public function success(Request $request)
+    {
+        // Check if we have the tracking data in session
+        if (!$request->session()->has('trackingCode')) {
+            return redirect()->route('home');
+        }
+
+        return Inertia::render('Reports/Success', [
+            'trackingCode' => $request->session()->get('trackingCode'),
+            'dateSubmitted' => $request->session()->get('dateSubmitted'),
+        ]);
     }
 
     public function customerIndex(Request $request)
@@ -84,7 +100,6 @@ class ReportController extends Controller
         ]);
     }
 
-    // In ReportController
     public function adminIndex(Request $request)
     {
         $query = Report::with(['photos', 'user'])
@@ -128,5 +143,46 @@ class ReportController extends Controller
         return Inertia::render('Reports/Show', [
             'report' => $report
         ]);
+    }
+
+    // In your ReportController.php
+    public function track(Request $request)
+    {
+        // If it's a GET request, just show the tracking form
+        if ($request->isMethod('get')) {
+            return inertia()->render('Reports/Track');
+        }
+
+        // Handle POST request for tracking submission
+        $request->validate([
+            'tracking_code' => 'required|string|exists:reports,tracking_code'
+        ]);
+
+        $report = Report::with(['photos'])
+            ->where('tracking_code', $request->tracking_code)
+            ->firstOrFail();
+
+        return inertia()->render('Reports/Track', [
+            'report' => $report
+        ]);
+    }
+
+    public function findByTrackingCode(Request $request)
+    {
+        $request->validate([
+            'tracking_code' => 'required|string'
+        ]);
+
+        $report = Report::with(['photos'])
+            ->where('tracking_code', $request->tracking_code)
+            ->first();
+
+        if (!$report) {
+            return response()->json([
+                'message' => 'No report found with this tracking code.'
+            ], 404);
+        }
+
+        return response()->json($report);
     }
 }

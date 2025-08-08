@@ -19,11 +19,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
-
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard/Dashboard');
-// })->name('dashboard');
+})->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -31,26 +27,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Add these new routes
+// Dashboard redirection
 Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 'redirectToDashboard'])
     ->middleware(['auth', 'verified'])
     ->name('redirect-to-dashboard');
 
-
+// Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-
-    Route::get('/admin/reports', [ReportController::class, 'adminIndex'])
-        ->middleware(['auth', 'role:admin'])
-        ->name('admin.reports');
-
+    Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/records', function () {
         return Inertia::render('Admin/Records');
     })->name('admin.records');
-
 
     Route::get('/admin/announcements', [AnnouncementsController::class, 'index'])->name('announcements');
     Route::post('/admin/announcements', [AnnouncementsController::class, 'store'])->name('announcements.store');
@@ -62,18 +53,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('admin.staff');
 });
 
-//Staff Routes
+// Staff Routes
 Route::middleware(['auth', 'role:staff'])->group(function () {
-
     Route::get('/staff/dashboard', function () {
         return Inertia::render('Staff/Dashboard');
-    })->middleware(['auth', 'role:staff'])->name('staff.dashboard');
+    })->name('staff.dashboard');
 
     Route::get('/staff/reading', function () {
         return Inertia::render('Staff/Reading');
     })->name('staff.reading');
 });
-
 
 // Customer Routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -85,11 +74,14 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
 
-// Public report routes (accessible to guests)
+// Report Routes (Public and Authenticated)
 Route::get('/reports', [ReportController::class, 'publicIndex'])->name('reports.index');
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+Route::get('/reports/success', [ReportController::class, 'success'])->name('reports.success');
+Route::match(['get', 'post'], '/reports/track', [ReportController::class, 'track'])->name('reports.track');
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
+Route::get('/api/reports/find', [ReportController::class, 'findByTrackingCode'])->name('reports.find');
 
 
 require __DIR__ . '/auth.php';

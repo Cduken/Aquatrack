@@ -45,24 +45,20 @@ const handleAddReport = () => {
 
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
-                        <!-- Sidebar Toggle Button -->
-                        <button @click="toggleSidebar"
-                            class="p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-colors">
-                            <v-icon name="bi-list" scale="1.25" />
-                        </button>
+                        <!-- Login Button (replaces burger icon) -->
+                        <Link v-if="canLogin && !$page.props.auth.user" :href="route('login')"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        <v-icon name="bi-box-arrow-in-right" class="mr-2" />
+                        Log in
+                        </Link>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Sidebar Component -->
-        <Sidebar
-            :isOpen="isSidebarOpen"
-            :canLogin="canLogin"
-            :canRegister="canRegister"
-            @close="toggleSidebar"
-            @add-report="handleAddReport"
-        />
+        <Sidebar :isOpen="isSidebarOpen" :canLogin="canLogin" :canRegister="canRegister" @close="toggleSidebar"
+            @add-report="handleAddReport" />
 
         <!-- Add Report Modal -->
         <AddReportModal :show="showReportModal" @close="showReportModal = false" />

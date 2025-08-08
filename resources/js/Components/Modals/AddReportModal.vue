@@ -2,11 +2,23 @@
 import { useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
-const emit = defineEmits(['close']);
+import { ref } from 'vue';
+import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
+
+const emit = defineEmits(['close', 'submitted']);
+
+const showSuccessModal = ref(false);
+const trackingInfo = ref(null);
+
+const handleClose = () => {
+  emit('close');
+};
 
 defineProps({
     show: Boolean,
 });
+
+
 
 const form = useForm({
     municipality: "Clarin",
@@ -107,22 +119,20 @@ const submitReport = () => {
 
     form.post(route('reports.store'), {
         preserveScroll: true,
-        onSuccess: () => {
+        onSuccess: (response) => {
+            emit('submitted'); // Emit submitted event
             emit('close');
+
             form.reset();
             form.photo_previews.forEach(url => URL.revokeObjectURL(url));
             form.photo_previews = [];
 
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Report Submitted!',
-                text: 'Thank you for reporting the issue.',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-            });
+            // Store tracking info and show success modal
+            trackingInfo.value = {
+                code: response.props.trackingCode,
+                date: response.props.dateSubmitted
+            };
+            showSuccessModal.value = true;
         },
         onError: (errors) => {
             Swal.fire({
@@ -188,11 +198,10 @@ const submitReport = () => {
                         </div>
                         <input type="text" id="reporter_name" v-model="form.reporter_name" required
                             class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                            placeholder="Enter your full name"
-
+                            placeholder="Enter your full name">
                     </div>
                     <p v-if="form.errors.reporter_name" class="mt-1 text-sm text-red-600">{{ form.errors.reporter_name
-                        }}</p>
+                    }}</p>
                 </div>
 
                 <!-- Reporter Phone -->
@@ -208,10 +217,9 @@ const submitReport = () => {
                         <input type="tel" id="reporter_phone" v-model="form.reporter_phone"
                             class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
                             placeholder="Enter phone number (Optional)">
-
                     </div>
                     <p v-if="form.errors.reporter_phone" class="mt-1 text-sm text-red-600">{{ form.errors.reporter_phone
-                        }}</p>
+                    }}</p>
                 </div>
 
                 <!-- Barangay Dropdown -->
@@ -344,4 +352,8 @@ const submitReport = () => {
             </div>
         </form>
     </Modal>
+
+    <!-- Success Modal -->
+    <ReportSuccessModal v-if="trackingInfo" :show="showSuccessModal" :tracking-code="trackingInfo.code"
+        :date-submitted="trackingInfo.date" @close="showSuccessModal = false" />
 </template>

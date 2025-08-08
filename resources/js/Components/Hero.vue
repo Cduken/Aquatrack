@@ -1,56 +1,89 @@
+<!-- resources/js/Pages/Landing/LandingPage.vue -->
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import AddReportModal from '@/Components/Modals/AddReportModal.vue';
+import { ref } from 'vue';
+import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
+import TrackReportModal from '@/Components/Modals/TrackReportModal.vue';
 
-defineProps(
-    {
-        mainText: {
-            type:String,
-            default: 'Track Your Water Usage with'
-        }
-    }
-);
+const showReportModal = ref(false);
+const showSuccessModal = ref(false);
+const showTrackModal = ref(false);
+const trackingInfo = ref(null);
+
+const handleAddReport = () => {
+    showReportModal.value = true;
+};
+
+const handleTrackReport = () => {
+    showTrackModal.value = true;
+};
+
+const handleReportSubmitted = (response) => {
+    showReportModal.value = false;
+    trackingInfo.value = {
+        code: response.trackingCode,
+        date: response.dateSubmitted
+    };
+    showSuccessModal.value = true;
+};
 </script>
 
 <template>
-    <main class="pt-16 w-full">
-        <div class="w-full flex flex-col items-center text-center px-4 sm:px-6">
+    <main class="relative pt-16 w-full h-screen">
+        <!-- Background elements -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style="background-image: url('/images/HomePage.png')"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+        <!-- Track Report Button with Tooltip -->
+        <div class="absolute top-8 right-8 z-10 group">
+            <button @click="handleTrackReport"
+                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg">
+                <v-icon name="io-desktop" scale="1.3" />
+                <span class="sr-only">Track Report</span>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+                class="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-2 text-sm font-medium text-white bg-gray-800 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                Track Report
+                <div class="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+            </div>
+        </div>
+
+        <!-- Content container -->
+        <div class="relative w-full h-full flex flex-col items-center justify-center text-center px-4 sm:px-6">
             <div class="w-full">
-                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-gray-900">
-                    {{ mainText }} <span class="text-blue-600">AquaTrack</span>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-white">
+                    Report Water Issues with <span class="text-blue-400">AquaTrack</span>
                 </h1>
 
-                <p class="mt-6 max-w-5xl mx-auto text-base sm:text-md md:text-lg lg:text-xl text-gray-600">
+                <p class="mt-6 max-w-5xl mx-auto text-base sm:text-md md:text-lg lg:text-xl text-gray-200">
                     Modern water management system for residential customers. Monitor usage, pay bills, and report
                     issues all in one convenient platform.
                 </p>
 
                 <div class="mt-8">
-                    <Link :href="route('login')"
-                        class="inline-flex items-center text-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
-                    Log in to Your Account
-                    <v-icon name="hi-solid-user" scale="1.3"></v-icon>
-                    </Link>
-                    </div>
-
-
-
-                <!-- Full width water wave illustration with rounded corners -->
-                <div class="w-full mt-12 overflow-hidden">
-                    <div class="rounded-tl-[40px] rounded-tr-[40px] overflow-hidden">
-                        <svg class="w-full" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                            <path
-                                d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                                opacity=".25" class="fill-blue-400 dark:fill-blue-600"></path>
-                            <path
-                                d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                                opacity=".5" class="fill-blue-400 dark:fill-blue-600"></path>
-                            <path
-                                d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                                class="fill-blue-500 dark:fill-blue-700"></path>
-                        </svg>
+                    <div class="flex gap-4 justify-center">
+                        <button @click="handleAddReport"
+                            class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-lg font-medium text-white hover:bg-blue-700 transition-colors">
+                            <v-icon name="bi-plus-circle" scale="1.3" />
+                            <span>Report Now</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Report Form Modal -->
+    <AddReportModal :show="showReportModal" @close="showReportModal = false" @submitted="handleReportSubmitted" />
+
+    <!-- Success Modal -->
+    <ReportSuccessModal v-if="trackingInfo" :show="showSuccessModal" :tracking-code="trackingInfo.code"
+        :date-submitted="trackingInfo.date" @close="showSuccessModal = false" />
+
+    <!-- Track Report Modal -->
+    <TrackReportModal :show="showTrackModal" @close="showTrackModal = false" />
 </template>
