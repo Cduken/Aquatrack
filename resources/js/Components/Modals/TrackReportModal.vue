@@ -183,7 +183,7 @@ const downloadReportAsImage = async () => {
                         @click.stop>
 
                         <!-- Header with modern gradient -->
-                        <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600">
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-900/80 to-teal-800/80">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-xl font-semibold text-white flex items-center gap-2">
                                     <v-icon name="fa-search" scale="1.1" />

@@ -83,7 +83,7 @@ const activeLinks = computed(() => {
 </script>
 
 <template>
-    <div class="sidebar-wrapper">
+    <div class="sidebar-wrapper ">
         <button v-if="!isMobile" class="sidebar-toggle" @click="toggleSidebar" :style="{
             left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
             right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
@@ -100,7 +100,7 @@ const activeLinks = computed(() => {
             width: isMobile ? '100%' : width,
             color: textColor
         }">
-            <div class="sidebar-content">
+            <div class="sidebar-content ">
                 <div v-if="!isMobile && (logo || $slots.logo)" class="sidebar-logo">
                     <slot name="logo">
                         <div class="logo-container">

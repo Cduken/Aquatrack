@@ -15,7 +15,9 @@
         <!-- Main Content -->
         <main :class="['main-content', { 'sidebar-open': sidebarOpen }]">
             <!-- Navbar Component -->
-            <MainContentNavbar :title="title" @logout="logout" />
+            <div class="sticky top-0 z-10 shadow-md">
+                <MainContentNavbar :title="title" @logout="logout" />
+            </div>
 
             <div class="content-container p-6 w-full">
                 <slot></slot>

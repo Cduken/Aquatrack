@@ -127,7 +127,7 @@ const emit = defineEmits(['close']);
                                             <div>
                                                 <p class="text-xs text-gray-500">Submitted</p>
                                                 <p class="font-medium">{{ new Date(report.created_at).toLocaleString()
-                                                    }}</p>
+                                                }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-start">
@@ -138,6 +138,13 @@ const emit = defineEmits(['close']);
                                                     class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                                     Verified
                                                 </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <v-icon name="bi-upc-scan" class="mr-2 mt-0.5 text-gray-500" />
+                                            <div>
+                                                <p class="text-xs text-gray-500">Tracking Code</p>
+                                                <p class="font-medium">{{ report.tracking_code }}</p>
                                             </div>
                                         </div>
                                     </div>
