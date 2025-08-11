@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import DashboardSidebar from '@/Components/Sidebar/DashboardSidebar.vue';
 import MainContentNavbar from '@/Components/Header/MainContentNavbar.vue';
 import { ref, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 
 const { props: pageProps } = usePage();
 const user = computed(() => pageProps.auth?.user);
@@ -52,7 +53,8 @@ const logout = () => {
                         timerProgressBar: true,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = route('login');
+                        router.visit(route('home'));
+
                     });
                 },
                 onError: () => {

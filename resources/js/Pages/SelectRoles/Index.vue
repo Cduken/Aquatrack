@@ -1,16 +1,15 @@
 <template>
     <div class="min-h-screen relative overflow-hidden">
-        <!-- Background elements matching Hero.vue -->
+        <!-- Background elements -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/bgimg.jpg')"></div>
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-teal-800/80">
             <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
         </div>
 
-        <!-- Floating water drop decoration -->
+        <!-- Floating decorations -->
         <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-500 opacity-10 blur-3xl"></div>
         <div class="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-teal-500 opacity-10 blur-3xl"></div>
-
 
         <Link href="/">
         <button
@@ -20,15 +19,15 @@
         </button>
         </Link>
 
-        <!-- Content container -->
+        <!-- Main content -->
         <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
             <div class="w-full max-w-6xl text-center">
-                <!-- Header matching Hero.vue style -->
+                <!-- Header -->
                 <div class="mb-12">
                     <div
                         class="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mx-auto">
                         <v-icon name="fa-water" class="text-blue-300" />
-                        <span class="text-sm font-medium text-blue-100">Select Your Role</span>
+                        <span class="text-sm font-medium text-blue-100">Select Your Role to Login</span>
                     </div>
                     <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
                         <span
@@ -40,10 +39,10 @@
                     </p>
                 </div>
 
-                <!-- Role cards with enhanced hover effects -->
+                <!-- Role cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto max-w-5xl">
                     <!-- Customer Card -->
-                    <div class="glass-card group" @click="selectRole('customer')">
+                    <div class="glass-card group" @click="showLoginModal('customer')">
                         <div class="glass-card-inner bg-gradient-to-br from-blue-500/20 to-blue-600/20">
                             <div class="icon-container bg-blue-500/20">
                                 <v-icon name="hi-user" class="text-blue-300 text-4xl" />
@@ -55,7 +54,7 @@
                     </div>
 
                     <!-- Admin Card -->
-                    <div class="glass-card group" @click="selectRole('admin')">
+                    <div class="glass-card group" @click="showLoginModal('admin')">
                         <div class="glass-card-inner bg-gradient-to-br from-purple-500/20 to-purple-600/20">
                             <div class="icon-container bg-purple-500/20">
                                 <v-icon name="hi-cog" class="text-purple-300 text-4xl" />
@@ -67,7 +66,7 @@
                     </div>
 
                     <!-- Staff Card -->
-                    <div class="glass-card group" @click="selectRole('staff')">
+                    <div class="glass-card group" @click="showLoginModal('staff')">
                         <div class="glass-card-inner bg-gradient-to-br from-teal-500/20 to-teal-600/20">
                             <div class="icon-container bg-teal-500/20">
                                 <v-icon name="hi-users" class="text-teal-300 text-4xl" />
@@ -80,30 +79,57 @@
                 </div>
             </div>
         </div>
+
+
+        <div v-if="showModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
+            <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-[900px] mx-4 overflow-hidden transform transition-all duration-300"
+                :class="modalClasses">
+                <button @click="hideLoginModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+                    <v-icon name="hi-x" class="text-2xl" />
+                </button>
+                <Login :selected-role="selectedRole" @close="hideLoginModal" @login-success="handleLoginSuccess" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { OhVueIcon, addIcons } from 'oh-vue-icons';
-import { HiUser, HiCog, HiUsers, FaWater, HiArrowLeft } from 'oh-vue-icons/icons';
+import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import { OhVueIcon, addIcons } from 'oh-vue-icons';
+import { HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX } from 'oh-vue-icons/icons';
+import Login from '@/Pages/Auth/Login.vue';
 
-addIcons(HiUser, HiCog, HiUsers, FaWater, HiArrowLeft);
+addIcons(HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX);
 
-const selectRole = (role) => {
-    console.log(`Selected role: ${role}`);
-    // Add your navigation logic here
+const showModal = ref(false);
+const selectedRole = ref('');
+
+const modalClasses = computed(() => {
+    return showModal.value ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4';
+});
+
+const showLoginModal = (role) => {
+    selectedRole.value = role.charAt(0).toUpperCase() + role.slice(1);
+    showModal.value = true;
 };
 
+const hideLoginModal = () => {
+    showModal.value = false;
+};
 
+const handleLoginSuccess = () => {
+    hideLoginModal();
+};
 </script>
 
 <style scoped>
-/* Glassmorphism effect - enhanced to match Hero.vue */
 .glass-card {
     perspective: 1000px;
     height: 320px;
     position: relative;
+    cursor: pointer;
 }
 
 .glass-card::before {
@@ -168,5 +194,15 @@ const selectRole = (role) => {
 
 .group:hover .select-badge {
     @apply bg-white/30 transform scale-105;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
 }
 </style>

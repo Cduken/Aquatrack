@@ -33,6 +33,8 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
     ->middleware(['auth', 'verified'])
     ->name('redirect-to-dashboard');
 
+Route::post('/verify-role-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify.role.code');
+
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
@@ -84,7 +86,6 @@ Route::post('/reports', [ReportController::class, 'store'])->name('reports.store
 Route::get('/reports/success', [ReportController::class, 'success'])->name('reports.success');
 Route::match(['get', 'post'], '/reports/track', [ReportController::class, 'track'])->name('reports.track');
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-
 Route::get('/api/reports/find', [ReportController::class, 'findByTrackingCode'])->name('reports.find');
 
 
