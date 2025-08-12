@@ -118,6 +118,9 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Add a flash message for logout success
+        $request->session()->flash('logout_success', true);
+
         // Return a proper response that will trigger page reload
         return Inertia::location(route('select-roles'));
     }

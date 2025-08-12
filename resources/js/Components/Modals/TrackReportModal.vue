@@ -4,6 +4,7 @@ import { ref, watch, nextTick, onMounted } from 'vue';
 import axios from 'axios';
 import QRCode from 'qrcode';
 import { OhVueIcon, addIcons } from 'oh-vue-icons';
+import { computed } from 'vue';
 import html2canvas from 'html2canvas';
 import {
     FaSearch,
@@ -164,6 +165,21 @@ const downloadReportAsImage = async () => {
         isLoading.value = false;
     }
 };
+
+const formattedStatus = computed(() => {
+    if (!reportDetails.value?.status) return '';
+    switch (reportDetails.value.status) {
+        case 'in_progress':
+            return 'In Progress';
+        case 'pending':
+            return 'Pending';
+        case 'resolved':
+            return 'Resolved';
+        default:
+            // Capitalize first letter, lowercase the rest
+            return reportDetails.value.status.charAt(0).toUpperCase() + reportDetails.value.status.slice(1).toLowerCase();
+    }
+});
 </script>
 
 <template>
@@ -283,9 +299,9 @@ const downloadReportAsImage = async () => {
                                                             :class="{
                                                                 'bg-green-100 text-green-800': reportDetails.status === 'resolved',
                                                                 'bg-yellow-100 text-yellow-800': reportDetails.status === 'pending',
-                                                                'bg-red-100 text-red-800': reportDetails.status === 'cancelled'
+                                                                'bg-blue-100 text-blue-800': reportDetails.status === 'in_progress'
                                                             }">
-                                                            {{ reportDetails.status }}
+                                                            {{ formattedStatus }}
                                                         </span>
                                                     </div>
                                                 </div>

@@ -42,6 +42,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
+    Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
+        ->name('admin.reports.updateStatus'); // ✅ New route
+
     Route::get('/admin/records', function () {
         return Inertia::render('Admin/Records');
     })->name('admin.records');

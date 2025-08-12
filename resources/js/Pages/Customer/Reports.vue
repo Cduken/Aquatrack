@@ -16,6 +16,8 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tracking
+                                    Code</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description
@@ -29,6 +31,9 @@
                             <tr v-for="report in reports.data" :key="report.id">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ report.id
                                     }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ report.tracking_code }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ report.barangay }}, {{ report.municipality }}
                                 </td>
@@ -117,8 +122,12 @@
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import AddReportModal from '@/Components/Modals/AddReportModal.vue';
 import ReportDetailsModal from '@/Components/Modals/ReportDetailsModal.vue';
-import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed, watch } from 'vue';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
+const page = usePage();
 
 const props = defineProps({
     reports: {
@@ -129,8 +138,19 @@ const props = defineProps({
             meta: {},
             links: {}
         })
-    }
+    },
+    flash: Object // Add flash as a prop
 });
+
+// Watch for flash messages
+watch(() => page.props.flash, (newFlash) => {
+    if (newFlash?.success) {
+        toast.success(newFlash.success);
+        if (newFlash.trackingCode) {
+            toast.info(`Your tracking code: ${newFlash.trackingCode}`);
+        }
+    }
+}, { immediate: true });
 
 const showAddModal = ref(false);
 const showDetailsModal = ref(false);
@@ -142,7 +162,6 @@ const openReportDetails = (report) => {
 };
 
 const handleReportAdded = () => {
-    // This will be handled by Inertia's preserveState
     showAddModal.value = false;
 };
 

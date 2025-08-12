@@ -54,7 +54,6 @@ const logout = () => {
                         showConfirmButton: false
                     }).then(() => {
                         router.visit(route('home'));
-
                     });
                 },
                 onError: () => {
@@ -85,7 +84,7 @@ const logout = () => {
         </DashboardSidebar>
 
         <!-- Main Content -->
-        <main :class="['main-content', { 'sidebar-open': sidebarOpen }]">
+        <main :class="['main-content', { 'sidebar-open': sidebarOpen, 'sidebar-closed': !sidebarOpen }]">
             <!-- Water background effect -->
             <div class="water-bg"></div>
 
@@ -121,10 +120,6 @@ const logout = () => {
     position: relative;
 }
 
-.main-content.sidebar-open {
-    margin-left: 0;
-}
-
 .sticky-nav-container {
     position: sticky;
     top: 0;
@@ -155,11 +150,18 @@ const logout = () => {
         margin-left: 250px;
         width: calc(100% - 250px);
     }
+
+    .main-content.sidebar-closed {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+    }
 }
 
 @media (max-width: 640px) {
     .main-content {
         margin-bottom: 60px;
+        margin-left: 0 !important;
+        width: 100% !important;
     }
 
     .water-bg {

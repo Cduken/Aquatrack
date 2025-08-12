@@ -7,6 +7,10 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+
+
 
 // Import ALL icons directly from their sets
 import * as BiIcons from "oh-vue-icons/icons/bi";
@@ -122,6 +126,10 @@ addIcons(
     BiIcons.BiExclamationTriangle,
     BiIcons.BiChevronLeft,
     BiIcons.BiArrowRight,
+    BiIcons.BiUpcScan,
+    BiIcons.BiChevronDoubleLeft,
+    BiIcons.BiChevronDoubleRight,
+    BiIcons.BiChevronUp,
 
 
 
@@ -155,6 +163,7 @@ addIcons(
     RiIcons.RiPieChartLine,
     RiIcons.RiEditBoxFill,
     RiIcons.RiSave3Fill,
+    RiIcons.RiEdit2Fill,
 
 
     // Material Design
@@ -181,6 +190,19 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(Toast, {
+                timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: false,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false
+            })
             .component("v-icon", OhVueIcon);
 
         app.config.globalProperties.$swal = Swal;

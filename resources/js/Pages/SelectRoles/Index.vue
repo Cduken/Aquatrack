@@ -2,7 +2,7 @@
     <div class="min-h-screen relative overflow-hidden">
         <!-- Background elements -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style="background-image: url('/images/bgimg.jpg')"></div>
+            style="background-image: url('/images/AquatrackIMG.jpg')"></div>
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-teal-800/80">
             <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
         </div>
@@ -30,9 +30,9 @@
                         <span class="text-sm font-medium text-blue-100">Select Your Role to Login</span>
                     </div>
                     <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-                        <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200">Welcome</span>
-                        to AquaTrack
+                        <span class="">Welcome</span>
+                        to <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200">AquaTrack</span>
                     </h1>
                     <p class="text-xl text-blue-200 max-w-2xl mx-auto">
                         Choose how you want to access the platform
@@ -101,7 +101,10 @@ import { OhVueIcon, addIcons } from 'oh-vue-icons';
 import { HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX } from 'oh-vue-icons/icons';
 import Login from '@/Pages/Auth/Login.vue';
 
+
 addIcons(HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX);
+
+
 
 const showModal = ref(false);
 const selectedRole = ref('');

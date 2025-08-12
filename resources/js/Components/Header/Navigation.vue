@@ -47,9 +47,9 @@ const handleAddReport = () => {
                     <div class="flex items-center gap-4">
                         <!-- Login Button -->
                         <Link :href="route('select-roles')"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            class="inline-flex items-center px-4 py-2 text-blue-900 border border-blue-600 rounded-md hover: border-blue-700">
                         <v-icon name="bi-box-arrow-in-right" class="mr-2" />
-                        Log in
+                        Login
                         </Link>
                     </div>
                 </div>

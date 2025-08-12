@@ -83,200 +83,99 @@ const activeLinks = computed(() => {
 </script>
 
 <template>
-    <div class="sidebar-wrapper ">
-        <button v-if="!isMobile" class="sidebar-toggle" @click="toggleSidebar" :style="{
-            left: position === 'left' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
-            right: position === 'right' ? (isOpen ? `calc(${width} + 20px)` : '20px') : 'auto',
-        }">
-            <v-icon class="w-8 h-8 text-white " :name="isOpen ? 'bi-x' : 'bi-list'" />
+    <div class="relative">
+        <!-- External Toggle Button (visible when sidebar is open) -->
+        <button v-if="!isMobile && isOpen"
+            class="fixed top-5 z-[1001] text-white bg-gradient-to-br from-blue-500 to-teal-500 border-none rounded-lg flex items-center cursor-pointer text-xl transition-all shadow-md hover:bg-gradient-to-br hover:from-blue-600 hover:to-teal-600 p-2"
+            @click="toggleSidebar" :style="{
+                left: position === 'left' ? `calc(${width} - 30px)` : 'auto',
+                right: position === 'right' ? `calc(${width} - 30px)` : 'auto',
+            }">
+            <v-icon class="w-6 h-6 text-white" name="bi-chevron-double-left" />
         </button>
 
-        <aside class="sidebar" :class="{
-            'sidebar-open': isOpen,
-            'sidebar-left': position === 'left',
-            'sidebar-right': position === 'right',
-            'sidebar-mobile': isMobile
-        }" :style="{
-            width: isMobile ? '100%' : width,
-            color: textColor
-        }">
-            <div class="sidebar-content ">
-                <div v-if="!isMobile && (logo || $slots.logo)" class="sidebar-logo">
+        <aside
+            class="fixed top-0 h-screen transition-all z-[1000] overflow-y-auto bg-gradient-to-br from-blue-500 to-teal-500 shadow-lg"
+            :class="{
+                'sidebar-open': isOpen,
+                'sidebar-left': position === 'left',
+                'sidebar-right': position === 'right',
+                'sidebar-mobile': isMobile,
+                'w-20': !isOpen && !isMobile,
+                'w-[250px]': isOpen && !isMobile,
+            }">
+            <div class="h-full flex flex-col">
+                <!-- Internal Toggle Button (visible when sidebar is closed) -->
+                <button v-if="!isMobile && !isOpen"
+                    class="p-[30.5px] shadow-lg text-white flex items-center justify-center cursor-pointer transition-all hover:bg-white/20"
+                    @click="toggleSidebar">
+                    <v-icon class="w-8 h-8 text-white" name="bi-chevron-double-right" />
+                </button>
+
+                <!-- Logo section (only visible when open) -->
+                <div v-if="!isMobile && (logo || $slots.logo) && isOpen"
+                    class="p-[5.5px] text-center mb-5 bg-blue-600/30 shadow-lg">
                     <slot name="logo">
-                        <div class="logo-container">
-                            <span class="logo-text">AquaTrack</span>
+                        <div class="flex items-center justify-center">
+                            <span class="text-white text-2xl font-bold">AquaTrack</span>
                         </div>
                     </slot>
                 </div>
 
-                <div class="sidebar-section">
-                    <nav class="sidebar-nav" :class="{ 'mobile-nav': isMobile }">
+                <div class="px-4">
+                    <nav class="flex flex-col gap-4 mt-2" :class="{ 'mobile-nav': isMobile }">
                         <slot name="links">
                             <template v-if="useRouterLinks">
                                 <Link v-for="(link, index) in activeLinks" :key="index" :href="link.url"
-                                    class="sidebar-link" :class="{ 'active-link': link.active }">
-                                <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
-                                <span v-if="!isMobile || (isMobile && isOpen)">{{ link.name }}</span>
+                                    class="flex items-center gap-3 px-3 py-3 text-white no-underline rounded-lg transition-colors hover:bg-white/20 group"
+                                    :class="{ 'bg-white/30 font-medium': link.active }">
+                                <div class="relative">
+                                    <v-icon v-if="link.icon" :name="link.icon"
+                                        class="text-white text-xl min-w-[24px]" />
+                                    <!-- Tooltip for closed state -->
+                                    <span v-if="!isOpen && !isMobile"
+                                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 px-3 py-1 text-sm whitespace-nowrap bg-gray-800 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-[1001] pointer-events-none">
+                                        {{ link.name }}
+                                        <div
+                                            class="absolute right-full top-1/2 w-2 h-2 -mt-1 bg-gray-800 transform rotate-45">
+                                        </div>
+                                    </span>
+                                </div>
+                                <span v-if="isOpen" class="text-sm whitespace-nowrap">{{ link.name }}</span>
                                 </Link>
                             </template>
                             <template v-else>
                                 <a v-for="(link, index) in activeLinks" :key="index" :href="link.url"
-                                    class="sidebar-link" :class="{ 'active-link': link.active }">
-                                    <v-icon v-if="link.icon" :name="link.icon" class="link-icon" />
-                                    <span v-if="!isMobile || (isMobile && isOpen)">{{ link.name }}</span>
+                                    class="flex items-center gap-3 px-3 py-3 text-white no-underline rounded-lg transition-colors hover:bg-white/20 group"
+                                    :class="{ 'bg-white/30 font-medium': link.active }">
+                                    <div class="relative">
+                                        <v-icon v-if="link.icon" :name="link.icon"
+                                            class="text-white text-xl min-w-[24px]" />
+                                        <!-- Tooltip for closed state -->
+                                        <span v-if="!isOpen && !isMobile"
+                                            class="absolute left-full top-1/2 transform -translate-y-1/2 ml-4 px-3 py-1 text-sm whitespace-nowrap bg-gray-800 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-[1001] pointer-events-none">
+                                            {{ link.name }}
+                                            <div
+                                                class="absolute right-full top-1/2 w-2 h-2 -mt-1 bg-gray-800 transform rotate-45">
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <span v-if="isOpen" class="text-sm whitespace-nowrap">{{ link.name }}</span>
                                 </a>
                             </template>
                         </slot>
                     </nav>
                 </div>
-                <!-- <div v-if="!isMobile && showLogout" class="mt-auto p-4 border-t border-gray-700">
-                    <button @click="emit('logout')"
-                        class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-                        <v-icon name="bi-box-arrow-right" />
-                        <span>Logout</span>
-                    </button>
-                </div> -->
             </div>
         </aside>
 
-        <div class="sidebar-overlay" :class="{ 'overlay-visible': isOpen && isMobile }" @click="toggleSidebar"></div>
+        <div class="fixed inset-0 z-[999] transition-all opacity-0 invisible"
+            :class="{ 'opacity-100 visible': isOpen && isMobile }" @click="toggleSidebar"></div>
     </div>
 </template>
 
 <style scoped>
-.sidebar {
-    background: linear-gradient(to bottom, #2D3E50, #1a1f24 90%);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-logo {
-    padding: 5px;
-    text-align: center;
-    margin-bottom: 20px;
-    background: #223241;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-text {
-    color: #ffffff;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.sidebar-section {
-    padding: 0 15px;
-}
-
-.sidebar-nav {
-    gap: 5px;
-}
-
-.sidebar-link {
-    padding: 10px 10px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    margin-top: 15px;
-    border-radius: 5px;
-    transition: background 0.3s;
-}
-
-.sidebar-link:hover {
-    background: #425262;
-}
-
-.active-link {
-    background: #425262;
-    font-weight: 500;
-}
-
-.link-icon {
-    color: #ffffff;
-    font-size: 1.2rem;
-}
-
-.sidebar-wrapper {
-    position: relative;
-}
-
-.sidebar-toggle {
-    position: fixed;
-    top: 20px;
-    z-index: 1001;
-    color: #1e3a8a;
-    background: #223241;
-    border: none;
-    padding: 5px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-toggle:hover {
-    background: #2D3E50;
-}
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.sidebar-left {
-    left: calc(-1 * v-bind(width));
-}
-
-.sidebar-right {
-    right: calc(-1 * v-bind(width));
-}
-
-.sidebar-left.sidebar-open {
-    left: 0;
-}
-
-.sidebar-right.sidebar-open {
-    right: 0;
-}
-
-.sidebar-content {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* background: rgba(0, 0, 0, 0.5); */
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.overlay-visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Mobile styles */
+/* Mobile styles - keep exactly the same as before */
 @media (max-width: 640px) {
     .sidebar.sidebar-mobile {
         width: 100% !important;
@@ -290,12 +189,12 @@ const activeLinks = computed(() => {
         z-index: 1000;
     }
 
-    .sidebar-content {
+    .sidebar-mobile .flex-col {
         padding: 10px;
         min-height: 80px;
     }
 
-    .sidebar-nav.mobile-nav {
+    .mobile-nav {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -304,11 +203,11 @@ const activeLinks = computed(() => {
         bottom: 0;
         left: 0;
         right: 0;
-        background: #1e3a8a;
-        border-top: 1px solid #3b82f6;
+        background: linear-gradient(to right, #3b82f6, #06b6d4);
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .sidebar-link {
+    .mobile-nav a {
         flex-direction: column;
         gap: 5px;
         padding: 8px 12px;
@@ -317,11 +216,7 @@ const activeLinks = computed(() => {
         text-align: center;
     }
 
-    .sidebar-link span {
-        display: none;
-    }
-
-    .sidebar-toggle {
+    .mobile-nav span {
         display: none;
     }
 }

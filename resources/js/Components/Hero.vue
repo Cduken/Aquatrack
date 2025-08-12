@@ -67,7 +67,7 @@ const handleReportSubmitted = async (response) => {
     <main class="relative w-full min-h-screen overflow-hidden">
         <!-- Background elements - image with gradient overlay -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style="background-image: url('/images/bgimg.jpg')"></div>
+            style="background-image: url('/images/AquatrackIMG.jpg')"></div>
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-teal-800/80">
             <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
         </div>
@@ -77,7 +77,8 @@ const handleReportSubmitted = async (response) => {
         <div class="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-teal-500 opacity-10 blur-3xl"></div>
 
         <!-- Main content -->
-        <div class="relative z-10 container mx-auto px-6 h-screen flex flex-col justify-center">
+        <div class="relative z-10 container mx-auto px-6 h-screen flex flex-col justify-start pt-32">
+            <!-- Changed justify-center to justify-start and added pt-32 -->
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Tagline -->
                 <div
@@ -109,16 +110,16 @@ const handleReportSubmitted = async (response) => {
                         <span>Report Water Issue</span>
                     </button>
 
-                    <button @click="handleTrackReport"
+                    <!-- <button @click="handleTrackReport"
                         class="flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white font-semibold rounded-xl backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                         <v-icon name="io-search" scale="1.3" />
                         <span>Track Report</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
 
-            <!-- Stats bar at bottom -->
-            <div class="absolute bottom-10 left-0 right-0">
+            <!-- Stats section remains at the bottom -->
+            <div class="absolute bottom-[100px] left-0 right-0">
                 <div class="max-w-5xl mx-auto px-6 py-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="p-3">
@@ -138,16 +139,28 @@ const handleReportSubmitted = async (response) => {
             </div>
         </div>
 
-        <!-- Floating action button for tracking -->
         <div class="fixed bottom-8 right-8 z-20">
-            <button @click="handleTrackReport"
-                class="group flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl hover:shadow-2xl transition-all">
-                <v-icon name="io-search" scale="1.3" />
-                <span class="sr-only">Track Report</span>
+            <div class="relative group">
+                <button @click="handleTrackReport"
+                    class="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl hover:shadow-2xl transition-all">
+                    <v-icon name="io-search" scale="1.3" />
+                    <span class="sr-only">Track Report</span>
+                    <div
+                        class="absolute -right-1 -top-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white animate-pulse">
+                    </div>
+                </button>
+
+                <!-- Tooltip -->
                 <div
-                    class="absolute -right-1 -top-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white animate-pulse">
+                    class="absolute right-16 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <div class="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap shadow-lg">
+                        Track Report
+                        <div
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-gray-800 rotate-45">
+                        </div>
+                    </div>
                 </div>
-            </button>
+            </div>
         </div>
 
         <!-- Modals -->

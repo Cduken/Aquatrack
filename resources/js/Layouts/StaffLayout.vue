@@ -13,11 +13,17 @@
         </DashboardSidebar>
 
         <!-- Main Content -->
-        <main :class="['main-content', { 'sidebar-open': sidebarOpen }]">
-            <!-- Navbar Component -->
-            <MainContentNavbar :title="title" @logout="logout" />
+        <main :class="['main-content', { 'sidebar-open': sidebarOpen, 'sidebar-closed': !sidebarOpen }]">
+            <!-- Water background effect -->
+            <div class="water-bg"></div>
 
-            <div class="content-container p-6 w-full">
+            <!-- Sticky Navbar Container -->
+            <div class="sticky-nav-container">
+                <MainContentNavbar :title="title" @logout="logout" />
+            </div>
+
+            <!-- Scrollable Content Area -->
+            <div class="content-container">
                 <slot></slot>
             </div>
         </main>
@@ -47,7 +53,6 @@ const sidebarOpen = ref(true);
 const adminLinks = ref([
     { name: 'Dashboard', url: '/staff/dashboard', icon: 'md-dashboard' },
     { name: 'Reading', url: '/staff/reading', icon: 'bi-flag-fill' },
-
 ]);
 
 const form = useForm({});
@@ -101,18 +106,39 @@ const logout = () => {
 }
 
 .main-content {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    height: 100vh;
+    overflow: hidden;
     transition: all 0.3s ease;
     width: 100%;
+    position: relative;
 }
 
-.main-content.sidebar-open {
-    margin-left: 0;
+.sticky-nav-container {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    width: 100%;
 }
 
 .content-container {
-    width: 100%;
+    flex: 1;
+    overflow-y: auto;
     padding: 1.5rem;
+    position: relative;
+}
+
+.water-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50vh;
+    background: linear-gradient(135deg, #e0f7fa 0%, #80deea 50%, #4dd0e1 100%);
+    z-index: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
 }
 
 @media (min-width: 641px) {
@@ -120,11 +146,23 @@ const logout = () => {
         margin-left: 250px;
         width: calc(100% - 250px);
     }
+
+    .main-content.sidebar-closed {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+    }
 }
 
 @media (max-width: 640px) {
     .main-content {
         margin-bottom: 60px;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .water-bg {
+        height: 40vh;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
     }
 }
 </style>

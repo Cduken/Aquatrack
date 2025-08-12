@@ -65,11 +65,20 @@ class ReportController extends Controller
                 ]);
             }
 
-            // Redirect to success page with tracking information
-            return redirect()->route('reports.success')->with([
-                'trackingCode' => $trackingCode,
-                'dateSubmitted' => Carbon::now()->toDateTimeString(),
-            ]);
+            // Check if user is authenticated
+            if (Auth::check()) {
+                // For authenticated users, redirect back to reports list with success message
+                return redirect()->route('customer.reports')->with([
+                    'success' => 'Report submitted successfully!',
+                    'trackingCode' => $trackingCode
+                ]);
+            } else {
+                // For guests, redirect to success page
+                return redirect()->route('reports.success')->with([
+                    'trackingCode' => $trackingCode,
+                    'dateSubmitted' => Carbon::now()->toDateTimeString(),
+                ]);
+            }
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to submit report. Please try again.');
         }
@@ -96,7 +105,11 @@ class ReportController extends Controller
             ->paginate(10);
 
         return Inertia::render('Customer/Reports', [
-            'reports' => $reports
+            'reports' => $reports,
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'trackingCode' => $request->session()->get('trackingCode')
+            ]
         ]);
     }
 
@@ -120,8 +133,10 @@ class ReportController extends Controller
             ->appends($request->query());
 
         return Inertia::render('Admin/Reports', [
-            'reports' => $reports,
-            'filters' => $request->only(['userType', 'status', 'search'])
+            'reports' => $query->paginate(10)
+                ->appends($request->query()),
+            'filters' => $request->only(['userType', 'status', 'search']),
+            'canEdit' => true // Add this line to always enable editing for admin
         ]);
     }
 
@@ -184,5 +199,17 @@ class ReportController extends Controller
         }
 
         return response()->json($report);
+    }
+
+    public function updateStatus(Request $request, Report $report)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,resolved'
+        ]);
+
+        $report->status = $request->status;
+        $report->save();
+
+        return redirect()->route('admin.reports')->with('success', 'Report status updated successfully!');
     }
 }

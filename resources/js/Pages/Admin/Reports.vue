@@ -66,12 +66,14 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr v-for="report in filteredReports" :key="report.id">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ report.id
-                                    }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    #{{ report.id }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ report.reporter_name || report.user?.name }}
-                                    <span v-if="report.user_id" class="text-xs text-gray-400 block">User ID: {{
-                                        report.user_id }}</span>
+                                    <span v-if="report.user_id" class="text-xs text-gray-400 block">
+                                        User ID: {{ report.user_id }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <span :class="userTypeClasses(report.user_id)">
@@ -86,22 +88,51 @@
                                         {{ report.priority || 'N/A' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span :class="statusClasses(report.status)">
-                                        {{ formatStatus(report.status) }}
-                                    </span>
+
+                                <!-- STATUS CELL -->
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
+                                    <transition enter-active-class="transition duration-150 ease-out"
+                                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+                                        leave-active-class="transition duration-100 ease-in"
+                                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95"
+                                        mode="out-in">
+                                        <template v-if="editingRowId === report.id" :key="'edit-'+report.id">
+                                            <select v-model="report.status"
+                                                @change="updateStatus(report); closeEditDropdown()"
+                                                class=" rounded-md text-sm"
+                                                :class="{
+                                                    'bg-blue-100 text-blue-800': report.status === 'in_progress',
+                                                    'bg-gray-100 text-gray-800': report.status === 'pending',
+                                                    'bg-green-100 text-green-800': report.status === 'resolved'
+                                                }">
+                                                <option value="pending">Pending</option>
+                                                <option value="in_progress">In Progress</option>
+                                                <option value="resolved">Resolved</option>
+                                            </select>
+                                        </template>
+
+                                        <template v-else :key="'view-'+report.id">
+                                            <span :class="statusClasses(report.status)">
+                                                {{ formatStatus(report.status) }}
+                                            </span>
+                                        </template>
+                                    </transition>
                                 </td>
+
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ formatDate(report.created_at) }}
                                 </td>
+
+                                <!-- ACTIONS -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div class="flex space-x-4">
                                         <button class="text-blue-600 hover:text-blue-800" title="View"
                                             @click="openModal(report)">
                                             <v-icon name="bi-eye-fill" class="w-5 h-5" />
                                         </button>
-                                        <button v-if="canEdit" class="text-yellow-500 hover:text-yellow-700"
-                                            title="Edit" @click="editReport(report)">
+                                        <button class="text-yellow-500 hover:text-yellow-700" title="Edit"
+                                            @click="toggleEditDropdown(report.id)">
                                             <v-icon name="ri-edit-box-fill" class="w-5 h-5" />
                                         </button>
                                     </div>
@@ -172,125 +203,100 @@ import { debounce } from 'lodash';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
-    reports: {
-        type: Object,
-        required: true,
-        default: () => ({
-            data: [],
-            meta: {},
-            links: {}
-        })
-    },
-    filters: {
-        type: Object,
-        default: () => ({
-            userType: 'all',
-            status: 'all',
-            search: ''
-        })
-    },
-    canEdit: {
-        type: Boolean,
-        default: false
-    }
+    reports: Object,
+    filters: Object,
+    canEdit: Boolean
 });
 
 const filters = ref({
-    userType: props.filters.userType || 'all',
-    status: props.filters.status || 'all',
-    search: props.filters.search || ''
+    userType: props.filters?.userType || 'all',
+    status: props.filters?.status || 'all',
+    search: props.filters?.search || ''
 });
 
-// Modal state
+// State
 const selectedReport = ref(null);
 const showModal = ref(false);
+const updatingStatus = ref(false);
+const editingRowId = ref(null);
 
-const openModal = (report) => {
-    selectedReport.value = report;
-    showModal.value = true;
+// Open / Close Modals
+const openModal = (report) => { selectedReport.value = report; showModal.value = true; };
+const closeModal = () => { showModal.value = false; };
+
+// Edit dropdown handling
+const toggleEditDropdown = (id) => {
+    editingRowId.value = editingRowId.value === id ? null : id;
+};
+const closeEditDropdown = () => { editingRowId.value = null; };
+
+document.addEventListener("click", (e) => {
+    if (!e.target.closest("td")) editingRowId.value = null;
+});
+
+const updateStatus = async (report) => {
+    updatingStatus.value = true;
+    try {
+        await router.post(route('admin.reports.updateStatus', report.id), {
+            status: report.status
+        }, { preserveScroll: true });
+    } finally {
+        updatingStatus.value = false;
+    }
 };
 
-const closeModal = () => {
-    showModal.value = false;
-};
-
-const editReport = (report) => {
-    router.get(route('admin.reports.edit', report.id));
-};
-
-// Apply filters to reports
+// Filtering logic
 const filteredReports = computed(() => {
     return props.reports.data.filter(report => {
-        // Filter by user type
         if (filters.value.userType === 'guest' && report.user_id) return false;
         if (filters.value.userType === 'authenticated' && !report.user_id) return false;
-
-        // Filter by status
         if (filters.value.status !== 'all' && report.status !== filters.value.status) return false;
 
-        // Search filter
         if (filters.value.search) {
             const searchTerm = filters.value.search.toLowerCase();
             const matchesId = report.id.toString().includes(searchTerm);
             const matchesName = (report.reporter_name || report.user?.name || '').toLowerCase().includes(searchTerm);
-
             if (!matchesId && !matchesName) return false;
         }
-
         return true;
     });
 });
 
-// Watch filters and reload with debounce
+// Watch filters
 watch(filters, debounce(() => {
-    router.get(route('admin.reports'), filters.value, {
-        preserveState: true,
-        replace: true
-    });
+    router.get(route('admin.reports'), filters.value, { preserveState: true, replace: true });
 }, 300), { deep: true });
 
-const userTypeClasses = (userId) => {
-    return {
-        'px-2 py-1 rounded-full text-xs font-semibold': true,
-        'bg-purple-100 text-purple-800': userId,
-        'bg-gray-100 text-gray-800': !userId
-    };
-};
+// Helpers
+const userTypeClasses = (userId) => ({
+    'px-2 py-1 rounded-full text-xs font-semibold': true,
+    'bg-purple-100 text-purple-800': userId,
+    'bg-gray-100 text-gray-800': !userId
+});
 
-const priorityClasses = (priority) => {
-    return {
-        'px-2 py-1 rounded-full text-xs font-semibold': true,
-        'bg-yellow-100 text-yellow-800': priority === 'medium',
-        'bg-red-100 text-red-800': priority === 'high',
-        'bg-green-100 text-green-800': priority === 'low',
-        'bg-gray-100 text-gray-800': !priority
-    };
-};
+const priorityClasses = (priority) => ({
+    'px-2 py-1 rounded-full text-xs font-semibold': true,
+    'bg-yellow-100 text-yellow-800': priority === 'medium',
+    'bg-red-100 text-red-800': priority === 'high',
+    'bg-green-100 text-green-800': priority === 'low',
+    'bg-gray-100 text-gray-800': !priority
+});
 
-const statusClasses = (status) => {
-    return {
-        'px-2 py-1 rounded-full text-xs font-semibold': true,
-        'bg-blue-100 text-blue-800': status === 'in_progress',
-        'bg-gray-100 text-gray-800': status === 'pending',
-        'bg-green-100 text-green-800': status === 'resolved'
-    };
-};
+const statusClasses = (status) => ({
+    'px-2 py-1 rounded-full text-xs font-semibold': true,
+    'bg-blue-100 text-blue-800': status === 'in_progress',
+    'bg-gray-100 text-gray-800': status === 'pending',
+    'bg-green-100 text-green-800': status === 'resolved'
+});
 
-const formatStatus = (status) => {
-    const statusMap = {
-        'pending': 'Pending',
-        'in_progress': 'In Progress',
-        'resolved': 'Resolved'
-    };
-    return statusMap[status] || status;
-};
+const formatStatus = (status) => ({
+    'pending': 'Pending',
+    'in_progress': 'In Progress',
+    'resolved': 'Resolved'
+}[status] || status);
 
 const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
 };
 </script>
-
-<style scoped>
-/* Add any custom styles here if needed */
-</style>
