@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
@@ -10,51 +9,55 @@ use Illuminate\Support\Facades\Hash;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Create roles
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'staff']);
-        Role::create(['name' => 'customer']);
-
-
-
-
-        $admin = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@email.com',
-            'password' => Hash::make('admin123'),
-        ]);
-        $admin->assignRole('admin');
-
-        // Create staff user
-        $staff = User::create([
-            'name' => 'Staff',
-            'email' => 'staff@email.com',
-            'password' => Hash::make('staff123'),
-        ]);
-        $staff->assignRole('staff');
-
-        // Create customer user
-        $customer = User::create([
-            'name' => 'Customer',
-            'email' => 'customer@email.com',
-            'password' => Hash::make('customer123'),
+        // Create roles if they don't exist
+        $adminRole = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web'
         ]);
 
-        $customer2 = User::create([
-            'name' => 'Customer2',
-            'email' => 'customer2@email.com',
-            'password' => Hash::make('customer123'),
+        $staffRole = Role::firstOrCreate([
+            'name' => 'staff',
+            'guard_name' => 'web'
         ]);
 
-        $customer2->assignRole('customer');
-        $customer->assignRole('customer');
+        $customerRole = Role::firstOrCreate([
+            'name' => 'customer',
+            'guard_name' => 'web'
+        ]);
+
+        // Create or update admin user
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@email.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('admin123'),
+                'email_verified_at' => now()
+            ]
+        );
+        $admin->syncRoles([$adminRole]);
+
+        // Create or update staff user
+        $staff = User::updateOrCreate(
+            ['email' => 'staff@email.com'],
+            [
+                'name' => 'Staff',
+                'password' => Hash::make('staff123'),
+                'email_verified_at' => now()
+            ]
+        );
+        $staff->syncRoles([$staffRole]);
+
+        // Create or update customer user
+        $customer = User::updateOrCreate(
+            ['email' => 'customer@email.com'],
+            [
+                'name' => 'Customer',
+                'password' => Hash::make('customer123'),
+                'email_verified_at' => now()
+            ]
+        );
+        $customer->syncRoles([$customerRole]);
     }
 }

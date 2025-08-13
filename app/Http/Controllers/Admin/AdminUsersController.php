@@ -33,6 +33,7 @@ class AdminUsersController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
+                    'avatar_url' => $user->avatar_url,
                     'role' => $user->roles->first()?->name ?? 'none',
                 ];
             });

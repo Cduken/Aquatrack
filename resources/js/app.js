@@ -130,6 +130,13 @@ addIcons(
     BiIcons.BiChevronDoubleLeft,
     BiIcons.BiChevronDoubleRight,
     BiIcons.BiChevronUp,
+    BiIcons.BiPersonFill,
+    BiIcons.BiEnvelopeFill,
+    BiIcons.BiLockFill,
+    BiIcons.BiKeyFill,
+    BiIcons.BiShieldLockFill,
+    BiIcons.BiShieldFillCheck,
+    BiIcons.BiArrowRepeat,
 
 
 

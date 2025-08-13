@@ -27,10 +27,15 @@
                     <button @click.stop="toggleDropdown"
                         class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1 transition-colors duration-200"
                         aria-label="Toggle user menu" :aria-expanded="isDropdownOpen" ref="dropdownButton">
-                        <span
-                            class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 text-white rounded-full flex items-center justify-center font-medium">
-                            {{ userInitials }}
-                        </span>
+                        <!-- Updated Avatar/Initials Display -->
+                        <div class="relative w-8 h-8 rounded-full overflow-hidden">
+                            <img v-if="user.avatar_url" :src="user.avatar_url" :alt="userDisplayName"
+                                class="w-full h-full object-cover">
+                            <div v-else
+                                class="w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 text-white flex items-center justify-center font-medium">
+                                {{ userInitials }}
+                            </div>
+                        </div>
                         <span class="hidden md:inline text-sm font-medium">{{
                             userDisplayName
                             }}</span>
@@ -42,9 +47,9 @@
                         <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
                             class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
                             role="menu" aria-label="User menu" ref="dropdownMenu">
-                            <a href="/settings"
+                            <Link href="/profile"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 focus:bg-blue-50 hover:text-blue-700 focus:text-blue-700 transition-colors duration-150"
-                                role="menuitem">Settings</a>
+                                role="menuitem">Settings</Link>
                             <hr class="border-gray-200" />
                             <button @click.prevent="handleLogout"
                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:bg-red-50 hover:text-red-700 focus:text-red-700 transition-colors duration-150"
@@ -62,6 +67,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     title: {
@@ -73,6 +79,7 @@ const props = defineProps({
 const emit = defineEmits(['logout']);
 
 const { props: pageProps } = usePage();
+
 const user = computed(() => pageProps.auth?.user ?? {});
 
 // Compute user display name with fallback

@@ -80,6 +80,9 @@
                                             :name="filters.order === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down'"
                                             class="w-3 h-3 ml-1" />
                                     </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Avatar
+                                    </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer"
                                         @click="sortBy('name')">
                                         Name <v-icon v-if="filters.sort === 'name'"
@@ -100,6 +103,17 @@
                                 <tr v-for="user in users.data" :key="user.id">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.id
                                         }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img v-if="user.avatar_url" :src="user.avatar_url" :alt="user.name"
+                                                class="h-10 w-10 rounded-full object-cover">
+                                            <div v-else
+                                                class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <span class="text-gray-500 text-sm">{{ user.name.charAt(0).toUpperCase()
+                                                    }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.phone || ' - '
