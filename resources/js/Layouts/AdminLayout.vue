@@ -10,9 +10,10 @@ const { props: pageProps } = usePage();
 const user = computed(() => pageProps.auth?.user);
 
 const props = defineProps({
-    title: {
-        type: String,
-        default: 'Dashboard'
+    title: String,
+    initialReports: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -90,7 +91,7 @@ const logout = () => {
 
             <!-- Sticky Navbar Container -->
             <div class="sticky-nav-container">
-                <MainContentNavbar :title="title" @logout="logout" />
+                <MainContentNavbar :title="title" @logout="logout" :initial-reports="initialReports" />
             </div>
 
             <!-- Scrollable Content Area -->

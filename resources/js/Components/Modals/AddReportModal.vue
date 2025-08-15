@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import Swal from 'sweetalert2';
 import { ref } from 'vue';
+import { computed, watch } from 'vue';
 import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
 
 const emit = defineEmits(['close', 'submitted']);
@@ -11,7 +12,22 @@ const showSuccessModal = ref(false);
 const trackingInfo = ref(null);
 
 const handleClose = () => {
-  emit('close');
+    emit('close');
+};
+
+const zones = {
+    "Zone 1": ["Poblacion Sur"],
+    "Zone 2": ["Poblacion Centro"],
+    "Zone 3": ["Poblacion Centro"],
+    "Zone 4": ["Poblacion Norte"],
+    "Zone 5": ["Candajec", "Buangan"],
+    "Zone 6": ["Bonbon"],
+    "Zone 7": ["Bonbon"],
+    "Zone 8": ["Nahawan"],
+    "Zone 9": ["Caboy", "Villaflor", "Cantuyoc"],
+    "Zone 10": ["Bacani", "Mataub", "Comaang", "Tangaran"],
+    "Zone 11": ["Cantuyoc", "Nahawan"],
+    "Zone 12": ["Lajog", "Buacao"],
 };
 
 defineProps({
@@ -23,23 +39,33 @@ defineProps({
 const form = useForm({
     municipality: "Clarin",
     province: "Bohol",
+    zone: "",
     barangay: "",
     purok: "",
     description: "",
     photos: [],
     photo_previews: [],
     reporter_name: "",
-    reporter_phone: ""
+    reporter_phone: "",
+    priority: "medium",
 });
 
-const barangays = [
-    "Bacani", "Bogtongbod", "Bonbon", "Bontud", "Buacao",
-    "Buangan", "Cabog", "Caboy", "Caluwasan",
-    "Candajec", "Cantoyoc", "Comaang", "Danahao", "Katipunan",
-    "Lajog", "Mataub", "Nahawan",
-    "Poblacion Centro", "Poblacion Norte", "Poblacion Sur", "Tangaran",
-    "Tontunan", "Tubod", "Villaflor"
-];
+const filteredBarangays = computed(() => {
+    return form.zone ? zones[form.zone] : [];
+});
+
+watch(() => form.zone, (newZone) => {
+    form.barangay = "";
+});
+
+// const barangays = [
+//     "Bacani", "Bogtongbod", "Bonbon", "Bontud", "Buacao",
+//     "Buangan", "Cabog", "Caboy", "Caluwasan",
+//     "Candajec", "Cantoyoc", "Comaang", "Danahao", "Katipunan",
+//     "Lajog", "Mataub", "Nahawan",
+//     "Poblacion Centro", "Poblacion Norte", "Poblacion Sur", "Tangaran",
+//     "Tontunan", "Tubod", "Villaflor"
+// ];
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -222,6 +248,25 @@ const submitReport = () => {
                     }}</p>
                 </div>
 
+                <div class="sm:col-span-2">
+                    <label for="zone" class="text-sm font-medium text-gray-700 flex items-center">
+                        <v-icon name="bi-signpost-split" class="mr-1 text-blue-500" /> Zone
+                    </label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <v-icon name="bi-grid" class="text-gray-400" />
+                        </div>
+                        <select id="zone" v-model="form.zone" required
+                            class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                            <option value="" disabled selected>Select Zone</option>
+                            <option v-for="(zone, index) in Object.keys(zones)" :key="index" :value="zone">
+                                {{ zone }}
+                            </option>
+                        </select>
+                    </div>
+                    <p v-if="form.errors.zone" class="mt-1 text-sm text-red-600">{{ form.errors.zone }}</p>
+                </div>
+
                 <!-- Barangay Dropdown -->
                 <div class="sm:col-span-2">
                     <label for="barangay" class="text-sm font-medium text-gray-700 flex items-center">
@@ -231,10 +276,10 @@ const submitReport = () => {
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <v-icon name="bi-info-circle" class="text-gray-400" />
                         </div>
-                        <select id="barangay" v-model="form.barangay" required
+                        <select id="barangay" v-model="form.barangay" required :disabled="!form.zone"
                             class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
                             <option value="" disabled selected>Select Barangay</option>
-                            <option v-for="barangay in barangays" :key="barangay" :value="barangay">
+                            <option v-for="barangay in filteredBarangays" :key="barangay" :value="barangay">
                                 {{ barangay }}
                             </option>
                         </select>
@@ -257,6 +302,24 @@ const submitReport = () => {
                     </div>
                     <p v-if="form.errors.purok" class="mt-1 text-sm text-red-600">{{ form.errors.purok }}</p>
                 </div>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="text-sm font-medium text-gray-700 flex items-center">
+                    <v-icon name="bi-exclamation-triangle" class="mr-1 text-blue-500" /> Priority
+                </label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <v-icon name="bi-flag" class="text-gray-400" />
+                    </div>
+                    <select v-model="form.priority" required
+                        class="block w-full pl-10 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <p v-if="form.errors.priority" class="mt-1 text-sm text-red-600">{{ form.errors.priority }}</p>
             </div>
 
             <!-- Description -->

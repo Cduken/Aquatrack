@@ -55,8 +55,10 @@
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User Type
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Zone</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barangay
                                 </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Purok</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -81,50 +83,27 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ report.barangay }}, {{ report.municipality }}
+                                    {{ report.zone }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ report.barangay }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ report.purok }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <span :class="priorityClasses(report.priority)">
                                         {{ report.priority || 'N/A' }}
                                     </span>
                                 </td>
-
-                                <!-- STATUS CELL -->
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
-                                    <transition enter-active-class="transition duration-150 ease-out"
-                                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
-                                        leave-active-class="transition duration-100 ease-in"
-                                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95"
-                                        mode="out-in">
-                                        <template v-if="editingRowId === report.id" :key="'edit-'+report.id">
-                                            <select v-model="report.status"
-                                                @change="updateStatus(report); closeEditDropdown()"
-                                                class=" rounded-md text-sm"
-                                                :class="{
-                                                    'bg-blue-100 text-blue-800': report.status === 'in_progress',
-                                                    'bg-gray-100 text-gray-800': report.status === 'pending',
-                                                    'bg-green-100 text-green-800': report.status === 'resolved'
-                                                }">
-                                                <option value="pending">Pending</option>
-                                                <option value="in_progress">In Progress</option>
-                                                <option value="resolved">Resolved</option>
-                                            </select>
-                                        </template>
-
-                                        <template v-else :key="'view-'+report.id">
-                                            <span :class="statusClasses(report.status)">
-                                                {{ formatStatus(report.status) }}
-                                            </span>
-                                        </template>
-                                    </transition>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span :class="statusClasses(report.status)">
+                                        {{ formatStatus(report.status) }}
+                                    </span>
                                 </td>
-
-
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ formatDate(report.created_at) }}
                                 </td>
-
-                                <!-- ACTIONS -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div class="flex space-x-4">
                                         <button class="text-blue-600 hover:text-blue-800" title="View"
@@ -191,12 +170,36 @@
 
         <!-- Report Details Modal -->
         <ReportDetailsModal :show="showModal" :report="selectedReport" @close="closeModal" />
+
+        <!-- Status Edit Modal -->
+        <Modal :show="editingRowId !== null" @close="closeEditDropdown">
+            <div class="p-4">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Update Report Status</h2>
+                <select v-model="selectedStatus"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <div class="mt-4 flex justify-end space-x-3">
+                    <button @click="closeEditDropdown"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button @click="confirmStatusUpdate"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </AdminLayout>
 </template>
 
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ReportDetailsModal from '@/Components/Modals/ReportDetailsModal.vue';
+import Modal from '@/Components/Modal.vue';
 import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
@@ -217,31 +220,41 @@ const filters = ref({
 // State
 const selectedReport = ref(null);
 const showModal = ref(false);
-const updatingStatus = ref(false);
 const editingRowId = ref(null);
+const selectedStatus = ref(null);
+const currentEditingReport = ref(null);
 
-// Open / Close Modals
-const openModal = (report) => { selectedReport.value = report; showModal.value = true; };
-const closeModal = () => { showModal.value = false; };
-
-// Edit dropdown handling
-const toggleEditDropdown = (id) => {
-    editingRowId.value = editingRowId.value === id ? null : id;
+// Open/Close Modals
+const openModal = (report) => {
+    selectedReport.value = report;
+    showModal.value = true;
 };
-const closeEditDropdown = () => { editingRowId.value = null; };
 
-document.addEventListener("click", (e) => {
-    if (!e.target.closest("td")) editingRowId.value = null;
-});
+const closeModal = () => {
+    showModal.value = false;
+};
 
-const updateStatus = async (report) => {
-    updatingStatus.value = true;
-    try {
-        await router.post(route('admin.reports.updateStatus', report.id), {
-            status: report.status
+// Edit status handling
+const toggleEditDropdown = (id) => {
+    const report = props.reports.data.find(r => r.id === id);
+    if (report) {
+        currentEditingReport.value = report;
+        selectedStatus.value = report.status;
+        editingRowId.value = id;
+    }
+};
+
+const closeEditDropdown = () => {
+    editingRowId.value = null;
+    currentEditingReport.value = null;
+};
+
+const confirmStatusUpdate = async () => {
+    if (currentEditingReport.value) {
+        await router.post(route('admin.reports.updateStatus', currentEditingReport.value.id), {
+            status: selectedStatus.value
         }, { preserveScroll: true });
-    } finally {
-        updatingStatus.value = false;
+        closeEditDropdown();
     }
 };
 
@@ -300,3 +313,10 @@ const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', options);
 };
 </script>
+
+<style scoped>
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+</style>

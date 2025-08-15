@@ -2,6 +2,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { router } from '@inertiajs/vue3';
 import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
 
 const props = defineProps({
@@ -22,7 +23,7 @@ const closeModal = () => {
     <Head title="Report Submitted" />
 
     <div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-cover bg-center bg-no-repeat"
-        style="background-image: url('/images/bgimg.jpg')">
+        style="background-image: url('/images/AquatrackIMG.jpg')">
         <!-- Dark overlay for better text readability -->
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 

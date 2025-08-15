@@ -95,6 +95,7 @@ Route::get('/reports/success', [ReportController::class, 'success'])->name('repo
 Route::match(['get', 'post'], '/reports/track', [ReportController::class, 'track'])->name('reports.track');
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 Route::get('/api/reports/find', [ReportController::class, 'findByTrackingCode'])->name('reports.find');
+Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
 
 
 require __DIR__ . '/auth.php';

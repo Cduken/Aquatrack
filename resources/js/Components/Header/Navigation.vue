@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import AquatrackLogo from '../AquatrackLogo.vue';
 import AddReportModal from '../Modals/AddReportModal.vue';
 import Sidebar from '../Sidebar/Sidebar.vue';
@@ -29,12 +29,19 @@ const handleAddReport = () => {
     showReportModal.value = true;
     isSidebarOpen.value = false;
 };
+
+// Detect if we're on specific pages
+const isReportsPage = computed(() => page.url.startsWith('/reports'));
+const isSelectRolesPage = computed(() => page.url.startsWith('/select-roles'));
+
+// Single computed to decide if we should show "Back to Home"
+const showBackToHome = computed(() => isReportsPage.value || isSelectRolesPage.value);
 </script>
 
 <template>
     <div class="min-h-screen flex flex-col">
         <!-- Navbar -->
-        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100">
+        <header class=" bg-[#1E4272] backdrop-blur-md shadow-sm ">
             <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex h-20 items-center justify-between">
                     <div class="flex-shrink-0">
@@ -45,9 +52,13 @@ const handleAddReport = () => {
 
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
-                        <!-- Login Button -->
-                        <Link :href="route('select-roles')"
-                            class="inline-flex items-center px-4 py-2 text-blue-900 border border-blue-600 rounded-md hover: border-blue-700">
+                        <Link v-if="showBackToHome" href="/"
+                            class="inline-flex items-center px-4 py-2 text-gray-300 rounded-lg transition-duration-200 hover:bg-[#4e637d]">
+                        <v-icon name="bi-arrow-left" class="mr-2" />
+                        Back to Home
+                        </Link>
+                        <Link v-else :href="route('select-roles')"
+                            class="inline-flex items-center px-4 py-2 text-gray-300 rounded-lg transition-duration-200 hover:bg-[#4e637d]">
                         <v-icon name="bi-box-arrow-in-right" class="mr-2" />
                         Login
                         </Link>

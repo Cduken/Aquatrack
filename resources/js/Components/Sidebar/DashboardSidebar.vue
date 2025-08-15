@@ -86,16 +86,16 @@ const activeLinks = computed(() => {
     <div class="relative">
         <!-- External Toggle Button (visible when sidebar is open) -->
         <button v-if="!isMobile && isOpen"
-            class="fixed top-5 z-[1001] text-white bg-gradient-to-br from-blue-500 to-teal-500 border-none rounded-lg flex items-center cursor-pointer text-xl transition-all shadow-md hover:bg-gradient-to-br hover:from-blue-600 hover:to-teal-600 p-2"
+            class="fixed top-1 z-[1001] text-white bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 border-none rounded-lg flex items-center cursor-pointer text-xl transition-all shadow-md hover:bg-gradient-to-br hover:from-[#062F64] hover:to-[#1E4272] p-2"
             @click="toggleSidebar" :style="{
-                left: position === 'left' ? `calc(${width} - 30px)` : 'auto',
-                right: position === 'right' ? `calc(${width} - 30px)` : 'auto',
+                left: position === 'left' ? `calc(${width} - -10px)` : 'auto',
+                right: position === 'right' ? `calc(${width} - 20px)` : 'auto',
             }">
-            <v-icon class="w-6 h-6 text-white" name="bi-chevron-double-left" />
+            <v-icon class="w-4 h-4 text-white" name="bi-chevron-double-left" />
         </button>
 
         <aside
-            class="fixed top-0 h-screen transition-all z-[1000] overflow-y-auto bg-gradient-to-br from-blue-500 to-teal-500 shadow-lg"
+            class="fixed top-0 h-screen transition-all z-[1000] overflow-y-auto bg-gradient-to-br from-[#062F64] to-[#1E4272] shadow-lg"
             :class="{
                 'sidebar-open': isOpen,
                 'sidebar-left': position === 'left',
@@ -114,7 +114,7 @@ const activeLinks = computed(() => {
 
                 <!-- Logo section (only visible when open) -->
                 <div v-if="!isMobile && (logo || $slots.logo) && isOpen"
-                    class="p-[5.5px] text-center mb-5 bg-blue-600/30 shadow-lg">
+                    class="p-[5.5px] text-center mb-5 bg-[#062F64]/20 shadow-lg">
                     <slot name="logo">
                         <div class="flex items-center justify-center">
                             <span class="text-white text-2xl font-bold">AquaTrack</span>

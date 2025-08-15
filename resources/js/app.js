@@ -137,6 +137,10 @@ addIcons(
     BiIcons.BiShieldLockFill,
     BiIcons.BiShieldFillCheck,
     BiIcons.BiArrowRepeat,
+    BiIcons.BiTelephone,
+    BiIcons.BiCloudArrowUp,
+    BiIcons.BiSignpostSplit,
+    BiIcons.BiGrid,
 
 
 
@@ -177,6 +181,7 @@ addIcons(
     MdIcons.MdLoginOutlined,
     MdIcons.MdStartTwotone,
     MdIcons.MdDashboard,
+    MdIcons.MdWarningamberRound,
 
     // Simple Icons
     SiIcons.SiGoogleanalytics,

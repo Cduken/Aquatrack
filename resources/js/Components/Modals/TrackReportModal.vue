@@ -14,7 +14,9 @@ import {
     MdDescriptionOutlined,
     FaMapMarkerAlt,
     FaQrcode,
-    BiDownload
+    BiDownload,
+    BiImages,
+    BiExclamationTriangle
 } from 'oh-vue-icons/icons';
 
 addIcons(
@@ -25,7 +27,9 @@ addIcons(
     MdDescriptionOutlined,
     FaMapMarkerAlt,
     FaQrcode,
-    BiDownload
+    BiDownload,
+    BiImages,
+    BiExclamationTriangle
 );
 
 const props = defineProps({
@@ -176,9 +180,13 @@ const formattedStatus = computed(() => {
         case 'resolved':
             return 'Resolved';
         default:
-            // Capitalize first letter, lowercase the rest
             return reportDetails.value.status.charAt(0).toUpperCase() + reportDetails.value.status.slice(1).toLowerCase();
     }
+});
+
+const formattedPriority = computed(() => {
+    if (!reportDetails.value?.priority) return 'Not Specified';
+    return reportDetails.value.priority.charAt(0).toUpperCase() + reportDetails.value.priority.slice(1);
 });
 </script>
 
@@ -308,12 +316,21 @@ const formattedStatus = computed(() => {
                                                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                                                     <p
                                                         class="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                                                        <v-icon name="bi-calendar-date" class="text-gray-400"
+                                                        <v-icon name="bi-exclamation-triangle" class="text-gray-400"
                                                             scale="0.8" />
-                                                        <span>DATE SUBMITTED</span>
+                                                        <span>PRIORITY</span>
                                                     </p>
-                                                    <p class="text-lg text-gray-900 mt-1">{{ new
-                                                        Date(reportDetails.created_at).toLocaleString() }}</p>
+                                                    <div class="mt-1 flex items-center gap-2">
+                                                        <span
+                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                            :class="{
+                                                                'bg-red-100 text-red-800': reportDetails.priority === 'high',
+                                                                'bg-yellow-100 text-yellow-800': reportDetails.priority === 'medium',
+                                                                'bg-green-100 text-green-800': reportDetails.priority === 'low'
+                                                            }">
+                                                            {{ formattedPriority }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -341,6 +358,29 @@ const formattedStatus = computed(() => {
                                                     {{ reportDetails.purok }}, {{ reportDetails.barangay }},
                                                     {{ reportDetails.municipality }}, {{ reportDetails.province }}
                                                 </p>
+                                            </div>
+
+                                            <!-- Photos -->
+                                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"
+                                                v-if="reportDetails.photos && reportDetails.photos.length">
+                                                <p
+                                                    class="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
+                                                    <v-icon name="bi-images" class="text-gray-400" scale="0.8" />
+                                                    <span>PHOTOS</span>
+                                                </p>
+                                                <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                    <div v-for="(photo, index) in reportDetails.photos" :key="index"
+                                                        class="relative group overflow-hidden rounded-lg border border-gray-200 h-32">
+                                                        <img :src="'/storage/' + photo.path"
+                                                            :alt="`Report photo ${index + 1}`"
+                                                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                                                        <a :href="'/storage/' + photo.path" target="_blank"
+                                                            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                            <v-icon name="bi-zoom-in"
+                                                                class="text-white bg-black/50 p-1.5 rounded-full" />
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 

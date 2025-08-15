@@ -14,19 +14,54 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
+
+    protected $zones = [
+        'Zone 1' => ['Poblacion Sur'],
+        'Zone 2' => ['Poblacion Centro'],
+        'Zone 3' => ['Poblacion Centro'],
+        'Zone 4' => ['Poblacion Norte'],
+        'Zone 5' => ['Candajec', 'Buangan'],
+        'Zone 6' => ['Bonbon'],
+        'Zone 7' => ['Bonbon'],
+        'Zone 8' => ['Nahawan'],
+        'Zone 9' => ['Caboy', 'Villaflor', 'Cantuyoc'],
+        'Zone 10' => ['Bacani', 'Mataub', 'Comaang', 'Tangaran'],
+        'Zone 11' => ['Cantuyoc', 'Nahawan'],
+        'Zone 12' => ['Lajog', 'Buacao'],
+    ];
+
+    public function create()
+    {
+        return Inertia::render('Reports/Index');
+    }
     public function store(Request $request)
     {
+
+
         try {
             $validated = $request->validate([
                 'municipality' => 'required|string|max:255',
                 'province' => 'required|string|max:255',
-                'barangay' => 'required|string|max:255',
+                'zone' => 'required|string',
+                'barangay' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $zone = $request->input('zone');
+                        if (!in_array($value, $this->zones[$zone] ?? [])) {
+                            $fail('The selected barangay is not valid for the chosen zone.');
+                        }
+                    },
+                ],
                 'purok' => 'required|string|max:255',
                 'description' => 'required|string',
                 'photos' => 'required|array|min:1',
                 'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
                 'reporter_name' => 'required|string|max:255',
                 'reporter_phone' => 'nullable|string|max:11',
+                'priority' => 'required|in:low,medium,high',
+
             ]);
 
             // Generate tracking code (AQT-yyyymmdd-4random)
@@ -39,12 +74,14 @@ class ReportController extends Controller
                 'province' => $validated['province'],
                 'barangay' => $validated['barangay'],
                 'purok' => $validated['purok'],
+                'zone' => $validated['zone'],
                 'description' => $validated['description'],
                 'reporter_name' => $validated['reporter_name'],
                 'reporter_phone' => $validated['reporter_phone'] ?? null,
                 'user_id' => Auth::id(),
                 'status' => 'pending',
                 'tracking_code' => $trackingCode,
+                'priority' => $validated['priority'],
             ];
 
             $report = Report::create($reportData);
@@ -86,7 +123,7 @@ class ReportController extends Controller
 
     public function success(Request $request)
     {
-        // Check if we have the tracking data in session
+
         if (!$request->session()->has('trackingCode')) {
             return redirect()->route('home');
         }
@@ -147,7 +184,7 @@ class ReportController extends Controller
             ->paginate(10);
 
         return Inertia::render('Reports/Index', [
-            'reports' => $reports
+            'reports' => $reports,
         ]);
     }
 

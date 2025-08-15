@@ -1,9 +1,10 @@
 <template>
+    <Navigation>
     <div class="min-h-screen relative overflow-hidden">
         <!-- Background elements -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/AquatrackIMG.jpg')"></div>
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-teal-800/80">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80">
             <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
         </div>
 
@@ -11,13 +12,7 @@
         <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-500 opacity-10 blur-3xl"></div>
         <div class="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-teal-500 opacity-10 blur-3xl"></div>
 
-        <Link href="/">
-        <button
-            class="absolute top-6 left-6 z-50 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 group">
-            <v-icon name="hi-arrow-left"
-                class="text-white text-xl group-hover:text-blue-200 transition-all duration-300" />
-        </button>
-        </Link>
+
 
         <!-- Main content -->
         <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
@@ -92,6 +87,7 @@
             </div>
         </div>
     </div>
+</Navigation>
 </template>
 
 <script setup>
@@ -100,7 +96,7 @@ import { Link } from '@inertiajs/vue3';
 import { OhVueIcon, addIcons } from 'oh-vue-icons';
 import { HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX } from 'oh-vue-icons/icons';
 import Login from '@/Pages/Auth/Login.vue';
-
+import Navigation from '@/Components/Header/Navigation.vue';
 
 addIcons(HiUser, HiCog, HiUsers, FaWater, HiArrowLeft, HiX);
 

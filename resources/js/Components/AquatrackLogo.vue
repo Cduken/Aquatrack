@@ -13,7 +13,7 @@
 
             <!-- Fallback text with responsive breakpoints -->
             <span v-else
-                class="ml-1 sm:ml-2 text-md xs:text-sm sm:text-md md:text-lg lg:text-xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                class="ml-1 sm:ml-2 text-md xs:text-sm sm:text-md md:text-lg lg:text-xl font-bold text-white">
                 AquaTrack
             </span>
         </div>

@@ -228,7 +228,7 @@ const submit = () => {
     <div class="flex flex-col md:flex-row h-full bg-white">
         <!-- Left Side - Logo Section -->
         <div
-            class="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-900/80 to-teal-800/80 items-center justify-center p-12">
+            class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 items-center justify-center p-12">
             <div class="text-center space-y-6">
                 <img src="/images/MainLogo.png" class="w-64 h-64 mx-auto object-contain" alt="Logo">
                 <div class="space-y-2">

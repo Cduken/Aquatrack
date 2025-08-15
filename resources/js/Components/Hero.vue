@@ -11,9 +11,7 @@ const showSuccessModal = ref(false);
 const showTrackModal = ref(false);
 const trackingInfo = ref(null);
 
-const handleAddReport = () => {
-    showReportModal.value = true;
-};
+
 
 const handleTrackReport = () => {
     showTrackModal.value = true;
@@ -68,7 +66,7 @@ const handleReportSubmitted = async (response) => {
         <!-- Background elements - image with gradient overlay -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/AquatrackIMG.jpg')"></div>
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-teal-800/80">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80">
             <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
         </div>
 
@@ -104,11 +102,11 @@ const handleReportSubmitted = async (response) => {
 
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <button @click="handleAddReport"
+                    <Link :href="route('reports.index')"
                         class="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <v-icon name="bi-plus-circle" scale="1.3" />
                         <span>Report Water Issue</span>
-                    </button>
+                    </Link>
 
                     <!-- <button @click="handleTrackReport"
                         class="flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white/30 hover:border-white/50 text-white font-semibold rounded-xl backdrop-blur-sm hover:shadow-lg transition-all duration-300">

@@ -22,14 +22,21 @@ class Report extends Model
         'reporter_phone',
         'status',
         'tracking_code',
+        'zone',
+        'priority',
+
+
     ];
 
     protected $attributes = [
-        'status' => 'pending' // Default value
+        'status' => 'pending',
+         'priority' => 'medium',
+
     ];
 
     protected $casts = [
-        'status' => 'string'
+        'status' => 'string',
+
     ];
 
     /**
@@ -39,6 +46,7 @@ class Report extends Model
     {
         return $this->hasMany(ReportPhoto::class);
     }
+
 
     /**
      * Get the user who created this report
