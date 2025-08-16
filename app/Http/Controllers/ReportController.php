@@ -57,7 +57,23 @@ class ReportController extends Controller
                 'purok' => 'required|string|max:255',
                 'description' => 'required|string',
                 'photos' => 'required|array|min:1',
-                'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+                'photos.*' => [
+                    'file',
+                    'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi',
+                    'max:15360', // 15MB
+                    function ($attribute, $value, $fail) {
+                        // Get the original file name to check extension
+                        $originalName = $value->getClientOriginalName();
+                        $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+                        $imageExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp'];
+                        $videoExtensions = ['mp4', 'mov', 'avi'];
+
+                        if (!in_array($extension, array_merge($imageExtensions, $videoExtensions))) {
+                            $fail('The file must be an image (jpeg,png,jpg,gif,webp) or video (mp4,mov,avi).');
+                        }
+                    }
+                ],
                 'reporter_name' => 'required|string|max:255',
                 'reporter_phone' => 'nullable|string|max:11',
                 'priority' => 'required|in:low,medium,high',
@@ -92,6 +108,8 @@ class ReportController extends Controller
                 $extension = $photo->getClientOriginalExtension();
                 $filename = Str::uuid() . '.' . $extension;
                 $path = $photo->storeAs('report-photos', $filename, 'public');
+
+                 $type = in_array(strtolower($extension), ['mp4', 'mov', 'avi']) ? 'video' : 'photo';
 
                 ReportPhoto::create([
                     'report_id' => $report->id,

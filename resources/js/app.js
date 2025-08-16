@@ -141,6 +141,10 @@ addIcons(
     BiIcons.BiCloudArrowUp,
     BiIcons.BiSignpostSplit,
     BiIcons.BiGrid,
+    BiIcons.BiPlayCircleFill,
+    BiIcons.BiClockHistory,
+    BiIcons.BiFileEarmarkPlus,
+    BiIcons.BiPersonPlus,
 
 
 

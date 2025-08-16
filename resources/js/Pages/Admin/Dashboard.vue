@@ -1,214 +1,232 @@
 <template>
     <AdminLayout title="Dashboard">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            <!-- Total Users -->
+
+
+        <!-- Stats Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Users Card -->
             <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
-                <!-- Indicator line -->
-
-
-                <div class="flex items-start gap-4">
-                    <div class="p-3 rounded-xl bg-blue-50 text-blue-600 shadow-inner">
+                class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm border border-blue-100 hover:shadow-md transition-all duration-200 group">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-blue-600 mb-1">Total Users</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ totalUsers }}</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-xl bg-white/50 text-blue-600 shadow-inner group-hover:bg-white transition-all">
                         <v-icon name="bi-people" class="w-6 h-6" />
                     </div>
-                    <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium mb-1">Total Users</p>
-                        <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-gray-800">{{ totalUsers }}</span>
-                            <div class="flex flex-col items-end">
-                                <span
-                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
-                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 4.5%
-                                </span>
-                                <p class="text-[10px] text-gray-400">vs last month</p>
-                            </div>
-                        </div>
-                        <!-- Progress bar -->
-                        <div class="mt-3">
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-blue-500 rounded-full" style="width: 72%"></div>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1">72% of monthly target</p>
-                        </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <v-icon name="bi-arrow-up" class="w-4 h-4 text-green-500" />
+                        <span class="text-sm font-medium text-green-600">4.5%</span>
+                    </div>
+                    <div class="w-24 h-2 bg-blue-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500 rounded-full" style="width: 72%"></div>
                     </div>
                 </div>
+                <p class="text-xs text-blue-500 mt-2">72% of monthly target</p>
             </div>
 
-            <!-- Active Staff -->
+            <!-- Active Staff Card -->
             <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
-                <!-- Indicator line -->
-
-
-                <div class="flex items-start gap-4">
-                    <div class="p-3 rounded-xl bg-green-50 text-green-600 shadow-inner">
+                class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-sm border border-green-100 hover:shadow-md transition-all duration-200 group">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-green-600 mb-1">Active Staff</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ totalStaffs }}</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-xl bg-white/50 text-green-600 shadow-inner group-hover:bg-white transition-all">
                         <v-icon name="bi-person-badge" class="w-6 h-6" />
                     </div>
-                    <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium mb-1">Active Staff</p>
-                        <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-gray-800">{{ totalStaffs }}</span>
-                            <div class="flex flex-col items-end">
-                                <span
-                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
-                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 2.3%
-                                </span>
-                                <p class="text-[10px] text-gray-400">vs last month</p>
-                            </div>
-                        </div>
-                        <!-- Progress bar -->
-                        <div class="mt-3">
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-green-500 rounded-full" style="width: 85%"></div>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1">85% of capacity</p>
-                        </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <v-icon name="bi-arrow-up" class="w-4 h-4 text-green-500" />
+                        <span class="text-sm font-medium text-green-600">2.3%</span>
+                    </div>
+                    <div class="w-24 h-2 bg-green-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 rounded-full" style="width: 85%"></div>
                     </div>
                 </div>
+                <p class="text-xs text-green-500 mt-2">85% of capacity</p>
             </div>
 
-            <!-- Reports -->
+            <!-- Reports Card -->
             <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
-                <!-- Indicator line -->
-
-
-                <div class="flex items-start gap-4">
-                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600 shadow-inner">
+                class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all duration-200 group">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-amber-600 mb-1">Reports</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ totalReports }}</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-xl bg-white/50 text-amber-600 shadow-inner group-hover:bg-white transition-all">
                         <v-icon name="bi-flag" class="w-6 h-6" />
                     </div>
-                    <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium mb-1">Reports</p>
-                        <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-gray-800">{{ totalReports }}</span>
-                            <div class="flex flex-col items-end">
-                                <span
-                                    class="text-xs px-2 py-1 rounded-full bg-red-50 text-red-600 flex items-center gap-1 mb-1">
-                                    <v-icon name="bi-arrow-down" class="w-3 h-3" /> 1.2%
-                                </span>
-                                <p class="text-[10px] text-gray-400">vs last month</p>
-                            </div>
-                        </div>
-                        <!-- Progress bar -->
-                        <div class="mt-3">
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-amber-500 rounded-full" style="width: 42%"></div>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1">42% resolved</p>
-                        </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <v-icon name="bi-arrow-down" class="w-4 h-4 text-red-500" />
+                        <span class="text-sm font-medium text-red-600">1.2%</span>
                     </div>
+                    <div class="w-24 h-2 bg-amber-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 rounded-full" style="width: 42%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-amber-500 mt-2">42% resolved</p>
+            </div>
+
+            <!-- Customers Card -->
+            <div
+                class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 shadow-sm border border-purple-100 hover:shadow-md transition-all duration-200 group">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-purple-600 mb-1">Customers</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ totalCustomers }}</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-xl bg-white/50 text-purple-600 shadow-inner group-hover:bg-white transition-all">
+                        <v-icon name="bi-person-lines-fill" class="w-6 h-6" />
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <v-icon name="bi-arrow-up" class="w-4 h-4 text-green-500" />
+                        <span class="text-sm font-medium text-green-600">8.7%</span>
+                    </div>
+                    <div class="w-24 h-2 bg-purple-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 rounded-full" style="width: 63%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-purple-500 mt-2">63% growth target</p>
+            </div>
+        </div>
+
+        <!-- Water Analytics Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div
+                class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                        <v-icon name="bi-droplet-half" class="text-blue-500" />
+                        Water Consumption Analytics
+                    </h2>
+                    <p class="text-sm text-gray-500">Last 12 months water consumption trends and metrics</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button
+                        class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-lg px-3 py-2 transition-colors">
+                        <v-icon name="bi-calendar" class="text-blue-600 w-4 h-4" />
+                        <span class="text-sm font-medium text-blue-600">This Year</span>
+                    </button>
+                    <button
+                        class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors">
+                        <v-icon name="bi-download" class="text-gray-600 w-4 h-4" />
+                        <span class="text-sm font-medium text-gray-600">Export</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Customers -->
-            <div
-                class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
-                <!-- Indicator line -->
-
-
-                <div class="flex items-start gap-4">
-                    <div class="p-3 rounded-xl bg-purple-50 text-purple-600 shadow-inner">
-                        <v-icon name="bi-person-lines-fill" class="w-6 h-6" />
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart Area -->
+                <div class="lg:col-span-2">
+                    <div class="h-80">
+                        <canvas ref="waterChart"></canvas>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-gray-500 text-sm font-medium mb-1">Customers</p>
-                        <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-gray-800">{{ totalCustomers }}</span>
-                            <div class="flex flex-col items-end">
-                                <span
-                                    class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600 flex items-center gap-1 mb-1">
-                                    <v-icon name="bi-arrow-up" class="w-3 h-3" /> 8.7%
-                                </span>
-                                <p class="text-[10px] text-gray-400">vs last quarter</p>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="space-y-4">
+                    <div
+                        class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 rounded-xl p-4 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-blue-600">Current Month</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">52 <span
+                                        class="text-sm font-normal text-gray-500">m³</span></p>
+                            </div>
+                            <div class="bg-white rounded-full p-2 shadow-sm">
+                                <v-icon name="bi-arrow-up" class="w-5 h-5 text-green-500" />
                             </div>
                         </div>
-                        <!-- Progress bar -->
-                        <div class="mt-3">
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-purple-500 rounded-full" style="width: 63%"></div>
+                        <p class="text-xs text-blue-500 mt-2">+12% vs last month</p>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-100 rounded-xl p-4 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Average</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">45 <span
+                                        class="text-sm font-normal text-gray-500">m³</span></p>
                             </div>
-                            <p class="text-[10px] text-gray-500 mt-1">63% growth target</p>
+                            <div class="bg-white rounded-full p-2 shadow-sm">
+                                <v-icon name="bi-dash" class="w-5 h-5 text-gray-500" />
+                            </div>
                         </div>
+                        <p class="text-xs text-gray-500 mt-2">Monthly average consumption</p>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-100 rounded-xl p-4 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-amber-600">Peak Usage</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">68 <span
+                                        class="text-sm font-normal text-gray-500">m³</span></p>
+                            </div>
+                            <div class="bg-white rounded-full p-2 shadow-sm">
+                                <v-icon name="bi-exclamation-triangle" class="w-5 h-5 text-amber-500" />
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-500 mt-2">Recorded in June 2023</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Enhanced Analytics Section -->
-        <div class="bg-white rounded-2xl shadow-md border border-gray-100 mb-6 overflow-hidden">
-            <div class="p-6 pb-4 border-b border-gray-100">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                            <v-icon name="bi-droplet-half" class="text-blue-500 w-5 h-5" />
-                            Water Consumption Analytics
-                        </h2>
-                        <p class="text-sm text-gray-500 mt-1">Last 12 months consumption trend</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5">
-                            <v-icon name="bi-calendar" class="text-gray-500 w-4 h-4" />
-                            <span class="text-sm font-medium text-gray-700">This Year</span>
-                            <v-icon name="bi-chevron-down" class="text-gray-500 w-3 h-3 ml-1" />
-                        </div>
-                    </div>
-                </div>
+        <!-- Recent Activity Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                    <v-icon name="bi-clock-history" class="text-blue-500" />
+                    Recent Activity
+                </h2>
             </div>
-
-            <div class="p-6 pt-4">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Main Chart -->
-                    <div class="lg:col-span-2">
-                        <div class="h-80">
-                            <canvas ref="waterChart"></canvas>
-                        </div>
+            <div class="divide-y divide-gray-100">
+                <div class="p-4 hover:bg-gray-50 transition-colors flex items-start gap-4">
+                    <div class="p-2 rounded-full bg-blue-50 text-blue-500">
+                        <v-icon name="bi-file-earmark-plus" class="w-5 h-5" />
                     </div>
-
-                    <!-- Summary Stats -->
-                    <div class="space-y-5">
-                        <div class="bg-blue-50 rounded-xl p-4 shadow-2xl">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm text-blue-600 font-medium">Current Month</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">52 <span
-                                            class="text-sm text-gray-500">m³</span></p>
-                                </div>
-                                <div class="text-green-500 bg-white rounded-full p-2">
-                                    <v-icon name="bi-arrow-up" class="w-4 h-4" />
-                                </div>
-                            </div>
-                            <p class="text-xs text-blue-600 mt-2">+12% vs last month</p>
-                        </div>
-
-                        <div class="bg-gray-50 rounded-xl p-4 shadow-xl">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-600 font-medium">Average</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">45 <span
-                                            class="text-sm text-gray-500">m³</span></p>
-                                </div>
-                                <div class="text-gray-500 bg-white rounded-full p-2">
-                                    <v-icon name="bi-dash" class="w-4 h-4" />
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2">Monthly average consumption</p>
-                        </div>
-
-                        <div class="border border-gray-200 rounded-xl p-4 shadow-lg">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-600 font-medium">Peak Usage</p>
-                                    <p class="text-2xl font-bold text-gray-800 mt-1">68 <span
-                                            class="text-sm text-gray-500">m³</span></p>
-                                </div>
-                                <div class="text-amber-500 bg-white rounded-full p-2">
-                                    <v-icon name="bi-exclamation-triangle" class="w-4 h-4" />
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2">Recorded in June 2023</p>
-                        </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">New report submitted</p>
+                        <p class="text-xs text-gray-500 mt-1">Water leakage in Zone 3 reported by Ernesto Cabarrubias
+                        </p>
                     </div>
+                    <div class="text-xs text-gray-400">2 hours ago</div>
+                </div>
+                <div class="p-4 hover:bg-gray-50 transition-colors flex items-start gap-4">
+                    <div class="p-2 rounded-full bg-green-50 text-green-500">
+                        <v-icon name="bi-check-circle" class="w-5 h-5" />
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">Report resolved</p>
+                        <p class="text-xs text-gray-500 mt-1">Low pressure issue in Zone 5 has been fixed</p>
+                    </div>
+                    <div class="text-xs text-gray-400">1 day ago</div>
+                </div>
+                <div class="p-4 hover:bg-gray-50 transition-colors flex items-start gap-4">
+                    <div class="p-2 rounded-full bg-purple-50 text-purple-500">
+                        <v-icon name="bi-person-plus" class="w-5 h-5" />
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">New user registered</p>
+                        <p class="text-xs text-gray-500 mt-1">Maria Santos from Zone 2 has joined the system</p>
+                    </div>
+                    <div class="text-xs text-gray-400">2 days ago</div>
                 </div>
             </div>
         </div>
@@ -310,7 +328,7 @@ onMounted(() => {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.hover\:shadow-sm:hover {
+.shadow-sm {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 </style>

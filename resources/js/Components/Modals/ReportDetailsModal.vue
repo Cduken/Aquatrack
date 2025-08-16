@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 defineProps({
     show: {
         type: Boolean,
@@ -11,6 +12,23 @@ defineProps({
 });
 
 const emit = defineEmits(['close']);
+const showVideoModal = ref(false);
+const currentVideo = ref(null);
+
+const openVideoModal = (videoPath) => {
+    currentVideo.value = '/storage/' + videoPath;
+    showVideoModal.value = true;
+};
+
+const closeVideoModal = () => {
+    showVideoModal.value = false;
+    currentVideo.value = null;
+};
+
+const isVideoFile = (file) => {
+    return file.type === 'video' ||
+        (file.mime_type && file.mime_type.includes('video'));
+};
 </script>
 
 <template>
@@ -26,7 +44,7 @@ const emit = defineEmits(['close']);
                 <div class="relative w-full h-full transform transition-transform duration-300 ease-in-out">
                     <div class="h-full flex flex-col bg-white shadow-xl">
                         <!-- Header -->
-                        <div class="flex items-center justify-between px-4 py-6 bg-blue-600">
+                        <div class="flex items-center justify-between px-4 py-6 bg-gradient-to-r from-[#062F64] to-[#1E4272]">
                             <div class="flex items-center space-x-2">
                                 <v-icon name="bi-file-earmark-text" class="text-white" />
                                 <span class="text-white font-medium">Report Details</span>
@@ -159,24 +177,55 @@ const emit = defineEmits(['close']);
                                     <p class="text-gray-700 whitespace-pre-line text-sm">{{ report.description }}</p>
                                 </div>
 
-                                <!-- Photos Section -->
+                                <!-- Media Section -->
                                 <div v-if="report.photos && report.photos.length"
                                     class="bg-gray-100 border border-gray-200 p-4 rounded-lg">
                                     <h3 class="text-md font-medium text-gray-900 mb-3 flex items-center">
                                         <v-icon name="bi-images" class="mr-2 text-blue-600" />
-                                        Photos
+                                        Media
                                     </h3>
                                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                        <div v-for="(photo, index) in report.photos" :key="index"
-                                            class="relative group overflow-hidden rounded-lg border border-gray-200">
-                                            <img :src="'/storage/' + photo.path" :alt="`Report photo ${index + 1}`"
-                                                class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300">
-                                            <div
-                                                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                <a :href="'/storage/' + photo.path" target="_blank"
-                                                    class="text-white bg-blue-600 bg-opacity-80 p-1.5 rounded-full hover:bg-opacity-100">
-                                                    <v-icon name="bi-zoom-in" class="h-4 w-4" />
+                                        <div v-for="(media, index) in report.photos" :key="index"
+                                            class="relative group overflow-hidden rounded-lg border border-gray-200 h-32">
+                                            <!-- Video Thumbnail -->
+                                            <template v-if="isVideoFile(media)">
+                                                <div
+                                                    class="w-full h-full bg-gray-800 flex items-center justify-center relative">
+                                                    <!-- Video element that will play on hover -->
+                                                    <video muted loop
+                                                        class="absolute inset-0 w-full h-full object-cover  group-hover:opacity-100 transition-opacity duration-300">
+                                                        <source :src="'/storage/' + media.path" type="video/mp4">
+                                                    </video>
+
+                                                    <!-- Play button overlay -->
+                                                    <div
+                                                        class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-all z-10">
+                                                        <v-icon name="bi-play-circle-fill"
+                                                            class="text-white text-4xl" />
+                                                    </div>
+                                                </div>
+                                                <button @click="openVideoModal(media.path)"
+                                                    class="absolute inset-0 w-full h-full flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all z-20">
+                                                    <span class="sr-only">Play video</span>
+                                                </button>
+                                            </template>
+
+
+                                            <!-- Image Thumbnail -->
+                                            <template v-else>
+                                                <img :src="'/storage/' + media.path" :alt="`Report photo ${index + 1}`"
+                                                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                                                <a :href="'/storage/' + media.path" target="_blank"
+                                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                    <v-icon name="bi-zoom-in"
+                                                        class="text-white bg-black/50 p-1.5 rounded-full" />
                                                 </a>
+                                            </template>
+
+                                            <div
+                                                class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                                                {{ (media.size / 1024 / 1024).toFixed(2) }} MB
+                                                <span v-if="isVideoFile(media)">(Video)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -193,6 +242,24 @@ const emit = defineEmits(['close']);
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+
+    <!-- Video Modal -->
+    <transition name="modal">
+        <div v-if="showVideoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+            <div class="relative w-full max-w-4xl mx-4">
+                <button @click="closeVideoModal" class="absolute -top-10 right-0 text-white hover:text-gray-300">
+                    <v-icon name="bi-x-lg" scale="1.5" />
+                </button>
+
+                <div class="aspect-video w-full bg-black">
+                    <video v-if="currentVideo" controls autoplay class="w-full h-full">
+                        <source :src="currentVideo" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
             </div>
         </div>

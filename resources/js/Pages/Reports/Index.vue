@@ -19,8 +19,7 @@
                         <v-icon name="bi-exclamation-triangle-fill" class="mb-4 text-[#F87171]" scale="4" />
                         <h1 class="text-3xl md:text-4xl text-white font-bold">Report Water Issue</h1>
                         <p class="text-gray-300 mt-2 text-center">Report water emergencies, leaks, or other issues in
-                            your
-                            area</p>
+                            your area</p>
                     </div>
 
                     <div class="w-full p-6 rounded-lg border border-gray-500 bg-[#204878]/90 backdrop-blur-sm">
@@ -59,8 +58,7 @@
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white">
                                         <option value="" disabled selected>Select Zone</option>
                                         <option v-for="(zone, index) in Object.keys(zones)" :key="index" :value="zone">
-                                            {{
-                                                zone }}</option>
+                                            {{ zone }}</option>
                                     </select>
                                     <p v-if="form.errors.zone" class="mt-1 text-sm text-red-400">{{ form.errors.zone }}
                                     </p>
@@ -74,12 +72,10 @@
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white">
                                         <option value="" disabled selected>Select Barangay</option>
                                         <option v-for="barangay in filteredBarangays" :key="barangay" :value="barangay">
-                                            {{
-                                                barangay }}</option>
+                                            {{ barangay }}</option>
                                     </select>
                                     <p v-if="form.errors.barangay" class="mt-1 text-sm text-red-400">{{
-                                        form.errors.barangay
-                                        }}</p>
+                                        form.errors.barangay }}</p>
                                 </div>
                             </div>
 
@@ -93,8 +89,7 @@
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
                                         placeholder="Enter purok number or street name">
                                     <p v-if="form.errors.purok" class="mt-1 text-sm text-red-400">{{ form.errors.purok
-                                        }}
-                                    </p>
+                                        }}</p>
                                 </div>
 
                                 <!-- Priority -->
@@ -108,8 +103,7 @@
                                         <option value="high">High</option>
                                     </select>
                                     <p v-if="form.errors.priority" class="mt-1 text-sm text-red-400">{{
-                                        form.errors.priority
-                                        }}</p>
+                                        form.errors.priority }}</p>
                                 </div>
                             </div>
 
@@ -124,9 +118,10 @@
                                     form.errors.description }}</p>
                             </div>
 
-                            <!-- Photo Upload -->
+                            <!-- Media Upload -->
                             <div class="mt-6">
-                                <label class="text-white">Upload Photos <span class="text-red-500">*</span></label>
+                                <label class="text-white">Upload Photos/Videos <span
+                                        class="text-red-500">*</span></label>
                                 <div class="mt-2">
                                     <label for="file-upload" class="cursor-pointer">
                                         <div
@@ -139,12 +134,16 @@
                                                         Click to upload files
                                                     </span>
                                                     <input id="file-upload" name="photos" type="file" class="sr-only"
-                                                        multiple accept="image/*" @change="handleFileUpload">
+                                                        multiple accept="image/*,video/*" @change="handleFileUpload">
                                                 </div>
-                                                <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB each (max {{
-                                                    MAX_FILES }} files)</p>
+                                                <p class="text-xs text-gray-400">
+                                                    PNG, JPG, GIF (max {{ MAX_PHOTOS }} photos)<br>
+                                                    MP4 (max {{ MAX_VIDEOS }} videos, 15MB each)<br>
+                                                    Total files: {{ MAX_TOTAL }} max
+                                                </p>
                                                 <p v-if="form.photos.length > 0" class="text-xs text-blue-300">
-                                                    {{ form.photos.length }} of {{ MAX_FILES }} files selected
+                                                    {{ photoCount }} photos, {{ videoCount }} videos ({{
+                                                    form.photos.length }} of {{ MAX_TOTAL }} total)
                                                 </p>
                                             </div>
                                         </div>
@@ -153,13 +152,23 @@
                                 <p v-if="form.errors.photos" class="mt-1 text-sm text-red-400">{{ form.errors.photos }}
                                 </p>
 
-                                <!-- Photo Previews -->
+                                <!-- Media Previews -->
                                 <div v-if="form.photo_previews.length > 0" class="mt-4">
                                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                         <div v-for="(preview, index) in form.photo_previews" :key="index"
                                             class="relative group">
-                                            <img :src="preview"
-                                                class="h-24 w-full object-cover rounded border border-gray-200" />
+                                            <template v-if="isVideoFile(form.photos[index])">
+                                                <div
+                                                    class="h-24 w-full bg-gray-800 flex items-center justify-center rounded border border-gray-200">
+                                                    <v-icon name="bi-play-circle-fill" class="text-white text-4xl" />
+                                                    <span class="sr-only">Video preview</span>
+                                                </div>
+                                            </template>
+                                            <template v-else>
+                                                <img :src="preview"
+                                                    class="h-24 w-full object-cover rounded border border-gray-200"
+                                                    :alt="'Preview of image ' + (index + 1)" />
+                                            </template>
                                             <div
                                                 class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200">
                                                 <button @click="removePhoto(index)" type="button"
@@ -169,6 +178,7 @@
                                                 <div
                                                     class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
                                                     {{ (form.photos[index].size / 1024 / 1024).toFixed(2) }} MB
+                                                    <span v-if="isVideoFile(form.photos[index])">(Video)</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -201,8 +211,7 @@
                     </div>
 
                     <p class="mt-4 text-sm text-gray-300">For immediate emergencies, please call 911 or your local
-                        emergency
-                        services</p>
+                        emergency services</p>
                 </div>
             </div>
         </div>
@@ -244,25 +253,43 @@ const form = useForm({
     priority: "medium",
 });
 
+// Updated limits
+const MAX_PHOTOS = 5;
+const MAX_VIDEOS = 3;
+const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS; // 8 total files max
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
 const filteredBarangays = computed(() => {
     return form.zone ? zones[form.zone] : [];
+});
+
+const videoCount = computed(() => {
+    return form.photos.filter(file => isVideoFile(file)).length;
+});
+
+const photoCount = computed(() => {
+    return form.photos.filter(file => !isVideoFile(file)).length;
 });
 
 watch(() => form.zone, (newZone) => {
     form.barangay = "";
 });
 
-const MAX_FILES = 5;
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const isVideoFile = (file) => {
+    return file.type.match('video.*');
+};
 
 const handleFileUpload = (event) => {
     const files = event.target.files;
+    const currentPhotos = photoCount.value;
+    const currentVideos = videoCount.value;
 
-    if (form.photos.length + files.length > MAX_FILES) {
+    // Check total files limit
+    if (form.photos.length + files.length > MAX_TOTAL) {
         Swal.fire({
             icon: 'error',
             title: 'Too Many Files',
-            html: `You can upload a maximum of ${MAX_FILES} files.<br>You currently have ${form.photos.length} files selected.`,
+            html: `You can upload a maximum of ${MAX_TOTAL} files total (${MAX_PHOTOS} photos + ${MAX_VIDEOS} videos).<br>You currently have ${form.photos.length} files selected.`,
             confirmButtonColor: '#3085d6',
         });
         event.target.value = '';
@@ -272,13 +299,26 @@ const handleFileUpload = (event) => {
     const validFiles = [];
     const invalidFiles = [];
     const invalidTypeFiles = [];
+    const overPhotoLimit = [];
+    const overVideoLimit = [];
 
     Array.from(files).forEach(file => {
-        if (!file.type.match('image.*')) {
+        const isImage = file.type.match('image.*');
+        const isVideo = file.type.match('video.*');
+
+        if (!isImage && !isVideo) {
             invalidTypeFiles.push(file.name);
-        } else if (file.size > MAX_FILE_SIZE) {
+        }
+        else if (file.size > MAX_FILE_SIZE) {
             invalidFiles.push(file.name);
-        } else {
+        }
+        else if (isImage && (currentPhotos + validFiles.filter(f => f.type.match('image.*')).length >= MAX_PHOTOS)) {
+            overPhotoLimit.push(file.name);
+        }
+        else if (isVideo && (currentVideos + validFiles.filter(f => f.type.match('video.*')).length >= MAX_VIDEOS)) {
+            overVideoLimit.push(file.name);
+        }
+        else {
             validFiles.push(file);
         }
     });
@@ -287,7 +327,7 @@ const handleFileUpload = (event) => {
         Swal.fire({
             icon: 'error',
             title: 'Invalid File Type',
-            html: `The following files are not images:<br><strong>${invalidTypeFiles.join('<br>')}</strong><br><br>Please select only image files.`,
+            html: `The following files are not supported:<br><strong>${invalidTypeFiles.join('<br>')}</strong><br><br>Please select only image or video files.`,
             confirmButtonColor: '#3085d6',
         });
     }
@@ -296,7 +336,25 @@ const handleFileUpload = (event) => {
         Swal.fire({
             icon: 'error',
             title: 'File Size Exceeded',
-            html: `The following files exceed 10MB limit:<br><strong>${invalidFiles.join('<br>')}</strong><br><br>Please select smaller files.`,
+            html: `The following files exceed 15MB limit:<br><strong>${invalidFiles.join('<br>')}</strong><br><br>Please select smaller files.`,
+            confirmButtonColor: '#3085d6',
+        });
+    }
+
+    if (overPhotoLimit.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Photo Limit Reached',
+            html: `You can only upload ${MAX_PHOTOS} photos maximum.<br>The following files won't be added:<br><strong>${overPhotoLimit.join('<br>')}</strong>`,
+            confirmButtonColor: '#3085d6',
+        });
+    }
+
+    if (overVideoLimit.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Video Limit Reached',
+            html: `You can only upload ${MAX_VIDEOS} videos maximum.<br>The following files won't be added:<br><strong>${overVideoLimit.join('<br>')}</strong>`,
             confirmButtonColor: '#3085d6',
         });
     }
@@ -304,7 +362,12 @@ const handleFileUpload = (event) => {
     if (validFiles.length > 0) {
         form.photos = [...form.photos, ...validFiles];
         validFiles.forEach(file => {
-            form.photo_previews.push(URL.createObjectURL(file));
+            if (isVideoFile(file)) {
+                // For videos, we'll show a thumbnail or icon
+                form.photo_previews.push('/images/video-icon.png');
+            } else {
+                form.photo_previews.push(URL.createObjectURL(file));
+            }
         });
     }
 
@@ -312,7 +375,10 @@ const handleFileUpload = (event) => {
 };
 
 const removePhoto = (index) => {
-    URL.revokeObjectURL(form.photo_previews[index]);
+    // Only revoke object URL if it's an image (not our video placeholder)
+    if (!isVideoFile(form.photos[index])) {
+        URL.revokeObjectURL(form.photo_previews[index]);
+    }
     form.photos.splice(index, 1);
     form.photo_previews.splice(index, 1);
 };
@@ -321,8 +387,8 @@ const submitReport = () => {
     if (form.photos.length === 0) {
         Swal.fire({
             icon: 'error',
-            title: 'Photos Required',
-            text: 'Please upload at least one photo for your report.',
+            title: 'Media Required',
+            text: 'Please upload at least one photo or video for your report.',
             confirmButtonColor: '#3085d6',
         });
         return;
@@ -332,7 +398,12 @@ const submitReport = () => {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
-            form.photo_previews.forEach(url => URL.revokeObjectURL(url));
+            // Clean up object URLs for images
+            form.photo_previews.forEach((url, index) => {
+                if (!isVideoFile(form.photos[index])) {
+                    URL.revokeObjectURL(url);
+                }
+            });
             form.photo_previews = [];
         },
         onError: (errors) => {

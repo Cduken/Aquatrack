@@ -15,7 +15,12 @@ class ReportPhoto extends Model
         'path',
         'original_name',
         'mime_type',
-        'size'
+        'size',
+        'type',
+    ];
+
+    protected $casts = [
+        'type' => 'string'
     ];
 
     /**
@@ -31,6 +36,11 @@ class ReportPhoto extends Model
      */
     public function getUrlAttribute()
     {
-        return asset('storage/'.$this->path);
+        return asset('storage/' . $this->path);
+    }
+
+    public function isVideo(): bool
+    {
+        return $this->type === 'video';
     }
 }

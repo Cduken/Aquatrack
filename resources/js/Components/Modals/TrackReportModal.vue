@@ -16,7 +16,9 @@ import {
     FaQrcode,
     BiDownload,
     BiImages,
-    BiExclamationTriangle
+    BiExclamationTriangle,
+    BiPlayCircleFill,
+    BiZoomIn
 } from 'oh-vue-icons/icons';
 
 addIcons(
@@ -29,7 +31,9 @@ addIcons(
     FaQrcode,
     BiDownload,
     BiImages,
-    BiExclamationTriangle
+    BiExclamationTriangle,
+    BiPlayCircleFill,
+    BiZoomIn
 );
 
 const props = defineProps({
@@ -47,6 +51,13 @@ const qrCodeCanvas = ref(null);
 const showLoadingDelay = ref(false);
 const modalVisible = ref(false);
 const modalRef = ref(null);
+
+// Media modal state
+const mediaModal = ref({
+    show: false,
+    src: '',
+    type: 'image' // 'image' or 'video'
+});
 
 const form = useForm({
     tracking_code: ''
@@ -123,10 +134,40 @@ watch(reportDetails, () => {
 }, { deep: true });
 
 const closeModal = () => {
+    mediaModal.value.show = false;
     modalVisible.value = false;
     setTimeout(() => {
         emit('close');
     }, 300);
+};
+
+// Open media in modal
+const openMediaModal = (src, type) => {
+    mediaModal.value = {
+        show: true,
+        src,
+        type
+    };
+};
+
+// Close media modal
+const closeMediaModal = () => {
+    mediaModal.value.show = false;
+    // Pause any playing videos when closing
+    document.querySelectorAll('video').forEach(video => {
+        video.pause();
+    });
+};
+
+// Helper to get video mime type
+const getVideoMimeType = (src) => {
+    const extension = src.split('.').pop().toLowerCase();
+    switch (extension) {
+        case 'mp4': return 'video/mp4';
+        case 'webm': return 'video/webm';
+        case 'ogg': return 'video/ogg';
+        default: return 'video/mp4';
+    }
 };
 
 const downloadReportAsImage = async () => {
@@ -188,6 +229,11 @@ const formattedPriority = computed(() => {
     if (!reportDetails.value?.priority) return 'Not Specified';
     return reportDetails.value.priority.charAt(0).toUpperCase() + reportDetails.value.priority.slice(1);
 });
+
+const isVideoFile = (media) => {
+    return media.type === 'video' ||
+        (media.mime_type && media.mime_type.includes('video'));
+};
 </script>
 
 <template>
@@ -207,7 +253,7 @@ const formattedPriority = computed(() => {
                         @click.stop>
 
                         <!-- Header with modern gradient -->
-                        <div class="px-6 py-4 bg-gradient-to-r from-blue-900/80 to-teal-800/80">
+                        <div class="px-6 py-4 bg-gradient-to-r from-[#062F64] to-[#1E4272]">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-xl font-semibold text-white flex items-center gap-2">
                                     <v-icon name="fa-search" scale="1.1" />
@@ -360,25 +406,49 @@ const formattedPriority = computed(() => {
                                                 </p>
                                             </div>
 
-                                            <!-- Photos -->
+                                            <!-- Photos/Videos Section -->
                                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"
                                                 v-if="reportDetails.photos && reportDetails.photos.length">
                                                 <p
                                                     class="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
                                                     <v-icon name="bi-images" class="text-gray-400" scale="0.8" />
-                                                    <span>PHOTOS</span>
+                                                    <span>MEDIA</span>
                                                 </p>
                                                 <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                    <div v-for="(photo, index) in reportDetails.photos" :key="index"
+                                                    <div v-for="(media, index) in reportDetails.photos" :key="index"
                                                         class="relative group overflow-hidden rounded-lg border border-gray-200 h-32">
-                                                        <img :src="'/storage/' + photo.path"
-                                                            :alt="`Report photo ${index + 1}`"
-                                                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                                                        <a :href="'/storage/' + photo.path" target="_blank"
-                                                            class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                            <v-icon name="bi-zoom-in"
-                                                                class="text-white bg-black/50 p-1.5 rounded-full" />
-                                                        </a>
+                                                        <!-- Video Thumbnail with Play Button -->
+                                                        <template v-if="isVideoFile(media)">
+                                                            <div
+                                                                class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                                                <video
+                                                                    class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100">
+                                                                    <source :src="'/storage/' + media.path"
+                                                                        :type="media.mime_type">
+                                                                </video>
+                                                                <div
+                                                                    class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-all">
+                                                                    <v-icon name="bi-play-circle-fill"
+                                                                        class="text-white text-4xl" />
+                                                                </div>
+                                                            </div>
+                                                            <a href="#"
+                                                                @click.prevent="openMediaModal('/storage/' + media.path, 'video')"
+                                                                class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all">
+                                                            </a>
+                                                        </template>
+
+                                                        <!-- Image Thumbnail -->
+                                                        <template v-else>
+                                                            <img :src="'/storage/' + media.path"
+                                                                :alt="`Report photo ${index + 1}`"
+                                                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                                                            <a :href="'/storage/' + media.path" target="_blank"
+                                                                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                                <v-icon name="bi-zoom-in"
+                                                                    class="text-white bg-black/50 p-1.5 rounded-full" />
+                                                            </a>
+                                                        </template>
                                                     </div>
                                                 </div>
                                             </div>
@@ -428,6 +498,26 @@ const formattedPriority = computed(() => {
                         </div>
                     </div>
                 </Transition>
+            </div>
+        </div>
+    </Transition>
+
+    <!-- Media Modal -->
+    <Transition name="modal">
+        <div v-if="mediaModal.show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+            <div class="relative w-full max-w-4xl mx-4">
+                <button @click="closeMediaModal" class="absolute -top-10 right-0 text-white hover:text-gray-300">
+                    <v-icon name="io-close" scale="1.5" />
+                </button>
+
+                <div v-if="mediaModal.type === 'video'" class="aspect-video w-full">
+                    <video controls autoplay class="w-full h-full">
+                        <source :src="mediaModal.src" :type="getVideoMimeType(mediaModal.src)">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <img v-else :src="mediaModal.src" class="max-h-[80vh] mx-auto object-contain">
             </div>
         </div>
     </Transition>
@@ -491,5 +581,23 @@ const formattedPriority = computed(() => {
         transform: scale(1);
         opacity: 1;
     }
+}
+
+/* Media hover effects */
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1;
+}
+
+.group:hover .group-hover\:bg-black\/20 {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.group:hover .group-hover\:bg-black\/10 {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Video hover transition */
+video {
+    transition: opacity 0.3s ease;
 }
 </style>
