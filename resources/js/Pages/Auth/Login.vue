@@ -60,7 +60,7 @@ const verifyCode = async () => {
 
         // Add artificial delay to ensure spinner is visible
         await Promise.all([
-            axios.post(route('verify.role.code'), {
+            axios.post(route('verify-code'), {
                 role: props.selectedRole.toLowerCase(),
                 code: verificationCode.value
             }, {
@@ -72,7 +72,7 @@ const verifyCode = async () => {
             new Promise(resolve => setTimeout(resolve, 2000)) // Minimum 2 second delay
         ]);
 
-        const response = await axios.post(route('verify.role.code'), {
+        const response = await axios.post(route('verify-code'), {
             role: props.selectedRole.toLowerCase(),
             code: verificationCode.value
         }, {

@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Report;
 use App\Models\ReportPhoto;
 use Carbon\Carbon;
@@ -102,6 +103,20 @@ class ReportController extends Controller
 
             $report = Report::create($reportData);
 
+            Activity::create([
+                'event' => 'report_created',
+                'description' => 'New report submitted: ' . $report->tracking_code,
+                'subject_type' => get_class($report),
+                'subject_id' => $report->id,
+                'causer_type' => Auth::check() ? get_class(Auth::user()) : null,
+                'causer_id' => Auth::id(),
+                'properties' => [
+                    'tracking_code' => $report->tracking_code,
+                    'zone' => $report->zone,
+                    'status' => $report->status
+                ]
+            ]);
+
             // Handle photo uploads
             foreach ($request->file('photos') as $photo) {
                 $originalName = $photo->getClientOriginalName();
@@ -109,7 +124,7 @@ class ReportController extends Controller
                 $filename = Str::uuid() . '.' . $extension;
                 $path = $photo->storeAs('report-photos', $filename, 'public');
 
-                 $type = in_array(strtolower($extension), ['mp4', 'mov', 'avi']) ? 'video' : 'photo';
+                $type = in_array(strtolower($extension), ['mp4', 'mov', 'avi']) ? 'video' : 'photo';
 
                 ReportPhoto::create([
                     'report_id' => $report->id,
@@ -262,8 +277,24 @@ class ReportController extends Controller
             'status' => 'required|in:pending,in_progress,resolved'
         ]);
 
+        $oldStatus = $report->status;
         $report->status = $request->status;
         $report->save();
+
+        // Log the status change activity
+        Activity::create([
+            'event' => 'report_status_changed',
+            'description' => "Report status changed from {$oldStatus} to {$report->status}",
+            'subject_type' => get_class($report),
+            'subject_id' => $report->id,
+            'causer_type' => get_class(Auth::user()),
+            'causer_id' => Auth::id(),
+            'properties' => [
+                'tracking_code' => $report->tracking_code,
+                'old_status' => $oldStatus,
+                'new_status' => $report->status
+            ]
+        ]);
 
         return redirect()->route('admin.reports')->with('success', 'Report status updated successfully!');
     }

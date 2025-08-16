@@ -38,7 +38,7 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
     ->middleware(['auth', 'verified'])
     ->name('redirect-to-dashboard');
 
-Route::post('/verify-role-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify.role.code');
+Route::post('/verify-role-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify-code');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
+
 
     Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
         ->name('admin.reports.updateStatus'); // ✅ New route

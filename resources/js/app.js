@@ -145,7 +145,8 @@ addIcons(
     BiIcons.BiClockHistory,
     BiIcons.BiFileEarmarkPlus,
     BiIcons.BiPersonPlus,
-
+    BiIcons.BiShieldCheck,
+    BiIcons.BiBoxArrowLeft,
 
 
     // Heroicons

@@ -110,10 +110,37 @@
                                             @click="openModal(report)">
                                             <v-icon name="bi-eye-fill" class="w-5 h-5" />
                                         </button>
-                                        <button class="text-yellow-500 hover:text-yellow-700" title="Edit"
-                                            @click="toggleEditDropdown(report.id)">
-                                            <v-icon name="ri-edit-box-fill" class="w-5 h-5" />
-                                        </button>
+
+                                        <!-- Status Dropdown -->
+                                        <div class="relative inline-block text-left">
+                                            <button @click="toggleDropdown(report.id)"
+                                                class="text-yellow-500 hover:text-yellow-700 flex items-center"
+                                                title="Change Status">
+                                                <v-icon name="ri-edit-box-fill" class="w-5 h-5" />
+                                            </button>
+
+                                            <!-- Dropdown Menu -->
+                                            <div v-show="activeDropdown === report.id"
+                                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                                <div class="py-1">
+                                                    <button @click="updateStatus(report, 'pending')"
+                                                        :class="{ 'bg-gray-100': report.status === 'pending' }"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Set to Pending
+                                                    </button>
+                                                    <button @click="updateStatus(report, 'in_progress')"
+                                                        :class="{ 'bg-blue-50': report.status === 'in_progress' }"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Set to In Progress
+                                                    </button>
+                                                    <button @click="updateStatus(report, 'resolved')"
+                                                        :class="{ 'bg-green-50': report.status === 'resolved' }"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Set to Resolved
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -170,40 +197,17 @@
 
         <!-- Report Details Modal -->
         <ReportDetailsModal :show="showModal" :report="selectedReport" @close="closeModal" />
-
-        <!-- Status Edit Modal -->
-        <Modal :show="editingRowId !== null" @close="closeEditDropdown">
-            <div class="p-4">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Update Report Status</h2>
-                <select v-model="selectedStatus"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                </select>
-                <div class="mt-4 flex justify-end space-x-3">
-                    <button @click="closeEditDropdown"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button @click="confirmStatusUpdate"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                        Update
-                    </button>
-                </div>
-            </div>
-        </Modal>
     </AdminLayout>
 </template>
 
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ReportDetailsModal from '@/Components/Modals/ReportDetailsModal.vue';
-import Modal from '@/Components/Modal.vue';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { Link } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     reports: Object,
@@ -220,9 +224,8 @@ const filters = ref({
 // State
 const selectedReport = ref(null);
 const showModal = ref(false);
-const editingRowId = ref(null);
-const selectedStatus = ref(null);
-const currentEditingReport = ref(null);
+const activeDropdown = ref(null);
+const updatingStatus = ref(false);
 
 // Open/Close Modals
 const openModal = (report) => {
@@ -234,29 +237,77 @@ const closeModal = () => {
     showModal.value = false;
 };
 
-// Edit status handling
-const toggleEditDropdown = (id) => {
-    const report = props.reports.data.find(r => r.id === id);
-    if (report) {
-        currentEditingReport.value = report;
-        selectedStatus.value = report.status;
-        editingRowId.value = id;
+// Dropdown handling
+const toggleDropdown = (reportId) => {
+    activeDropdown.value = activeDropdown.value === reportId ? null : reportId;
+};
+
+const closeDropdown = () => {
+    activeDropdown.value = null;
+};
+
+// Click outside to close dropdown
+const onClickOutside = (event) => {
+    if (!event.target.closest('.relative.inline-block.text-left')) {
+        closeDropdown();
     }
 };
 
-const closeEditDropdown = () => {
-    editingRowId.value = null;
-    currentEditingReport.value = null;
-};
+// Add event listener when component mounts
+onMounted(() => {
+    document.addEventListener('click', onClickOutside);
+});
 
-const confirmStatusUpdate = async () => {
-    if (currentEditingReport.value) {
-        await router.post(route('admin.reports.updateStatus', currentEditingReport.value.id), {
-            status: selectedStatus.value
-        }, { preserveScroll: true });
-        closeEditDropdown();
+// Remove event listener when component unmounts
+onUnmounted(() => {
+    document.removeEventListener('click', onClickOutside);
+});
+
+// Status update
+// Status update
+const updateStatus = async (report, newStatus) => {
+    if (report.status !== newStatus) {
+        updatingStatus.value = true;
+        try {
+            // ✅ Use fetch instead of router.post to avoid instant reload
+            await axios.post(route('admin.reports.updateStatus', report.id), {
+                status: newStatus
+            });
+
+            // ✅ SweetAlert toast
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: `Status updated to "${formatStatus(newStatus)}"`,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+            });
+
+
+            setTimeout(() => {
+                router.reload({ preserveScroll: true });
+
+            }, 2000);
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong while updating the status!',
+            });
+        } finally {
+            updatingStatus.value = false;
+            closeDropdown();
+        }
+    } else {
+        closeDropdown();
     }
 };
+
+
 
 // Filtering logic
 const filteredReports = computed(() => {
@@ -315,8 +366,34 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
+/* Dropdown animation */
+.dropdown-enter-active,
+.dropdown-leave-active {
+    transition: all 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Table responsive styles */
 .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Status highlight colors */
+.bg-gray-100 {
+    background-color: #f3f4f6;
+}
+
+.bg-blue-50 {
+    background-color: #eff6ff;
+}
+
+.bg-green-50 {
+    background-color: #ecfdf5;
 }
 </style>
