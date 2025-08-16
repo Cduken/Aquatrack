@@ -1,54 +1,81 @@
 <template>
     <div class="relative">
-        <nav class="sticky top-0 z-[100] bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200 px-4 py-[26px] flex justify-between items-center"
+        <nav class="sticky top-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-[26.5px] shadow-lg flex justify-between items-center"
             role="navigation" aria-label="Dashboard navigation">
-            <h1
-                class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 ml-4">
-                {{ title }}
-            </h1>
+            <!-- Left side - Logo and title -->
+            <div class="flex items-center space-x-3 pl-10">
 
+                <div class="flex items-center">
+
+
+                    <span class="text-md font-medium text-gray-600 capitalize">
+                        {{ currentPage }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right side - Navigation controls -->
             <div class="flex items-center space-x-4">
+                <!-- Notifications button -->
                 <button v-if="showNotificationsButton" @click="openNotifications"
-                    class="relative text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1 transition-colors duration-200"
+                    class="relative flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 focus:outline-none transition-all duration-200"
                     aria-label="View notifications">
-                    <v-icon name="bi-bell-fill" class="text-xl" />
+                    <v-icon name="bi-bell" class="text-[1rem]" />
                     <span v-if="unreadCount > 0"
-                        class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
-                        {{ unreadCount }}
+                        class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white">
+                        {{ unreadCount > 9 ? '9+' : unreadCount }}
                     </span>
                 </button>
 
+                <!-- User dropdown -->
                 <div class="relative">
                     <button @click.stop="toggleDropdown"
-                        class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1 transition-colors duration-200"
+                        class="flex items-center space-x-2 group focus:outline-none transition-all duration-200 px-2 py-1 rounded-lg hover:bg-gray-50"
                         aria-label="Toggle user menu" :aria-expanded="isDropdownOpen" ref="dropdownButton">
-                        <div class="relative w-8 h-8 rounded-full overflow-hidden">
-                            <img v-if="user.avatar_url" :src="user.avatar_url" :alt="userDisplayName"
-                                class="w-full h-full object-cover">
-                            <div v-else
-                                class="w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 text-white flex items-center justify-center font-medium">
-                                {{ userInitials }}
+                        <div class="flex items-center space-x-2">
+                            <div
+                                class="relative w-8 h-8 rounded-lg overflow-hidden border border-gray-200 group-hover:border-blue-300 transition-colors duration-200">
+                                <img v-if="user.avatar_url" :src="user.avatar_url" :alt="userDisplayName"
+                                    class="w-full h-full object-cover">
+                                <div v-else
+                                    class="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-medium text-sm">
+                                    {{ userInitials }}
+                                </div>
                             </div>
+                            <span class="hidden md:inline text-sm font-medium text-gray-700">
+                                {{ userDisplayName }}
+                            </span>
                         </div>
-                        <span class="hidden md:inline text-sm font-medium">
-                            {{ userDisplayName }}
-                        </span>
-                        <v-icon :name="isDropdownOpen ? 'bi-chevron-up' : 'bi-chevron-down'" class="text-sm" />
+                        <v-icon :name="isDropdownOpen ? 'bi-chevron-up' : 'bi-chevron-down'"
+                            class="text-gray-400 text-xs transition-transform duration-200" />
                     </button>
 
+                    <!-- Enhanced dropdown menu -->
                     <transition name="dropdown">
                         <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
-                            class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
+                            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 border border-gray-100 overflow-hidden"
                             role="menu" aria-label="User menu" ref="dropdownMenu">
-                            <Link href="/profile"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 focus:bg-blue-50 hover:text-blue-700 focus:text-blue-700 transition-colors duration-150"
-                                role="menuitem">Settings</Link>
-                            <hr class="border-gray-200" />
-                            <button @click.prevent="handleLogout"
-                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:bg-red-50 hover:text-red-700 focus:text-red-700 transition-colors duration-150"
-                                role="menuitem">
-                                Logout
-                            </button>
+                            <div class="p-1">
+                                <div
+                                    class="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-gray-100">
+                                    <p class="text-sm font-medium text-gray-900 truncate">{{ userDisplayName }}</p>
+                                    <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
+                                </div>
+
+                                <Link href="/profile"
+                                    class="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150"
+                                    role="menuitem">
+                                <v-icon name="bi-gear" class="mr-3 text-blue-400" />
+                                Account Settings
+                                </Link>
+
+                                <button @click.prevent="handleLogout"
+                                    class="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
+                                    role="menuitem">
+                                    <v-icon name="bi-box-arrow-right" class="mr-3 text-red-400" />
+                                    Sign Out
+                                </button>
+                            </div>
                         </div>
                     </transition>
                 </div>
@@ -62,7 +89,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import NotificationModal from '../Modals/NotificationModal.vue';
 
@@ -80,6 +107,18 @@ const props = defineProps({
 const emit = defineEmits(['logout']);
 
 const { props: pageProps } = usePage();
+
+// Get current page name from URL
+const currentPage = computed(() => {
+    const path = window.location.pathname;
+    if (path === '/') return 'dashboard';
+    if (path.startsWith('/reports')) return 'reports';
+    if (path.startsWith('/users')) return 'users';
+    if (path.startsWith('/staff')) return 'staff';
+    if (path.startsWith('/analytics')) return 'analytics';
+    if (path.startsWith('/profile')) return 'profile';
+    return path.split('/').pop() || 'dashboard';
+});
 
 const isAdmin = computed(() => {
     return pageProps.auth?.user?.role === 'admin';
@@ -200,39 +239,42 @@ onUnmounted(() => {
 <style scoped>
 .dropdown-enter-active,
 .dropdown-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: all 0.15s ease-out;
+    transform-origin: top right;
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.95);
+    transform: translateY(-2px);
 }
 
-@keyframes pulse {
+/* Water ripple effect on buttons */
+button:active {
+    transform: scale(0.98);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Subtle wave animation for the logo */
+@keyframes wave {
     0% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateY(0);
     }
 
     50% {
-        transform: scale(1.15);
-        opacity: 0.8;
+        transform: translateY(-2px);
     }
 
     100% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.animate-pulse {
-    animation: pulse 2s infinite;
-}
-
-button:focus,
-a:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+.wave-animate {
+    animation: wave 2s ease-in-out infinite;
 }
 </style>

@@ -147,6 +147,7 @@ addIcons(
     BiIcons.BiPersonPlus,
     BiIcons.BiShieldCheck,
     BiIcons.BiBoxArrowLeft,
+    BiIcons.BiBell,
 
 
     // Heroicons

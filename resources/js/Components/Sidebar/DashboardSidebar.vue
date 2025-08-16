@@ -86,12 +86,12 @@ const activeLinks = computed(() => {
     <div class="relative">
         <!-- External Toggle Button (visible when sidebar is open) -->
         <button v-if="!isMobile && isOpen"
-            class="fixed top-1 z-[1001] text-white bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 border-none rounded-lg flex items-center cursor-pointer text-xl transition-all shadow-md hover:bg-gradient-to-br hover:from-[#062F64] hover:to-[#1E4272] p-2"
+            class="fixed top-6 z-[1001]  text-white bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 border-none rounded-lg flex items-center cursor-pointer text-xl transition-all shadow-md hover:bg-gradient-to-br hover:from-[#062F64] hover:to-[#1E4272] p-2"
             @click="toggleSidebar" :style="{
                 left: position === 'left' ? `calc(${width} - -10px)` : 'auto',
                 right: position === 'right' ? `calc(${width} - 20px)` : 'auto',
             }">
-            <v-icon class="w-4 h-4 text-white" name="bi-chevron-double-left" />
+            <v-icon class="w-6 h-6 text-white" name="bi-chevron-double-left" />
         </button>
 
         <aside
