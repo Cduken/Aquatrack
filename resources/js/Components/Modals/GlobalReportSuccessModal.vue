@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import QRCode from 'qrcode';
 
 const props = defineProps({
@@ -10,31 +10,71 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 const qrCodeCanvas = ref(null);
+const qrError = ref(null);
 
-onMounted(() => {
-    if (props.show && props.trackingCode) {
-        QRCode.toCanvas(qrCodeCanvas.value, props.trackingCode,
-            { width: 180, margin: 1, color: { dark: '#1E3A8A', light: '#ffffff' } },
-            (error) => {
-                if (error) console.error(error);
-            }
-        );
-    }
+// Format date properly
+const formattedDate = computed(() => {
+    if (!props.dateSubmitted) return '';
+    const date = new Date(props.dateSubmitted);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 });
 
 const downloadQRCode = () => {
+    if (!qrCodeCanvas.value) return;
+
     const link = document.createElement('a');
     link.download = `aquatrack-report-${props.trackingCode}.png`;
     link.href = qrCodeCanvas.value.toDataURL('image/png');
     link.click();
 };
 
-const formattedDate = new Date(props.dateSubmitted).toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+const generateQRCode = async () => {
+    qrError.value = null;
+    try {
+        if (!props.trackingCode || !qrCodeCanvas.value) {
+            throw new Error('Missing tracking code or canvas element');
+        }
+
+        await QRCode.toCanvas(qrCodeCanvas.value, props.trackingCode, {
+            width: 180,
+            margin: 1,
+            color: {
+                dark: '#1E3A8A',
+                light: '#ffffff'
+            }
+        });
+    } catch (error) {
+        console.error('QR Code generation error:', error);
+        qrError.value = error.message;
+    }
+};
+
+// Watch for changes and generate QR code
+watch(() => props.show, async (show) => {
+    if (show && props.trackingCode) {
+        await nextTick(); // Wait for DOM update
+        generateQRCode();
+    }
+});
+
+watch(() => props.trackingCode, async (code) => {
+    if (props.show && code) {
+        await nextTick(); // Wait for DOM update
+        generateQRCode();
+    }
+});
+
+// Initialize when component mounts
+onMounted(() => {
+    if (props.show && props.trackingCode) {
+        nextTick().then(generateQRCode);
+    }
 });
 </script>
 
@@ -46,9 +86,9 @@ const formattedDate = new Date(props.dateSubmitted).toLocaleString('en-US', {
                 <div class="absolute inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
             </div>
 
-            <!-- Modal container with consistent width -->
+            <!-- Modal container -->
             <div
-                class="inline-block w-full max-w-[700px] bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all my-8 relative">
+                class="inline-block w-full max-w-xl bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all my-8 relative">
                 <!-- Close button -->
                 <button @click="$emit('close')"
                     class="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 transition-colors">
@@ -93,12 +133,13 @@ const formattedDate = new Date(props.dateSubmitted).toLocaleString('en-US', {
                         <div class="mb-4 flex flex-col items-center">
                             <p class="text-xs text-gray-500 mb-2">Scan to track your report</p>
                             <div class="p-2 bg-white rounded border border-gray-200">
-                                <canvas ref="qrCodeCanvas"></canvas>
+                                <canvas ref="qrCodeCanvas" width="180" height="180" class="w-full h-full"></canvas>
+                                <div v-if="qrError" class="text-red-500 text-xs mt-2">
+                                    QR Code Error: {{ qrError }}
+                                </div>
                             </div>
                             <p class="text-xs text-gray-600 mt-2">{{ trackingCode }}</p>
                         </div>
-
-
 
                         <!-- Important notice -->
                         <div class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r mb-5 text-left">
@@ -139,16 +180,3 @@ const formattedDate = new Date(props.dateSubmitted).toLocaleString('en-US', {
         </div>
     </div>
 </template>
-
-<style scoped>
-/* Add smooth transition for modal appearance */
-.modal-enter-active,
-.modal-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-    opacity: 0;
-}
-</style>

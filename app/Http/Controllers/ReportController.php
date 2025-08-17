@@ -143,10 +143,11 @@ class ReportController extends Controller
                     'trackingCode' => $trackingCode
                 ]);
             } else {
-                // For guests, redirect to success page
-                return redirect()->route('reports.success')->with([
+
+                return Inertia::render('Reports/Index', [
                     'trackingCode' => $trackingCode,
-                    'dateSubmitted' => Carbon::now()->toDateTimeString(),
+                    'dateSubmitted' => now()->toISOString(),
+                    'success' => 'Report submitted successfully!'
                 ]);
             }
         } catch (\Exception $e) {

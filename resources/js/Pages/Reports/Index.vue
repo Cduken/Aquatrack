@@ -40,7 +40,7 @@
                                 <!-- Reporter Phone -->
                                 <div>
                                     <label for="reporter_phone" class="text-white">Phone Number</label>
-                                    <input type="tel" id="reporter_phone" v-model="form.reporter_phone"
+                                    <input type="number" id="reporter_phone" v-model="form.reporter_phone"
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
                                         placeholder="Your contact number">
                                     <p v-if="form.errors.reporter_phone" class="mt-1 text-sm text-red-400">{{
@@ -89,7 +89,7 @@
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
                                         placeholder="Enter purok number or street name">
                                     <p v-if="form.errors.purok" class="mt-1 text-sm text-red-400">{{ form.errors.purok
-                                        }}</p>
+                                    }}</p>
                                 </div>
 
                                 <!-- Priority -->
@@ -137,13 +137,13 @@
                                                         multiple accept="image/*,video/*" @change="handleFileUpload">
                                                 </div>
                                                 <p class="text-xs text-gray-400">
-                                                    PNG, JPG, GIF (max {{ MAX_PHOTOS }} photos)<br>
+                                                    PNG, JPG, GIF (max {{ MAX_PHOTOS }} photos, 5MB each)<br>
                                                     MP4 (max {{ MAX_VIDEOS }} videos, 15MB each)<br>
                                                     Total files: {{ MAX_TOTAL }} max
                                                 </p>
                                                 <p v-if="form.photos.length > 0" class="text-xs text-blue-300">
                                                     {{ photoCount }} photos, {{ videoCount }} videos ({{
-                                                    form.photos.length }} of {{ MAX_TOTAL }} total)
+                                                        form.photos.length }} of {{ MAX_TOTAL }} total)
                                                 </p>
                                             </div>
                                         </div>
@@ -215,6 +215,9 @@
                 </div>
             </div>
         </div>
+
+        <GlobalReportSuccessModal :show="showSuccessModal" :trackingCode="successData.trackingCode"
+            :dateSubmitted="successData.dateSubmitted" @close="showSuccessModal = false" />
     </Navigation>
 </template>
 
@@ -223,7 +226,16 @@ import { useForm } from '@inertiajs/vue3';
 import Navigation from '@/Components/Header/Navigation.vue';
 import { ref, computed, watch } from 'vue';
 import Swal from 'sweetalert2';
+import GlobalReportSuccessModal from '@/Components/Modals/GlobalReportSuccessModal.vue';
 
+// Success modal state
+const showSuccessModal = ref(false);
+const successData = ref({
+    trackingCode: '',
+    dateSubmitted: ''
+});
+
+// Form data and validation
 const zones = {
     "Zone 1": ["Poblacion Sur"],
     "Zone 2": ["Poblacion Centro"],
@@ -253,12 +265,14 @@ const form = useForm({
     priority: "medium",
 });
 
-// Updated limits
+// File upload limits
 const MAX_PHOTOS = 5;
 const MAX_VIDEOS = 3;
-const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS; // 8 total files max
-const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS;
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_VIDEO_SIZE = 15 * 1024 * 1024; // 15MB
 
+// Computed properties
 const filteredBarangays = computed(() => {
     return form.zone ? zones[form.zone] : [];
 });
@@ -271,12 +285,14 @@ const photoCount = computed(() => {
     return form.photos.filter(file => !isVideoFile(file)).length;
 });
 
+// Watchers
 watch(() => form.zone, (newZone) => {
     form.barangay = "";
 });
 
+// Helper functions
 const isVideoFile = (file) => {
-    return file.type.match('video.*');
+    return file?.type?.match('video.*');
 };
 
 const handleFileUpload = (event) => {
@@ -297,32 +313,37 @@ const handleFileUpload = (event) => {
     }
 
     const validFiles = [];
-    const invalidFiles = [];
+    const invalidPhotoSizeFiles = [];
+    const invalidVideoSizeFiles = [];
     const invalidTypeFiles = [];
     const overPhotoLimit = [];
     const overVideoLimit = [];
 
     Array.from(files).forEach(file => {
         const isImage = file.type.match('image.*');
-        const isVideo = file.type.match('video.*');
+        const isVideo = isVideoFile(file);
 
         if (!isImage && !isVideo) {
             invalidTypeFiles.push(file.name);
         }
-        else if (file.size > MAX_FILE_SIZE) {
-            invalidFiles.push(file.name);
-        }
         else if (isImage && (currentPhotos + validFiles.filter(f => f.type.match('image.*')).length >= MAX_PHOTOS)) {
             overPhotoLimit.push(file.name);
         }
-        else if (isVideo && (currentVideos + validFiles.filter(f => f.type.match('video.*')).length >= MAX_VIDEOS)) {
+        else if (isVideo && (currentVideos + validFiles.filter(f => isVideoFile(f)).length >= MAX_VIDEOS)) {
             overVideoLimit.push(file.name);
+        }
+        else if (isImage && file.size > MAX_PHOTO_SIZE) {
+            invalidPhotoSizeFiles.push(file.name);
+        }
+        else if (isVideo && file.size > MAX_VIDEO_SIZE) {
+            invalidVideoSizeFiles.push(file.name);
         }
         else {
             validFiles.push(file);
         }
     });
 
+    // Show error messages
     if (invalidTypeFiles.length > 0) {
         Swal.fire({
             icon: 'error',
@@ -332,11 +353,20 @@ const handleFileUpload = (event) => {
         });
     }
 
-    if (invalidFiles.length > 0) {
+    if (invalidPhotoSizeFiles.length > 0) {
         Swal.fire({
             icon: 'error',
-            title: 'File Size Exceeded',
-            html: `The following files exceed 15MB limit:<br><strong>${invalidFiles.join('<br>')}</strong><br><br>Please select smaller files.`,
+            title: 'Photo Size Exceeded',
+            html: `The following photos exceed 5MB limit:<br><strong>${invalidPhotoSizeFiles.join('<br>')}</strong><br><br>Please select smaller photos.`,
+            confirmButtonColor: '#3085d6',
+        });
+    }
+
+    if (invalidVideoSizeFiles.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Video Size Exceeded',
+            html: `The following videos exceed 15MB limit:<br><strong>${invalidVideoSizeFiles.join('<br>')}</strong><br><br>Please select smaller videos.`,
             confirmButtonColor: '#3085d6',
         });
     }
@@ -359,11 +389,12 @@ const handleFileUpload = (event) => {
         });
     }
 
+    // Process valid files
     if (validFiles.length > 0) {
         form.photos = [...form.photos, ...validFiles];
         validFiles.forEach(file => {
             if (isVideoFile(file)) {
-                // For videos, we'll show a thumbnail or icon
+                // For videos, show a thumbnail or icon
                 form.photo_previews.push('/images/video-icon.png');
             } else {
                 form.photo_previews.push(URL.createObjectURL(file));
@@ -396,9 +427,16 @@ const submitReport = () => {
 
     form.post(route('reports.store'), {
         preserveScroll: true,
-        onSuccess: () => {
+        onSuccess: (response) => {
+            // Show success modal with tracking info
+            successData.value = {
+                trackingCode: response.props.trackingCode,
+                dateSubmitted: response.props.dateSubmitted
+            };
+            showSuccessModal.value = true;
+
+            // Reset form
             form.reset();
-            // Clean up object URLs for images
             form.photo_previews.forEach((url, index) => {
                 if (!isVideoFile(form.photos[index])) {
                     URL.revokeObjectURL(url);
