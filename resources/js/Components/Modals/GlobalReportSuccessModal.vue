@@ -8,7 +8,7 @@ const props = defineProps({
     dateSubmitted: String
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'track-report']);
 const qrCodeCanvas = ref(null);
 const qrError = ref(null);
 
@@ -89,15 +89,6 @@ onMounted(() => {
             <!-- Modal container -->
             <div
                 class="inline-block w-full max-w-xl bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all my-8 relative">
-                <!-- Close button -->
-                <button @click="$emit('close')"
-                    class="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
                 <!-- Modal content -->
                 <div class="bg-white px-6 py-6">
                     <div class="text-center">
@@ -152,8 +143,16 @@ onMounted(() => {
                                 </svg>
                                 <div class="ml-2">
                                     <p class="text-xs font-medium text-amber-800">Important</p>
-                                    <p class="text-xs text-amber-700">Save this QR code as you won't be able to retrieve
-                                        it again.</p>
+                                    <p class="text-xs text-amber-700">
+                                        Please be reminded that this QR Code is very important; once you lose it, you
+                                        will not be able to continue with your reservation.
+                                        Save this QR code for tracking and payment or
+                                        <button @click="$emit('track-report', trackingCode)"
+                                            class="text-blue-600 hover:underline focus:outline-none">
+                                            click here
+                                        </button>
+                                        to track your request.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -168,11 +167,7 @@ onMounted(() => {
                                 </svg>
                                 Download QR
                             </button>
-                            <button type="button"
-                                class="flex-1 inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                @click="$emit('close')">
-                                Close
-                            </button>
+
                         </div>
                     </div>
                 </div>

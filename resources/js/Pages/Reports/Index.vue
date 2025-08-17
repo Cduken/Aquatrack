@@ -89,7 +89,7 @@
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
                                         placeholder="Enter purok number or street name">
                                     <p v-if="form.errors.purok" class="mt-1 text-sm text-red-400">{{ form.errors.purok
-                                    }}</p>
+                                        }}</p>
                                 </div>
 
                                 <!-- Priority -->
@@ -188,9 +188,20 @@
 
                             <!-- Form Actions -->
                             <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                                <button type="submit" :disabled="form.processing"
+                                <button type="submit" :disabled="form.processing || isSubmitting"
                                     class="w-full p-3 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-75 disabled:cursor-not-allowed">
-                                    <span v-if="form.processing" class="flex items-center">
+                                    <span v-if="isSubmitting" class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Submitting...
+                                    </span>
+                                    <span v-else-if="form.processing" class="flex items-center">
                                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
@@ -217,7 +228,11 @@
         </div>
 
         <GlobalReportSuccessModal :show="showSuccessModal" :trackingCode="successData.trackingCode"
-            :dateSubmitted="successData.dateSubmitted" @close="showSuccessModal = false" />
+            :dateSubmitted="successData.dateSubmitted" @close="showSuccessModal = false"
+            @track-report="handleTrackReport" />
+
+        <TrackReportModal :show="showTrackModal" :initialTrackingCode="trackingCodeToShow"
+            @close="showTrackModal = false" />
     </Navigation>
 </template>
 
@@ -227,13 +242,25 @@ import Navigation from '@/Components/Header/Navigation.vue';
 import { ref, computed, watch } from 'vue';
 import Swal from 'sweetalert2';
 import GlobalReportSuccessModal from '@/Components/Modals/GlobalReportSuccessModal.vue';
+import TrackReportModal from '@/Components/Modals/TrackReportModal.vue';
 
 // Success modal state
 const showSuccessModal = ref(false);
+const showTrackModal = ref(false);
+const trackingCodeToShow = ref('');
 const successData = ref({
     trackingCode: '',
     dateSubmitted: ''
 });
+
+// Loading state for submit button
+const isSubmitting = ref(false);
+
+const handleTrackReport = (trackingCode) => {
+    showSuccessModal.value = false;
+    trackingCodeToShow.value = trackingCode;
+    showTrackModal.value = true;
+};
 
 // Form data and validation
 const zones = {
@@ -425,33 +452,54 @@ const submitReport = () => {
         return;
     }
 
-    form.post(route('reports.store'), {
-        preserveScroll: true,
-        onSuccess: (response) => {
-            // Show success modal with tracking info
-            successData.value = {
-                trackingCode: response.props.trackingCode,
-                dateSubmitted: response.props.dateSubmitted
-            };
-            showSuccessModal.value = true;
+    isSubmitting.value = true;
 
-            // Reset form
-            form.reset();
-            form.photo_previews.forEach((url, index) => {
-                if (!isVideoFile(form.photos[index])) {
-                    URL.revokeObjectURL(url);
-                }
-            });
-            form.photo_previews = [];
-        },
-        onError: (errors) => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Failed',
-                text: 'There was an error submitting your report. Please try again.',
-                confirmButtonColor: '#3085d6',
-            });
-        }
-    });
+    // Simulate 2 seconds loading before actual submission
+    setTimeout(() => {
+        form.post(route('reports.store'), {
+            preserveScroll: true,
+            onSuccess: (response) => {
+                isSubmitting.value = false;
+
+                // Show success modal with tracking info
+                successData.value = {
+                    trackingCode: response.props.trackingCode,
+                    dateSubmitted: response.props.dateSubmitted
+                };
+                showSuccessModal.value = true;
+
+                // Show SweetAlert success modal
+                Swal.fire({
+                    position: 'top-end',
+                    title: 'Report Submitted Successfully!',
+                    text: `Tracking Code: ${response.props.trackingCode}`,
+                    icon: 'success',
+                    toast: true,
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+
+                });
+
+                // Reset form
+                form.reset();
+                form.photo_previews.forEach((url, index) => {
+                    if (!isVideoFile(form.photos[index])) {
+                        URL.revokeObjectURL(url);
+                    }
+                });
+                form.photo_previews = [];
+            },
+            onError: (errors) => {
+                isSubmitting.value = false;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: 'There was an error submitting your report. Please try again.',
+                    confirmButtonColor: '#3085d6',
+                });
+            }
+        });
+    }, 2000);
 };
 </script>

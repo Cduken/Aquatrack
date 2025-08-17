@@ -40,6 +40,10 @@ const props = defineProps({
     show: {
         type: Boolean,
         default: false
+    },
+    initialTrackingCode: {
+        type: String,
+        default: ''
     }
 });
 
@@ -60,21 +64,30 @@ const mediaModal = ref({
 });
 
 const form = useForm({
-    tracking_code: ''
+    tracking_code: props.initialTrackingCode
 });
 
-// Animation handling
+// Auto-search if initial tracking code is provided
 onMounted(() => {
     if (props.show) {
         modalVisible.value = true;
+        if (props.initialTrackingCode) {
+            trackReport();
+        }
     }
 });
 
 watch(() => props.show, (newVal) => {
     modalVisible.value = newVal;
+    if (newVal && props.initialTrackingCode) {
+        form.tracking_code = props.initialTrackingCode;
+        trackReport();
+    }
 });
 
 const trackReport = async () => {
+    if (!form.tracking_code) return;
+
     isLoading.value = true;
     showLoadingDelay.value = true;
     errorMessage.value = null;
