@@ -144,20 +144,20 @@ onMounted(() => {
                                 <div class="ml-2">
                                     <p class="text-xs font-medium text-amber-800">Important</p>
                                     <p class="text-xs text-amber-700">
-                                        Please be reminded that this QR Code is very important; once you lose it, you
-                                        will not be able to continue with your reservation.
-                                        Save this QR code for tracking and payment or
+                                        Please be reminded that this QR Code is very important, once you lose it, you
+                                        will not be able to continue.
+                                        Save this QR code and
                                         <button @click="$emit('track-report', trackingCode)"
                                             class="text-blue-600 hover:underline focus:outline-none">
                                             click here
                                         </button>
-                                        to track your request.
+                                        to track your report.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Action buttons -->
+
                         <div class="flex flex-col sm:flex-row gap-2">
                             <button @click="downloadQRCode" type="button"
                                 class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
