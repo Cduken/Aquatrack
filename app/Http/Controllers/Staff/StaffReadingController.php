@@ -23,28 +23,33 @@ class StaffReadingController extends Controller
         try {
             $query = trim($request->input('query', ''));
 
-            if (empty($query)) {
+            if (empty($query) || strlen($query) < 2) {
                 return response()->json([]);
             }
 
-            $cleanPhone = preg_replace('/[^0-9]/', '', $query);
-
             $users = User::where('role', 'customer')
-                ->where(function ($q) use ($query, $cleanPhone) {
+                ->where(function ($q) use ($query) {
+                    // Search by name (first or last name)
                     $q->where('name', 'like', "%{$query}%")
-                        ->orWhere('account_number', 'like', "%{$query}%")
-                        ->orWhere('email', 'like', "%{$query}%")
-                        ->orWhere('phone', 'like', "%{$cleanPhone}%");
+                        ->orWhere('lastname', 'like', "%{$query}%");
+
+                    // Search by serial number
+                    $q->orWhere('serial_number', 'like', "%{$query}%");
                 })
                 ->select([
                     'id',
                     'name',
+                    'lastname',
                     'account_number',
                     'zone',
                     'barangay',
                     'municipality',
                     'province',
-                    'phone'
+                    'phone',
+                    'date_installed',
+                    'brand',
+                    'serial_number',
+                    'size'
                 ])
                 ->limit(10)
                 ->get()
@@ -52,6 +57,7 @@ class StaffReadingController extends Controller
                     return [
                         'id' => $user->id,
                         'name' => $user->name,
+                        'lastname' => $user->lastname,
                         'account_number' => $user->account_number,
                         'address' => implode(', ', array_filter([
                             $user->zone,
@@ -59,7 +65,11 @@ class StaffReadingController extends Controller
                             $user->municipality,
                             $user->province
                         ])),
-                        'phone' => $user->phone
+                        'phone' => $user->phone,
+                        'date_installed' => $user->date_installed,
+                        'brand' => $user->brand,
+                        'serial_number' => $user->serial_number,
+                        'size' => $user->size
                     ];
                 });
 
@@ -78,6 +88,7 @@ class StaffReadingController extends Controller
 
         return response()->json([
             'name' => $user->name,
+            'lastname' => $user->lastname,
             'account_number' => $user->account_number,
             'address' => implode(', ', array_filter([
                 $user->zone,

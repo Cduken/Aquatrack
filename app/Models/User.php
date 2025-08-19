@@ -22,11 +22,17 @@ class User extends Authenticatable
         'lastname',
         'email',
         'phone',
-        'account_number', // Add this
+        'account_number',
         'password',
         'avatar',
         'zone',
         'barangay',
+        'municipality',
+        'province',
+        'date_installed',
+        'brand',
+        'serial_number',
+        'size',
     ];
 
     /**

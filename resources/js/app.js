@@ -154,6 +154,7 @@ addIcons(
     BiIcons.BiPencilSquare,
     BiIcons.BiCalendarMonth,
     BiIcons.Bi123,
+    BiIcons.BiTag,
 
 
     // Heroicons
@@ -176,6 +177,12 @@ addIcons(
     HiIcons.HiLockClosed,
     HiIcons.HiKey,
     HiIcons.HiIdentification,
+    HiIcons.HiCalendar,
+    HiIcons.HiTag,
+    HiIcons.HiCode,
+    HiIcons.HiArrowsExpand,
+    HiIcons.HiUserCircle,
+    HiIcons.HiCube,
 
     // Font Awesome
     FaIcons.FaBuilding,

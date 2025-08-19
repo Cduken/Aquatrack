@@ -6,192 +6,276 @@
 
         <div class="flex items-center justify-center min-h-screen p-4">
             <Transition name="modal">
-                <div class="relative w-full max-w-lg">
+                <div class="relative w-full max-w-4xl"> <!-- Increased width -->
                     <!-- Modal container -->
-                    <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"> <!-- Added height constraint -->
                         <!-- Header -->
-                        <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
                             <h3 class="text-xl font-semibold text-white flex items-center gap-2">
                                 <v-icon name="hi-solid-user-add" scale="1.1" />
                                 Register New User
                             </h3>
-                            <button @click="$emit('close')" class="text-white/80 hover:text-white transition-colors">
+                            <button @click="$emit('close')" class="text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
                                 <v-icon name="hi-x" scale="1.2" />
                             </button>
                         </div>
 
                         <!-- Form -->
-                        <div class="p-6">
+                        <div class="p-6 overflow-y-auto flex-1">
                             <form @submit.prevent="handleSubmit">
                                 <div class="space-y-6">
-                                    <!-- Name Fields -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="relative">
-                                            <input id="firstName" v-model="userData.name" type="text" required
-                                                class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                placeholder=" ">
-                                            <label for="firstName"
+                                    <!-- Personal Information Section -->
+                                    <div class="border-b border-gray-200 pb-4">
+                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
+                                            <v-icon name="hi-user-circle" class="text-blue-500" />
+                                            Personal Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="relative">
+                                                <input id="firstName" v-model="userData.name" type="text" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" ">
+                                                <label for="firstName"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    First Name
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-user" />
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <input id="lastName" v-model="userData.lastname" type="text" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" " @input="updateGeneratedPassword">
+                                                <label for="lastName"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Last Name
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-user" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Account Number -->
+                                        <div class="mt-6 relative">
+                                            <input id="accountNumber" v-model="userData.accountNumber" type="text" required
+                                                class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                placeholder=" " @input="formatAccountNumber">
+                                            <label for="accountNumber"
                                                 class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                First Name
+                                                Account Number
                                             </label>
                                             <div
                                                 class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-user" />
+                                                <v-icon name="hi-identification" />
                                             </div>
                                         </div>
-                                        <div class="relative">
-                                            <input id="lastName" v-model="userData.lastname" type="text" required
-                                                class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                placeholder=" " @input="updateGeneratedPassword">
-                                            <label for="lastName"
-                                                class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                Last Name
-                                            </label>
-                                            <div
-                                                class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-user" />
+
+                                        <!-- Email and Phone -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                            <div class="relative">
+                                                <input id="email" v-model="userData.email" type="email" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" ">
+                                                <label for="email"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Email
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-mail" />
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <input id="phone" v-model="userData.phone" type="tel" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" " @input="validatePhoneNumber">
+                                                <label for="phone"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Phone
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-phone" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Account Number -->
-                                    <div class="relative">
-                                        <input id="accountNumber" v-model="userData.accountNumber" type="text" required
-                                            class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                            placeholder=" " @input="formatAccountNumber">
-                                        <label for="accountNumber"
-                                            class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                            Account Number
-                                        </label>
-                                        <div
-                                            class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                            <v-icon name="hi-identification" />
+                                    <!-- Equipment Information Section -->
+                                    <div class="border-b border-gray-200 pb-4">
+                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
+                                            <v-icon name="hi-cube" class="text-blue-500" />
+                                            Equipment Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="relative">
+                                                <input id="dateInstalled" v-model="userData.date_installed" type="date" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" ">
+                                                <label for="dateInstalled"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Date Installed
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-calendar" />
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <input id="brand" v-model="userData.brand" type="text" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" ">
+                                                <label for="brand"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Brand
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-tag" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                            <div class="relative">
+                                                <input id="serialNumber" v-model="userData.serial_number" type="text" required
+                                                    class="w-full pl-11 pr-12 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" " @input="validateSerialNumber"
+                                                    maxlength="9">
+                                                <label for="serialNumber"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Serial Number
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-code" />
+                                                </div>
+                                                <div class="absolute right-3 top-3.5 text-xs text-gray-400">
+                                                    {{ userData.serial_number ? userData.serial_number.length : 0 }}/9
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <input id="size" v-model="userData.size" type="text" required
+                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
+                                                    placeholder=" ">
+                                                <label for="size"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Size
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-arrows-expand" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <!-- Email and Phone -->
-                                    <div class="relative">
-                                        <input id="email" v-model="userData.email" type="email" required
-                                            class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                            placeholder=" ">
-                                        <label for="email"
-                                            class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                            Email
-                                        </label>
-                                        <div
-                                            class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                            <v-icon name="hi-mail" />
+                                    <!-- Location and Role Section -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
+                                            <v-icon name="hi-location-marker" class="text-blue-500" />
+                                            Location & Role
+                                        </h4>
+                                        <!-- Zone and Barangay -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="relative">
+                                                <select id="zone" v-model="userData.zone" @change="updateBarangays" required
+                                                    class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
+                                                    placeholder=" ">
+                                                    <option value="" disabled selected hidden></option>
+                                                    <option v-for="(zone, index) in Object.keys(zones)" :key="index"
+                                                        :value="zone">
+                                                        {{ zone }}
+                                                    </option>
+                                                </select>
+                                                <label for="zone"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Zone
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-location-marker" />
+                                                </div>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-chevron-down"
+                                                        class="transition-transform duration-200 peer-focus:rotate-180" />
+                                                </div>
+                                            </div>
+                                            <div class="relative">
+                                                <select id="barangay" v-model="userData.barangay" required
+                                                    class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
+                                                    :disabled="!userData.zone" placeholder=" ">
+                                                    <option value="" disabled selected hidden></option>
+                                                    <option v-for="(barangay, index) in filteredBarangays" :key="index"
+                                                        :value="barangay">
+                                                        {{ barangay }}
+                                                    </option>
+                                                </select>
+                                                <label for="barangay"
+                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
+                                                    Barangay
+                                                </label>
+                                                <div
+                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-map" />
+                                                </div>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
+                                                    <v-icon name="hi-chevron-down"
+                                                        class="transition-transform duration-200 peer-focus:rotate-180" />
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="relative">
-                                        <input id="phone" v-model="userData.phone" type="tel"
-                                            class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                            placeholder=" " @input="validatePhoneNumber">
-                                        <label for="phone"
-                                            class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                            Phone
-                                        </label>
-                                        <div
-                                            class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                            <v-icon name="hi-phone" />
-                                        </div>
-                                    </div>
 
-                                    <!-- Role Selection -->
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-blue-600 mb-2">Role</label>
-                                        <div class="flex space-x-6">
-                                            <label class="inline-flex items-center space-x-2 cursor-pointer group">
-                                                <div class="relative">
-                                                    <input type="radio" v-model="userData.role" value="staff"
-                                                        class="sr-only peer">
-                                                    <div
-                                                        class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
-                                                        peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
-                                                        flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
-                                                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
-                                                            peer-checked:scale-100 transition-transform duration-200">
+                                        <!-- Role Selection -->
+                                        <div class="space-y-2 mt-6">
+                                            <label class="block text-sm font-medium text-blue-600 mb-2">Role</label>
+                                            <div class="flex space-x-6">
+                                                <label class="inline-flex items-center space-x-2 cursor-pointer group">
+                                                    <div class="relative">
+                                                        <input type="radio" v-model="userData.role" value="staff"
+                                                            class="sr-only peer">
+                                                        <div
+                                                            class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
+                                                            peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
+                                                            flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
+                                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
+                                                                peer-checked:scale-100 transition-transform duration-200">
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <span
-                                                    class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
-                                                    <v-icon name="hi-user-group"
-                                                        class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
-                                                    Staff
-                                                </span>
-                                            </label>
-                                            <label class="inline-flex items-center space-x-2 cursor-pointer group">
-                                                <div class="relative">
-                                                    <input type="radio" v-model="userData.role" value="customer"
-                                                        class="sr-only peer">
-                                                    <div
-                                                        class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
-                                                        peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
-                                                        flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
-                                                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
-                                                            peer-checked:scale-100 transition-transform duration-200">
+                                                    <span
+                                                        class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
+                                                        <v-icon name="hi-user-group"
+                                                            class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
+                                                        Staff
+                                                    </span>
+                                                </label>
+                                                <label class="inline-flex items-center space-x-2 cursor-pointer group">
+                                                    <div class="relative">
+                                                        <input type="radio" v-model="userData.role" value="customer"
+                                                            class="sr-only peer">
+                                                        <div
+                                                            class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
+                                                            peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
+                                                            flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
+                                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
+                                                                peer-checked:scale-100 transition-transform duration-200">
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <span
-                                                    class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
-                                                    <v-icon name="hi-users"
-                                                        class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
-                                                    Customer
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Zone and Barangay -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="relative">
-                                            <select id="zone" v-model="userData.zone" @change="updateBarangays" required
-                                                class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
-                                                placeholder=" ">
-                                                <option value="" disabled selected hidden></option>
-                                                <option v-for="(zone, index) in Object.keys(zones)" :key="index"
-                                                    :value="zone">
-                                                    {{ zone }}
-                                                </option>
-                                            </select>
-                                            <label for="zone"
-                                                class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                Zone
-                                            </label>
-                                            <div
-                                                class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-location-marker" />
-                                            </div>
-                                            <div
-                                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-chevron-down"
-                                                    class="transition-transform duration-200 peer-focus:rotate-180" />
-                                            </div>
-                                        </div>
-                                        <div class="relative">
-                                            <select id="barangay" v-model="userData.barangay" required
-                                                class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
-                                                :disabled="!userData.zone" placeholder=" ">
-                                                <option value="" disabled selected hidden></option>
-                                                <option v-for="(barangay, index) in filteredBarangays" :key="index"
-                                                    :value="barangay">
-                                                    {{ barangay }}
-                                                </option>
-                                            </select>
-                                            <label for="barangay"
-                                                class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                Barangay
-                                            </label>
-                                            <div
-                                                class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-map" />
-                                            </div>
-                                            <div
-                                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-chevron-down"
-                                                    class="transition-transform duration-200 peer-focus:rotate-180" />
+                                                    <span
+                                                        class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
+                                                        <v-icon name="hi-users"
+                                                            class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
+                                                        Customer
+                                                    </span>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -199,13 +283,13 @@
                                     <!-- Generated Password Preview -->
                                     <Transition name="fade">
                                         <div v-if="userData.lastname"
-                                            class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                            class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200 shadow-sm">
                                             <div class="flex items-center gap-3">
                                                 <v-icon name="hi-key" class="text-blue-500" scale="1.1" />
                                                 <div>
                                                     <p class="text-sm font-medium text-blue-600">Generated Password
                                                         Preview</p>
-                                                    <p class="text-sm text-gray-700 mt-1">
+                                                    <p class="text-sm text-gray-700 mt-1 font-mono">
                                                         {{ generatedPasswordPreview }}_XXXX
                                                         <span class="text-xs text-gray-500">(XXXX will be replaced with
                                                             user
@@ -227,7 +311,7 @@
                                 Cancel
                             </button>
                             <button type="button" @click="handleSubmit"
-                                class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 shadow-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[120px]"
+                                class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 shadow-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[120px]"
                                 :disabled="isSubmitting">
                                 <template v-if="isSubmitting">
                                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -275,11 +359,15 @@ const userData = ref({
     role: 'customer',
     zone: '',
     barangay: '',
+    date_installed: '',
+    brand: '',
+    serial_number: '',
+    size: ''
 });
 
 const isSubmitting = ref(false);
 const filteredBarangays = ref([]);
-const rawAccountNumber = ref(''); // Store the unformatted account number
+const rawAccountNumber = ref('');
 
 const updateBarangays = () => {
     if (userData.value.zone && props.zones[userData.value.zone]) {
@@ -290,13 +378,10 @@ const updateBarangays = () => {
     userData.value.barangay = '';
 };
 
-// Format account number as 000-00-000
 const formatAccountNumber = (e) => {
-    // Remove all non-digit characters
     let value = e.target.value.replace(/\D/g, '');
-    rawAccountNumber.value = value; // Store the raw value
+    rawAccountNumber.value = value;
 
-    // Apply formatting
     if (value.length > 5) {
         value = value.substring(0, 3) + '-' + value.substring(3, 5) + '-' + value.substring(5, 8);
     } else if (value.length > 3) {
@@ -306,28 +391,29 @@ const formatAccountNumber = (e) => {
     userData.value.accountNumber = value.substring(0, 11);
 };
 
-
-// Validate phone number (numbers only)
-// Validate phone number (Philippine format)
 const validatePhoneNumber = (e) => {
     let value = e.target.value;
-
-    // Remove all non-digit characters except +
     value = value.replace(/[^0-9+]/g, '');
 
-    // Ensure it starts with + if present
     if (value.startsWith('+')) {
-        // Limit to 1 + and 11 digits (e.g., +639123456789)
         value = '+' + value.substring(1).replace(/\D/g, '').substring(0, 11);
     } else {
-        // For numbers without +, limit to 11 digits (e.g., 09123456789)
         value = value.substring(0, 11);
     }
 
     userData.value.phone = value;
 };
 
-// Generated password preview
+// Validate serial number (only digits, exactly 9 characters)
+const validateSerialNumber = (e) => {
+    let value = e.target.value;
+    // Remove all non-digit characters
+    value = value.replace(/\D/g, '');
+    // Limit to 9 digits
+    value = value.substring(0, 9);
+    userData.value.serial_number = value;
+};
+
 const generatedPasswordPreview = computed(() => {
     if (userData.value.lastname.length >= 3) {
         return userData.value.lastname.substring(0, 3).toUpperCase();
@@ -336,7 +422,7 @@ const generatedPasswordPreview = computed(() => {
 });
 
 const updateGeneratedPassword = () => {
-    // This is just for visual feedback, the actual password is generated in the backend
+    // For visual feedback only
 };
 
 const resetForm = () => {
@@ -349,6 +435,10 @@ const resetForm = () => {
         role: 'customer',
         zone: '',
         barangay: '',
+        date_installed: '',
+        brand: '',
+        serial_number: '',
+        size: ''
     };
     rawAccountNumber.value = '';
     filteredBarangays.value = [];
@@ -357,16 +447,20 @@ const resetForm = () => {
 const handleSubmit = async () => {
     isSubmitting.value = true;
 
-    // Prepare data with properly formatted account number
+    // Validate serial number length
+    if (userData.value.serial_number.length !== 9) {
+        alert('Serial number must be exactly 9 digits');
+        isSubmitting.value = false;
+        return;
+    }
+
     const submitData = {
         ...userData.value,
-        account_number: userData.value.accountNumber, // Send the FORMATTED value
+        account_number: userData.value.accountNumber,
         phone: userData.value.phone.replace(/\D/g, '')
     };
 
-    console.log('Submitting:', submitData); // Debug log
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log('Submitting:', submitData);
     emit('submit', submitData);
     resetForm();
     isSubmitting.value = false;
@@ -374,7 +468,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Transition effects */
+/* Your existing styles remain the same */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.2s ease;
@@ -396,7 +490,6 @@ const handleSubmit = async () => {
     transform: translateY(-20px);
 }
 
-/* Input styles */
 input:focus~label,
 input:not(:placeholder-shown)~label,
 select:focus~label,
@@ -410,12 +503,10 @@ select::placeholder {
     color: transparent;
 }
 
-/* Custom radio buttons */
 input[type="radio"]:checked~div>div {
     transform: scale(1);
 }
 
-/* Select dropdown styling */
 select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.5rem center;
@@ -434,7 +525,6 @@ select:disabled~label {
     @apply text-gray-400;
 }
 
-/* Spinner animation */
 .animate-spin {
     animation: spin 1s linear infinite;
 }

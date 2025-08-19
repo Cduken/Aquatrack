@@ -7,7 +7,7 @@
                     <div class="flex space-x-4">
                         <button @click="showCreateModal = true"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
-                            <v-icon name="bi-plus" class="w-5 h-5" /> Add New User
+                            <v-icon name="bi-plus" class="w-5 h-5" /> Register New User
                         </button>
                         <button
                             class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition flex items-center gap-2">

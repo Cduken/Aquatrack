@@ -14,13 +14,27 @@ return new class extends Migration
             $table->string('barangay')->after('zone')->nullable();
             $table->string('municipality')->after('barangay')->default('Clarin');
             $table->string('province')->after('municipality')->default('Bohol');
+            $table->date('date_installed')->after('province')->nullable();
+            $table->string('brand')->after('date_installed')->nullable();
+            $table->string('serial_number')->after('brand')->unique()->nullable();
+            $table->string('size')->after('serial_number')->nullable();
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['lastname', 'zone', 'barangay', 'municipality', 'province']);
+            $table->dropColumn([
+                'lastname',
+                'zone',
+                'barangay',
+                'municipality',
+                'province',
+                'date_installed',
+                'brand',
+                'serial_number',
+                'size'
+            ]);
         });
     }
 };

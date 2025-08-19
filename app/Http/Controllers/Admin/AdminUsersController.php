@@ -20,7 +20,9 @@ class AdminUsersController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%");
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('lastname', 'like', "%{$search}%")
+                        ->orWhere('serial_number', 'like', "%{$search}%");
                 });
             })
             ->when($request->role, function ($query, $role) {
@@ -34,10 +36,17 @@ class AdminUsersController extends Controller
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'lastname' => $user->lastname,
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'avatar_url' => $user->avatar_url,
                     'role' => $user->roles->first()?->name ?? 'none',
+                    'zone' => $user->zone,
+                    'barangay' => $user->barangay,
+                    'date_installed' => $user->date_installed,
+                    'brand' => $user->brand,
+                    'serial_number' => $user->serial_number,
+                    'size' => $user->size,
                 ];
             });
 
@@ -57,28 +66,35 @@ class AdminUsersController extends Controller
                 'required',
                 'string',
                 'regex:/^(\+63\d{10}|09\d{9})$/',
-                'max:13' // +639123456789 (13 chars)
+                'max:13'
             ],
             'account_number' => [
                 'required',
                 'string',
-                'regex:/^\d{3}-\d{2}-\d{3}$/', // Keep formatted validation
+                'regex:/^\d{3}-\d{2}-\d{3}$/',
                 'unique:users'
             ],
             'role' => 'required|in:customer,staff,admin',
             'zone' => 'required|string',
             'barangay' => 'required|string',
+            'date_installed' => 'required|date',
+            'brand' => 'required|string|max:255',
+            'serial_number' => 'required|string|regex:/^\d{9}$/|unique:users',
+            'size' => 'required|string|max:50',
         ]);
-
 
         $user = User::create([
             'name' => $validated['name'],
             'lastname' => $validated['lastname'],
             'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
             'account_number' => $validated['account_number'],
             'zone' => $validated['zone'],
             'barangay' => $validated['barangay'],
+            'date_installed' => $validated['date_installed'],
+            'brand' => $validated['brand'],
+            'serial_number' => $validated['serial_number'],
+            'size' => $validated['size'],
             'password' => Hash::make('temporary_password'),
         ]);
 

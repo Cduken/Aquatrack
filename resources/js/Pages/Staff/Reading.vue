@@ -1,3 +1,4 @@
+// Staff/Reading.vue
 <template>
     <StaffLayout title="Reading">
         <div class="w-full bg-white shadow-md rounded-lg p-6">
@@ -38,9 +39,13 @@
                 <!-- Loading State -->
                 <div v-if="isSearching" class="text-center py-4">
                     <div class="inline-flex items-center text-blue-600">
-                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                         <span>Searching customers...</span>
                     </div>
@@ -58,8 +63,10 @@
                                     class="p-4 border rounded-md hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition duration-200 flex justify-between items-start shadow-sm">
                                     <div>
                                         <div class="flex items-center gap-2">
-                                            <span class="font-medium text-gray-800">{{ user.name }}</span>
-                                            <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Account #{{ user.account_number }}</span>
+                                            <span class="font-medium text-gray-800">{{ user.name }} {{ user.lastname }}</span>
+                                            <span
+                                                class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Serial
+                                                # {{ user.serial_number }}</span>
                                         </div>
                                         <div class="text-sm text-gray-600 mt-1 flex items-center gap-1">
                                             <v-icon name="bi-geo-alt" class="text-gray-400 text-xs" />
@@ -68,6 +75,10 @@
                                         <div class="text-sm text-gray-600 mt-1 flex items-center gap-1">
                                             <v-icon name="bi-telephone" class="text-gray-400 text-xs" />
                                             {{ user.phone }}
+                                        </div>
+                                        <div class="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                                            <v-icon name="bi-tag" class="text-gray-400 text-xs" />
+                                            {{ user.account_number }}
                                         </div>
                                     </div>
                                     <v-icon name="bi-chevron-right" class="text-gray-400" />
@@ -89,12 +100,8 @@
         </div>
 
         <!-- Meter Reading Modal -->
-        <MeterReadingModal
-            v-if="showReadingForm"
-            :user="selectedUser"
-            @close="closeReadingForm"
-            @reading-submitted="handleReadingSubmitted"
-        />
+        <MeterReadingModal v-if="showReadingForm" :user="selectedUser" @close="closeReadingForm"
+            @reading-submitted="handleReadingSubmitted" />
     </StaffLayout>
 </template>
 
@@ -145,7 +152,19 @@ const searchUsers = async () => {
 const debouncedSearch = debounce(searchUsers, 300);
 
 const openReadingForm = (user) => {
-    selectedUser.value = user;
+    // Make sure we have all the user data
+    selectedUser.value = {
+        id: user.id,
+        name: user.name,
+        lastname: user.lastname,
+        account_number: user.account_number,
+        address: user.address,
+        phone: user.phone,
+        date_installed: user.date_installed || null,
+        brand: user.brand || null,
+        serial_number: user.serial_number || null,
+        size: user.size || null
+    };
     showReadingForm.value = true;
 };
 
