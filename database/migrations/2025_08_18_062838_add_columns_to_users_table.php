@@ -12,13 +12,15 @@ return new class extends Migration
             $table->string('lastname')->after('name')->nullable();
             $table->string('zone')->after('phone')->nullable();
             $table->string('barangay')->after('zone')->nullable();
+            $table->string('municipality')->after('barangay')->default('Clarin');
+            $table->string('province')->after('municipality')->default('Bohol');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['lastname', 'zone', 'barangay']);
+            $table->dropColumn(['lastname', 'zone', 'barangay', 'municipality', 'province']);
         });
     }
 };

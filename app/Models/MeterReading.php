@@ -19,7 +19,7 @@ class MeterReading extends Model
     ];
 
     protected $casts = [
-        'reading_date' => 'datetime:Y-m-d', // More specific date format
+        'reading_date' => 'datetime:Y-m-d',
         'reading' => 'float',
         'consumption' => 'float',
         'amount' => 'float'

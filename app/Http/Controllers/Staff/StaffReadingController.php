@@ -13,6 +13,8 @@ class StaffReadingController extends Controller
 {
     public function index()
     {
+
+
         return Inertia::render('Staff/Reading');
     }
 
@@ -25,7 +27,6 @@ class StaffReadingController extends Controller
                 return response()->json([]);
             }
 
-            // Clean special characters from phone numbers
             $cleanPhone = preg_replace('/[^0-9]/', '', $query);
 
             $users = User::where('role', 'customer')
@@ -41,10 +42,26 @@ class StaffReadingController extends Controller
                     'account_number',
                     'zone',
                     'barangay',
+                    'municipality',
+                    'province',
                     'phone'
                 ])
                 ->limit(10)
-                ->get();
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'account_number' => $user->account_number,
+                        'address' => implode(', ', array_filter([
+                            $user->zone,
+                            $user->barangay,
+                            $user->municipality,
+                            $user->province
+                        ])),
+                        'phone' => $user->phone
+                    ];
+                });
 
             return response()->json($users);
         } catch (\Exception $e) {
@@ -62,7 +79,12 @@ class StaffReadingController extends Controller
         return response()->json([
             'name' => $user->name,
             'account_number' => $user->account_number,
-            'address' => $user->zone . ', ' . $user->barangay,
+            'address' => implode(', ', array_filter([
+                $user->zone,
+                $user->barangay,
+                $user->municipality,
+                $user->province
+            ])),
             'phone' => $user->phone,
             'date_installed' => $user->date_installed ?? 'Not available',
             'brand' => $user->brand ?? 'Not specified',

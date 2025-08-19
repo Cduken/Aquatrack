@@ -148,6 +148,12 @@ addIcons(
     BiIcons.BiShieldCheck,
     BiIcons.BiBoxArrowLeft,
     BiIcons.BiBell,
+    BiIcons.BiPeopleFill,
+    BiIcons.BiCalendarCheck,
+    BiIcons.BiRulers,
+    BiIcons.BiPencilSquare,
+    BiIcons.BiCalendarMonth,
+    BiIcons.Bi123,
 
 
     // Heroicons

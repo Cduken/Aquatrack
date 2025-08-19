@@ -24,9 +24,27 @@
 
                     <div class="w-full p-6 rounded-lg border border-gray-500 bg-[#204878]/90 backdrop-blur-sm">
                         <form @submit.prevent="submitReport">
-                            <!-- Reporter Information -->
+
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Reporter Name -->
+                                <div>
+                                    <label for="municipality" class="text-white">Municipality <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="text" id="municipality" v-model="form.municipality" readonly
+                                        value="Clarin"
+                                        class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed">
+                                </div>
+
+                                <div>
+                                    <label for="province" class="text-white">Province</label>
+                                    <input type="text" id="province" v-model="form.province" readonly value="Bohol"
+                                        class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed">
+                                </div>
+                            </div>
+
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                                 <div>
                                     <label for="reporter_name" class="text-white">Full Name <span
                                             class="text-red-500">*</span></label>
