@@ -5,7 +5,7 @@
                 <div class="flex justify-between items-center border-b pb-4">
                     <h1 class="text-2xl font-bold text-gray-800">Users</h1>
                     <div class="flex space-x-4">
-                        <button @click="createUser"
+                        <button @click="showCreateModal = true"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-2">
                             <v-icon name="bi-plus" class="w-5 h-5" /> Add New User
                         </button>
@@ -154,6 +154,9 @@
             </div>
         </div>
 
+        <CreateUserModal :show="showCreateModal" :zones="zones" @close="showCreateModal = false"
+            @submit="submitCreateUser" />
+
 
     </AdminLayout>
 </template>
@@ -164,7 +167,9 @@ import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { pickBy } from 'lodash';
+import { usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+import CreateUserModal from '@/Components/Admin/Modals/CreateUserModal.vue';
 
 const props = defineProps({
     users: Object,
@@ -179,14 +184,22 @@ const filters = ref({
     per_page: props.filters.per_page || 10,
 });
 
-const newUser = ref({
-    name: '',
-    email: '',
-    phone: '',
-    status: 'active',
-});
-
 const showCreateModal = ref(false);
+
+const zones = {
+    "Zone 1": ["Poblacion Sur"],
+    "Zone 2": ["Poblacion Centro"],
+    "Zone 3": ["Poblacion Centro"],
+    "Zone 4": ["Poblacion Norte"],
+    "Zone 5": ["Candajec", "Buangan"],
+    "Zone 6": ["Bonbon"],
+    "Zone 7": ["Bonbon"],
+    "Zone 8": ["Nahawan"],
+    "Zone 9": ["Caboy", "Villaflor", "Cantuyoc"],
+    "Zone 10": ["Bacani", "Mataub", "Comaang", "Tangaran"],
+    "Zone 11": ["Cantuyoc", "Nahawan"],
+    "Zone 12": ["Lajog", "Buacao"],
+};
 
 // Watch filters and reload when they change
 watch(filters, (value) => {
@@ -215,29 +228,11 @@ const resetFilters = () => {
     };
 };
 
-const prevPage = () => {
-    if (props.users.prev_page_url) {
-        router.visit(props.users.prev_page_url, {
-            preserveState: true,
-        });
-    }
-};
-
-const nextPage = () => {
-    if (props.users.next_page_url) {
-        router.visit(props.users.next_page_url, {
-            preserveState: true,
-        });
-    }
-};
-
 const viewUser = (user) => {
-    // Implement view user functionality
     console.log('View user:', user);
 };
 
 const editUser = (user) => {
-    // Implement edit user functionality
     console.log('Edit user:', user);
 };
 
@@ -272,85 +267,88 @@ const confirmDelete = (user) => {
     });
 };
 
-const createUser = () => {
-    Swal.fire({
-        title: 'Create New User',
-        html: `
-            <div class="text-left space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                    <input id="swal-name" type="text" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input id="swal-email" type="email" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input id="swal-phone" type="tel"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                    <select id="swal-role"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="customer">Customer</option>
-                        <option value="staff">Staff</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-            </div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Create User',
-        cancelButtonText: 'Cancel',
-        customClass: {
-            popup: 'rounded-lg shadow-xl',
-            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition',
-            cancelButton: 'px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition mr-2',
-            actions: 'mt-4 flex justify-end space-x-3'
-        },
-        preConfirm: () => {
-            return {
-                name: document.getElementById('swal-name').value,
-                email: document.getElementById('swal-email').value,
-                phone: document.getElementById('swal-phone').value,
-                role: document.getElementById('swal-role').value
-            }
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const userData = result.value;
-            // Submit the form via Inertia
-            router.post('/admin/users', userData, {
-                onSuccess: () => {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'User created successfully',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
-                        }
-                    });
-                },
-                onError: (errors) => {
-                    let errorMessage = 'Failed to create user.';
-                    if (errors.email) errorMessage = errors.email;
-                    if (errors.name) errorMessage = errors.name;
+const submitCreateUser = (userData) => {
+    router.post(route('admin.users.store'), userData, {
+        preserveScroll: true,
+        onSuccess: (response) => {
+            showCreateModal.value = false;
 
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+            // Get the generated password from the response
+            const generatedPassword = response.props.flash?.generated_password;
+
+            if (generatedPassword) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'User created successfully!',
+                    html: `
+                        <div class="text-left flex items-center flex-col justify-center">
+                            <p class="mb-2 font-medium">Generated Password:</p>
+                            <input
+                                id="swal-password"
+                                class="swal2-input text-center font-mono text-lg"
+                                value="${generatedPassword}"
+                                readonly
+                                style="width: 70%; padding: 0.5rem;"
+                            />
+                            <p class="mt-2 text-sm text-gray-500">Please provide this password to the user</p>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Copy Password',
+                    showCancelButton: true,
+                    cancelButtonText: 'Close',
+                    focusConfirm: false,
+                    customClass: {
+                        popup: '!text-left',
+                        confirmButton: '!bg-blue-600 !hover:bg-blue-700',
+                    },
+                    didOpen: () => {
+                        const confirmBtn = Swal.getConfirmButton();
+                        if (confirmBtn) {
+                            confirmBtn.addEventListener('click', () => {
+                                navigator.clipboard.writeText(generatedPassword);
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Copied!',
+                                    text: 'Password copied to clipboard',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+                            });
                         }
-                    });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'User created',
+                    text: 'User was created successfully but password could not be displayed',
+                    toast: true,
+                    position: 'top-end',
+                    timer: 3000
+                });
+            }
+        },
+        onError: (errors) => {
+            let errorMessage = 'Failed to create user. Please check the form and try again.';
+
+            if (errors.email) {
+                errorMessage = errors.email;
+            } else if (errors.name) {
+                errorMessage = errors.name;
+            } else if (errors.lastname) {
+                errorMessage = errors.lastname;
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Creation Failed',
+                text: errorMessage,
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: '!bg-red-600 !hover:bg-red-700',
                 }
             });
         }

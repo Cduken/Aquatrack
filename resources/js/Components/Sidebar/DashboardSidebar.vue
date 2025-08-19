@@ -95,7 +95,7 @@ const activeLinks = computed(() => {
         </button>
 
         <aside
-            class="fixed top-0 h-screen transition-all z-[1000] overflow-y-auto bg-gradient-to-br from-[#062F64] to-[#1E4272] shadow-lg"
+            class="fixed top-0 h-screen transition-all z-[1000] overflow-hidden bg-gradient-to-br from-[#062F64] to-[#1E4272] shadow-lg"
             :class="{
                 'sidebar-open': isOpen,
                 'sidebar-left': position === 'left',

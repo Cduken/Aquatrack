@@ -40,7 +40,7 @@
                             <li class="flex items-start">
                                 <v-icon name="bi-exclamation-triangle-fill" class="text-red-500 mt-0.5 mr-2" />
                                 <div>
-                                    <p>High consumption alert for ACCT-1003</p>
+                                    <p>High consumption alert for ACCT-1001</p>
                                     <p class="text-sm text-gray-500">Yesterday, 2:15 PM</p>
                                 </div>
                             </li>
@@ -97,8 +97,12 @@
 
 <script setup>
 import StaffLayout from '@/Layouts/StaffLayout.vue';
+
+
+
+
 </script>
 
 <style scoped>
-/* Custom styles if needed */
+
 </style>

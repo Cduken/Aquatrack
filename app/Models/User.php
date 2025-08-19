@@ -19,10 +19,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
         'email',
         'phone',
+        'account_number', // Add this
         'password',
         'avatar',
+        'zone',
+        'barangay',
     ];
 
     /**
@@ -76,5 +80,40 @@ class User extends Authenticatable
 
         // For local storage - use the correct URL structure
         return asset('storage/' . $this->avatar);
+    }
+
+    public function setAccountNumberAttribute($value)
+    {
+        // Ensure value is properly formatted before saving
+        $clean = preg_replace('/[^0-9]/', '', $value);
+        $this->attributes['account_number'] = substr($clean, 0, 3) . '-'
+            . substr($clean, 3, 2) . '-'
+            . substr($clean, 5, 3);
+    }
+
+    public function getFormattedAccountNumberAttribute()
+    {
+        return $this->account_number; // Already formatted from the mutator
+    }
+
+    public function setPhoneAttribute($value)
+    {
+        // Standardize to +63 format if it starts with 09
+        $clean = str_replace('+', '', $value);
+        if (str_starts_with($clean, '63')) {
+            $this->attributes['phone'] = '+' . $clean;
+        } elseif (str_starts_with($clean, '09')) {
+            $this->attributes['phone'] = '+63' . substr($clean, 1);
+        } else {
+            $this->attributes['phone'] = $value;
+        }
+    }
+
+    public function getFormattedPhoneAttribute()
+    {
+        if (str_starts_with($this->phone, '+63')) {
+            return preg_replace('/(\+63)(\d{3})(\d{3})(\d{4})/', '$1 $2 $3 $4', $this->phone);
+        }
+        return $this->phone;
     }
 }

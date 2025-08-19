@@ -22,6 +22,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn() => $request->session()->get('error'),
                 'trackingCode' => fn() => $request->session()->get('trackingCode'),
                 'dateSubmitted' => fn() => $request->session()->get('dateSubmitted'),
+                'generated_password' => fn() => $request->session()->get('generated_password'),
             ],
             'auth' => [
                 'user' => $request->user() ? [

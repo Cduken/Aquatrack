@@ -28,7 +28,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Reporter Name -->
                                 <div>
-                                    <label for="reporter_name" class="text-white">Your Name <span
+                                    <label for="reporter_name" class="text-white">Full Name <span
                                             class="text-red-500">*</span></label>
                                     <input type="text" id="reporter_name" v-model="form.reporter_name" required
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
@@ -40,7 +40,7 @@
                                 <!-- Reporter Phone -->
                                 <div>
                                     <label for="reporter_phone" class="text-white">Phone Number</label>
-                                    <input type="number" id="reporter_phone" v-model="form.reporter_phone"
+                                    <input type="tel" id="reporter_phone" v-model="form.reporter_phone"
                                         class="w-full p-2 mt-2 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white"
                                         placeholder="Your contact number">
                                     <p v-if="form.errors.reporter_phone" class="mt-1 text-sm text-red-400">{{

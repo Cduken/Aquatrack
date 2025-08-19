@@ -9,6 +9,9 @@ use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Roles\SelectRolesController;
+use App\Http\Controllers\Staff\StaffDashboardController;
+use App\Http\Controllers\Staff\StaffReadingController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,9 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
-
 });
 
 // Dashboard redirection
@@ -44,7 +44,9 @@ Route::post('/verify-role-code', [AuthenticatedSessionController::class, 'verify
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
+
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store'); // Add this line
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
 
@@ -67,13 +69,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Staff Routes
 Route::middleware(['auth', 'role:staff'])->group(function () {
-    Route::get('/staff/dashboard', function () {
-        return Inertia::render('Staff/Dashboard');
-    })->name('staff.dashboard');
+    Route::get('/staff/dashboard', [StaffDashboardController::class, 'index'])->name('staff.dashboard');
 
-    Route::get('/staff/reading', function () {
-        return Inertia::render('Staff/Reading');
-    })->name('staff.reading');
+    // Meter reading routes
+    Route::get('/staff/reading', [StaffReadingController::class, 'index'])->name('staff.reading');
+    Route::get('/staff/reading/search', [StaffReadingController::class, 'search'])->name('staff.reading.search');
+    Route::get('/staff/reading/user/{userId}', [StaffReadingController::class, 'getUserDetails'])->name('staff.reading.user');
+    Route::get('/staff/reading/previous/{userId}', [StaffReadingController::class, 'getPreviousReadings'])->name('staff.reading.previous');
+    Route::post('/staff/reading', [StaffReadingController::class, 'storeReading'])->name('staff.reading.store');
 });
 
 // Customer Routes
@@ -97,6 +100,10 @@ Route::match(['get', 'post'], '/reports/track', [ReportController::class, 'track
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 Route::get('/api/reports/find', [ReportController::class, 'findByTrackingCode'])->name('reports.find');
 Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
+
+Route::get('/debug/customers', function() {
+    return User::where('role', 'customer')->get();
+});
 
 
 require __DIR__ . '/auth.php';

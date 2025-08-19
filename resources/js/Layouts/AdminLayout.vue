@@ -119,6 +119,7 @@ const logout = () => {
     transition: all 0.3s ease;
     width: 100%;
     position: relative;
+
 }
 
 .sticky-nav-container {
@@ -135,16 +136,8 @@ const logout = () => {
     position: relative;
 }
 
-.water-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50vh;
-    background: linear-gradient(135deg, #e0f7fa 0%, #80deea 50%, #4dd0e1 100%);
-    z-index: 0;
-    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
-}
+
+
 
 @media (min-width: 641px) {
     .main-content.sidebar-open {
