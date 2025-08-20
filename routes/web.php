@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminRecordController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -14,9 +15,7 @@ use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffReadingController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -47,16 +46,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
 
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
-    Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store'); // Add this line
+    Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
-
     Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
-        ->name('admin.reports.updateStatus'); // ✅ New route
+        ->name('admin.reports.updateStatus');
 
-    Route::get('/admin/records', function () {
-        return Inertia::render('Admin/Records');
-    })->name('admin.records');
+    Route::get('/admin/records', [AdminRecordController::class, 'index'])->name('admin.records.index');
+    Route::get('/admin/records/{record}', [AdminRecordController::class, 'show'])->name('admin.records.show');
+    Route::get('/admin/records/{record}/edit', [AdminRecordController::class, 'edit'])->name('admin.records.edit');
+    Route::put('/admin/records/{record}', [AdminRecordController::class, 'update'])->name('admin.records.update');
+    Route::delete('/admin/records/{record}', [AdminRecordController::class, 'destroy'])->name('admin.records.destroy');
 
     Route::get('/admin/announcements', [AnnouncementsController::class, 'index'])->name('announcements');
     Route::post('/admin/announcements', [AnnouncementsController::class, 'store'])->name('announcements.store');
@@ -88,7 +88,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
 
-//Select Roles
+// Select Roles
 Route::get('/select-roles', [SelectRolesController::class, 'index'])->name('select-roles');
 
 // Report Routes (Public and Authenticated)
@@ -100,9 +100,8 @@ Route::get('/reports/{report}', [ReportController::class, 'show'])->name('report
 Route::get('/api/reports/find', [ReportController::class, 'findByTrackingCode'])->name('reports.find');
 Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
 
-Route::get('/debug/customers', function() {
+Route::get('/debug/customers', function () {
     return User::where('role', 'customer')->get();
 });
-
 
 require __DIR__ . '/auth.php';

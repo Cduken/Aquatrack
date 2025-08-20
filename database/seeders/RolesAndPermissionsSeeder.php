@@ -37,6 +37,8 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $admin->syncRoles([$adminRole]);
+        $admin->role = 'admin'; // Update the custom role column
+        $admin->save();
 
         // Create or update staff user
         $staff = User::updateOrCreate(
@@ -48,6 +50,8 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $staff->syncRoles([$staffRole]);
+        $staff->role = 'staff'; // Update the custom role column
+        $staff->save();
 
         // Create or update customer user
         $customer = User::updateOrCreate(
@@ -59,5 +63,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $customer->syncRoles([$customerRole]);
+        $customer->role = 'customer'; // Update the custom role column
+        $customer->save();
     }
 }

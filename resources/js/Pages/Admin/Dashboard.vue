@@ -195,11 +195,7 @@
                     <v-icon name="bi-clock-history" class="text-blue-500" />
                     Recent Activity
                 </h2>
-                <Link v-if="$page.props.auth.user?.role === 'admin'" :href="route('admin.activities.index')"
-                    class="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                View All
-                <v-icon name="bi-arrow-right" class="w-3 h-3" />
-                </Link>
+
             </div>
             <div class="divide-y divide-gray-100">
                 <div v-for="activity in recentActivities" :key="activity.id"

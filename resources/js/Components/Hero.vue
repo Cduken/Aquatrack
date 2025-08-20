@@ -78,7 +78,7 @@ const handleReportSubmitted = async (response) => {
 
     <main class="relative w-full min-h-screen overflow-hidden">
 
-        <Navigation :can-login="canLogin" />
+        <Navigation  />
 
         <!-- Background elements - image with gradient overlay -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -96,14 +96,14 @@ const handleReportSubmitted = async (response) => {
             <!-- Changed justify-center to justify-start and added pt-32 -->
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Tagline -->
-                <div
+                <!-- <div
                     class="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                     <v-icon name="fa-water" class="text-blue-300" />
                     <span class="text-sm font-medium text-blue-100">Water Management System</span>
-                </div>
+                </div> -->
 
                 <!-- Main headline -->
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+                <h1 class="text-4xl md:text-6xl lg:text-[55px] font-bold text-white leading-tight mb-6">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200">Track</span>,
                     <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200">Report</span>,
@@ -112,7 +112,7 @@ const handleReportSubmitted = async (response) => {
                 </h1>
 
                 <!-- Subheadline -->
-                <p class="text-lg md:text-xl lg:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-10">
+                <p class="text-sm md:text-md lg:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed mb-10">
                     AquaTrack empowers you to monitor water usage, report issues instantly, and track resolutions - all
                     in one seamless platform.
                 </p>
@@ -120,7 +120,7 @@ const handleReportSubmitted = async (response) => {
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <Link :href="route('reports.index')"
-                        class="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-md rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <v-icon name="bi-plus-circle" scale="1.3" />
                         <span>Report Water Issue</span>
                     </Link>
@@ -135,18 +135,18 @@ const handleReportSubmitted = async (response) => {
 
             <!-- Stats section remains at the bottom -->
             <div class="absolute bottom-[100px] left-0 right-0">
-                <div class="max-w-5xl mx-auto px-6 py-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
+                <div class="max-w-4xl mx-auto p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="p-3">
-                            <div class="text-2xl md:text-3xl font-bold text-blue-300">1,200+</div>
+                            <div class="text-xl md:text-2xl font-semibold text-blue-300">1,200+</div>
                             <div class="text-sm text-blue-100">Issues Resolved</div>
                         </div>
                         <div class="p-3 border-x border-white/10">
-                            <div class="text-2xl md:text-3xl font-bold text-teal-300">342</div>
+                            <div class="text-2xl md:text-2xl font-semibold text-teal-300">342</div>
                             <div class="text-sm text-blue-100">Customers</div>
                         </div>
                         <div class="p-3">
-                            <div class="text-2xl md:text-3xl font-bold text-cyan-300">98%</div>
+                            <div class="text-2xl md:text-2xl font-semibold text-cyan-300">98%</div>
                             <div class="text-sm text-blue-100">Customer Satisfaction</div>
                         </div>
                     </div>
