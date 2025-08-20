@@ -57,13 +57,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $customer = User::updateOrCreate(
             ['email' => 'customer@email.com'],
             [
-                'name' => 'Customer',
+                'name' => 'Concessioner',
                 'password' => Hash::make('customer123'),
                 'email_verified_at' => now()
             ]
         );
         $customer->syncRoles([$customerRole]);
-        $customer->role = 'customer'; // Update the custom role column
+        $customer->role = 'customer';
         $customer->save();
     }
 }

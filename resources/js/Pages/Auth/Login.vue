@@ -1,6 +1,6 @@
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3';
-import { ref, computed, onMounted } from 'vue';
+import { useForm, Link, usePage } from '@inertiajs/vue3';
+import { ref, computed, onMounted, watch } from 'vue';
 import { OhVueIcon } from 'oh-vue-icons';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -44,10 +44,43 @@ const form = useForm({
 });
 
 // Reset code verification when selected role changes
-onMounted(() => {
+watch(() => props.selectedRole, () => {
     codeVerified.value = false;
     verificationCode.value = '';
 });
+
+// Handle logout success flash message
+const page = usePage();
+watch(() => page.props.flash, (flash) => {
+    if (flash.logout_success) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Logged Out',
+            text: 'You have been successfully logged out.',
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            background: '#f8f9fa',
+            backdrop: false,
+            width: '400px',
+            customClass: {
+                title: 'text-lg font-medium'
+            }
+        });
+    }
+}, { immediate: true });
+
+const updateCsrfToken = (newToken) => {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag && newToken) {
+        metaTag.setAttribute('content', newToken);
+    }
+};
+
+const getCsrfToken = () => {
+    return document.querySelector('meta[name="csrf-token"]')?.content || '';
+};
 
 const verifyCode = async () => {
     verificationError.value = '';
@@ -55,32 +88,20 @@ const verifyCode = async () => {
     const startTime = Date.now();
 
     try {
-        // Get fresh CSRF token before each request
-        const csrfToken = getCsrfToken();
-
-        // Add artificial delay to ensure spinner is visible
-        await Promise.all([
-            axios.post(route('verify-code'), {
-                role: props.selectedRole.toLowerCase(),
-                code: verificationCode.value
-            }, {
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            }),
-            new Promise(resolve => setTimeout(resolve, 2000)) // Minimum 2 second delay
-        ]);
-
         const response = await axios.post(route('verify-code'), {
             role: props.selectedRole.toLowerCase(),
             code: verificationCode.value
         }, {
             headers: {
-                'X-CSRF-TOKEN': csrfToken,
+                'X-CSRF-TOKEN': getCsrfToken(),
                 'X-Requested-With': 'XMLHttpRequest'
             }
         });
+
+        // Update CSRF token if provided
+        if (response.data.csrf_token) {
+            updateCsrfToken(response.data.csrf_token);
+        }
 
         if (response.data.verified) {
             codeVerified.value = true;
@@ -102,28 +123,52 @@ const verifyCode = async () => {
         }
     } catch (error) {
         console.error('Verification error:', error);
-        verificationError.value = error.response?.data?.message ||
-            error.response?.data?.errors?.code?.[0] ||
-            'The verification code you entered is incorrect';
-
-        Swal.fire({
-            position: 'top-end',
-            icon: 'error',
-            title: 'Verification Failed',
-            text: verificationError.value,
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            background: '#f8f9fa',
-            backdrop: false,
-            width: '400px',
-            customClass: {
-                title: 'text-lg font-medium'
-            }
-        });
+        if (error.response?.status === 419) {
+            // Handle CSRF token mismatch
+            updateCsrfToken(error.response.data.csrf_token);
+            verificationError.value = 'Session expired. Please refresh the page and try again.';
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Session Expired',
+                text: verificationError.value,
+                showConfirmButton: true,
+                confirmButtonText: 'Refresh',
+                toast: true,
+                background: '#f8f9fa',
+                backdrop: false,
+                width: '400px',
+                customClass: {
+                    title: 'text-lg font-medium'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.reload();
+                }
+            });
+        } else {
+            verificationError.value = error.response?.data?.message ||
+                error.response?.data?.errors?.code?.[0] ||
+                'The verification code you entered is incorrect';
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Verification Failed',
+                text: verificationError.value,
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                background: '#f8f9fa',
+                backdrop: false,
+                width: '400px',
+                customClass: {
+                    title: 'text-lg font-medium'
+                }
+            });
+        }
     } finally {
         const elapsed = Date.now() - startTime;
-        const minimumDelay = 2000; // 2 seconds minimum spinner display
+        const minimumDelay = 2000; // 2 seconds minimum spinner
         if (elapsed < minimumDelay) {
             await new Promise(resolve => setTimeout(resolve, minimumDelay - elapsed));
         }
@@ -131,18 +176,13 @@ const verifyCode = async () => {
     }
 };
 
-const getCsrfToken = () => {
-    return document.querySelector('meta[name="csrf-token"]').content;
-};
-
 const submit = () => {
-    form._token = getCsrfToken();
-
     form.post(route('login'), {
+        preserveState: true,
+        preserveScroll: true,
         onFinish: () => form.reset('password'),
-
-        onSuccess: (response) => {
-            const userName = response.props.auth?.user?.name || 'there';
+        onSuccess: () => {
+            const userName = page.props.auth?.user?.name || 'there';
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
@@ -163,31 +203,23 @@ const submit = () => {
             });
         },
         onError: (errors) => {
-            // Debug the complete error object
             console.log('Complete error object:', errors);
 
-            // Default error structure
             let errorTitle = 'Login Failed';
             let errorMessage = 'Invalid credentials. Please try again';
 
-            // Handle different error cases
-            if (errors.errors?.email?.[0]) {
-                errorMessage = errors.errors.email[0];
-            }
-            else if (errors.role_mismatch) {
-                // Handle enhanced role mismatch error
+            if (errors.email) {
+                errorMessage = errors.email;
+            } else if (errors.role_mismatch) {
                 if (typeof errors.role_mismatch === 'object') {
                     errorTitle = errors.role_mismatch.title || errorTitle;
                     errorMessage = errors.role_mismatch.message || errorMessage;
                 } else {
                     errorMessage = errors.role_mismatch;
                 }
-            }
-            else if (errors.message) {
+            } else if (errors.message) {
                 errorMessage = errors.message;
             }
-
-            console.log('Displaying error:', { title: errorTitle, message: errorMessage });
 
             Swal.fire({
                 position: 'top-end',
@@ -269,7 +301,7 @@ const submit = () => {
                     :class="{ 'opacity-75 cursor-not-allowed': isVerifying }">
                     <template v-if="isVerifying">
                         <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24">
+                            fill="none" viewBox="0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                             </circle>
                             <path class="opacity-75" fill="currentColor"
@@ -325,13 +357,13 @@ const submit = () => {
                         Signing in...
                     </template>
                     <template v-else>
-                        <v-icon name="md-login-outlined" class="text-lg" />
+                        <OhVueIcon name="md-login-outlined" class="text-lg" />
                         Sign In
                     </template>
                 </button>
             </form>
 
-            <div class="mt-6 text-sm text-[#1C606A] border border[#D7F1F5] p-4 bg-[#D7F1F5] rounded-md">
+            <div class="mt-6 text-sm text-[#1C606A] border border-[#D7F1F5] p-4 bg-[#D7F1F5] rounded-md">
                 If you do not know your account credentials, or if you have forgotten your password, please contact the
                 Systems Development & Administration Office.
             </div>

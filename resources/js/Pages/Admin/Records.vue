@@ -47,7 +47,7 @@
 
                 <!-- Records Table -->
                 <div v-else class="mt-6">
-                    <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>

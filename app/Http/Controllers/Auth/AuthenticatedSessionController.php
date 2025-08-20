@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\CsrfToken;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -21,11 +22,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
-
-
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
+            'csrf_token' => csrf_token(), // Include CSRF token explicitly
         ]);
     }
 
@@ -38,43 +38,54 @@ class AuthenticatedSessionController extends Controller
      */
     public function verifyCode(Request $request)
     {
-        $request->validate([
-            'role' => 'required|in:admin,staff',
-            'code' => 'required|string'
-        ]);
+        try {
+            $request->validate([
+                'role' => 'required|in:admin,staff',
+                'code' => 'required|string'
+            ]);
 
-        $role = strtoupper($request->role);
-        $correctCode = env("{$role}_VERIFICATION_CODE");
+            $role = strtoupper($request->role);
+            $correctCode = env("{$role}_VERIFICATION_CODE");
 
-        if (!$correctCode || $request->code !== $correctCode) {
-            // Simplified logging without recursion
+            if (!$correctCode || $request->code !== $correctCode) {
+                Activity::create([
+                    'event' => 'verification_failed',
+                    'description' => "Failed {$request->role} verification code attempt",
+                    'properties' => [
+                        'ip' => $request->ip(),
+                        'user_agent' => $request->userAgent()
+                    ]
+                ]);
+
+                throw ValidationException::withMessages([
+                    'code' => ['The provided verification code is invalid'],
+                ]);
+            }
+
             Activity::create([
-                'event' => 'verification_failed',
-                'description' => "Failed {$request->role} verification code attempt",
+                'event' => 'verification_success',
+                'description' => "Successful {$request->role} verification",
                 'properties' => [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent()
+                    'ip' => $request->ip()
                 ]
             ]);
 
-            throw ValidationException::withMessages([
-                'code' => ['The provided verification code is invalid'],
+            return response()->json([
+                'verified' => true,
+                'message' => 'Verification successful',
+                'csrf_token' => csrf_token(), // Return new CSRF token
             ]);
+        } catch (\Exception $e) {
+            // Handle potential CSRF mismatch
+            if ($e instanceof \Illuminate\Session\TokenMismatchException) {
+                return response()->json([
+                    'verified' => false,
+                    'message' => 'CSRF token mismatch. Please refresh the page and try again.',
+                    'csrf_token' => csrf_token(),
+                ], 419);
+            }
+            throw $e;
         }
-
-        // Simplified success logging
-        Activity::create([
-            'event' => 'verification_success',
-            'description' => "Successful {$request->role} verification",
-            'properties' => [
-                'ip' => $request->ip()
-            ]
-        ]);
-
-        return response()->json([
-            'verified' => true,
-            'message' => 'Verification successful'
-        ]);
     }
 
     /**
@@ -118,8 +129,7 @@ class AuthenticatedSessionController extends Controller
                 throw ValidationException::withMessages([
                     'role_mismatch' => [
                         'title' => 'Role Access Denied',
-                        'message' => "Your account has these roles: $userRoles. " .
-                            "Please login through the appropriate portal for your account type."
+                        'message' => "Your account has these roles: $userRoles. Please login through the appropriate portal for your account type."
                     ]
                 ]);
             }
@@ -133,18 +143,15 @@ class AuthenticatedSessionController extends Controller
                 'role' => $selectedRole
             ]);
 
-            // Improved redirect logic
-            if ($user->hasRole('admin')) {
-                return redirect()->intended(route('admin.dashboard'));
-            }
+            // Role-based redirects
+            $redirectRoute = match (true) {
+                $user->hasRole('admin') => 'admin.dashboard',
+                $user->hasRole('staff') => 'staff.dashboard',
+                default => 'customer.dashboard',
+            };
 
-            if ($user->hasRole('staff')) {
-                return redirect()->intended(route('staff.dashboard'));
-            }
-
-            return redirect()->intended(route('customer.dashboard'));
+            return redirect()->intended(route($redirectRoute));
         } catch (ValidationException $e) {
-            // Log failed login attempt
             Activity::log('login_failed', "Failed login attempt", null, [
                 'email' => $request->email,
                 'ip' => $request->ip(),
@@ -166,7 +173,6 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         if ($user) {
-            // Log logout activity
             Activity::log('logged_out', "User logged out", $user);
         }
 
@@ -174,10 +180,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Add a flash message for logout success
+        // Flash logout success and new CSRF token
         $request->session()->flash('logout_success', true);
 
-        // Return a proper response that will trigger page reload
-        return Inertia::location(route('select-roles'));
+        // Use Inertia::location to force a full page reload
+        return Inertia::location(route('select-roles', [], false));
     }
 }

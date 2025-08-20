@@ -38,7 +38,7 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
     ->middleware(['auth', 'verified'])
     ->name('redirect-to-dashboard');
 
-Route::post('/verify-role-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify-code');
+Route::post('/verify-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify-code');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
