@@ -8,11 +8,13 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerUsageController;
+use App\Http\Controllers\FlowbiteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Roles\SelectRolesController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffReadingController;
+use App\Http\Controllers\TestDashboardController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -103,5 +105,9 @@ Route::get('/reports/create', [ReportController::class, 'create'])->name('report
 Route::get('/debug/customers', function () {
     return User::where('role', 'customer')->get();
 });
+
+
+
+
 
 require __DIR__ . '/auth.php';

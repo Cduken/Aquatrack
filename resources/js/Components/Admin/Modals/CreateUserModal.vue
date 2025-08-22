@@ -1,344 +1,285 @@
 <template>
-    <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
-        <Transition name="fade">
-            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" @click="$emit('close')"></div>
-        </Transition>
-
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <Transition name="modal">
-                <div class="relative w-full max-w-4xl"> <!-- Increased width -->
-                    <!-- Modal container -->
-                    <div class="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"> <!-- Added height constraint -->
-                        <!-- Header -->
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
-                            <h3 class="text-xl font-semibold text-white flex items-center gap-2">
-                                <v-icon name="hi-solid-user-add" scale="1.1" />
-                                Register New User
-                            </h3>
-                            <button @click="$emit('close')" class="text-white/80 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
-                                <v-icon name="hi-x" scale="1.2" />
-                            </button>
+    <div v-if="show"
+        class="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden flex justify-center items-center w-full md:inset-0 h-modal md:h-full">
+        <div class="fixed inset-0 bg-gray-900/75" aria-hidden="true" @click="$emit('close')"></div>
+        <div class="relative p-4 w-full max-w-3xl h-full md:h-auto">
+            <!-- Modal content -->
+            <div
+                class="relative bg-white rounded-lg shadow-lg dark:bg-gray-800 sm:p-5 transform transition-all duration-300 ease-out scale-100 overflow-y-auto max-h-[80vh] scrollbar-hide">
+                <!-- Modal header -->
+                <div class="flex justify-between items-center rounded-t border-b dark:border-gray-600 mb-4  bg-white dark:bg-gray-800"
+                    style="margin-top:0;padding-top:0;padding-bottom:1rem;">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <v-icon name="hi-user" class="w-5 h-5" />
+                        Register New User
+                    </h3>
+                    <button @click="$emit('close')" type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <v-icon name="hi-x" class="w-5 h-5" />
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form @submit.prevent="handleSubmit">
+                    <div class="grid gap-3 mb-4 sm:grid-cols-2">
+                        <!-- Personal Information Section -->
+                        <div class="sm:col-span-2">
+                            <h4
+                                class="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2 mb-2">
+                                <v-icon name="hi-user" class="w-5 h-5" />
+                                Personal Information
+                            </h4>
                         </div>
-
-                        <!-- Form -->
-                        <div class="p-6 overflow-y-auto flex-1">
-                            <form @submit.prevent="handleSubmit">
-                                <div class="space-y-6">
-                                    <!-- Personal Information Section -->
-                                    <div class="border-b border-gray-200 pb-4">
-                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
-                                            <v-icon name="hi-user-circle" class="text-blue-500" />
-                                            Personal Information
-                                        </h4>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="relative">
-                                                <input id="firstName" v-model="userData.name" type="text" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" ">
-                                                <label for="firstName"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    First Name
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-user" />
-                                                </div>
-                                            </div>
-                                            <div class="relative">
-                                                <input id="lastName" v-model="userData.lastname" type="text" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" " @input="updateGeneratedPassword">
-                                                <label for="lastName"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Last Name
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-user" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Account Number -->
-                                        <div class="mt-6 relative">
-                                            <input id="accountNumber" v-model="userData.accountNumber" type="text" required
-                                                class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                placeholder=" " @input="formatAccountNumber">
-                                            <label for="accountNumber"
-                                                class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                Account Number
-                                            </label>
-                                            <div
-                                                class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                <v-icon name="hi-identification" />
-                                            </div>
-                                        </div>
-
-                                        <!-- Email and Phone -->
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                            <div class="relative">
-                                                <input id="email" v-model="userData.email" type="email" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" ">
-                                                <label for="email"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Email
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-mail" />
-                                                </div>
-                                            </div>
-                                            <div class="relative">
-                                                <input id="phone" v-model="userData.phone" type="tel" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" " @input="validatePhoneNumber">
-                                                <label for="phone"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Phone
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-phone" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Equipment Information Section -->
-                                    <div class="border-b border-gray-200 pb-4">
-                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
-                                            <v-icon name="hi-cube" class="text-blue-500" />
-                                            Equipment Information
-                                        </h4>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="relative">
-                                                <input id="dateInstalled" v-model="userData.date_installed" type="date" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" ">
-                                                <label for="dateInstalled"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Date Installed
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-calendar" />
-                                                </div>
-                                            </div>
-                                            <div class="relative">
-                                                <input id="brand" v-model="userData.brand" type="text" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" ">
-                                                <label for="brand"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Brand
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-tag" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                            <div class="relative">
-                                                <input id="serialNumber" v-model="userData.serial_number" type="text" required
-                                                    class="w-full pl-11 pr-12 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" " @input="validateSerialNumber"
-                                                    maxlength="9">
-                                                <label for="serialNumber"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Serial Number
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-code" />
-                                                </div>
-                                                <div class="absolute right-3 top-3.5 text-xs text-gray-400">
-                                                    {{ userData.serial_number ? userData.serial_number.length : 0 }}/9
-                                                </div>
-                                            </div>
-                                            <div class="relative">
-                                                <input id="size" v-model="userData.size" type="text" required
-                                                    class="w-full pl-11 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer transition-all duration-200"
-                                                    placeholder=" ">
-                                                <label for="size"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Size
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-arrows-expand" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Location and Role Section -->
-                                    <div>
-                                        <h4 class="text-lg font-medium text-blue-700 flex items-center gap-2 mb-4">
-                                            <v-icon name="hi-location-marker" class="text-blue-500" />
-                                            Location & Role
-                                        </h4>
-                                        <!-- Zone and Barangay -->
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="relative">
-                                                <select id="zone" v-model="userData.zone" @change="updateBarangays" required
-                                                    class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
-                                                    placeholder=" ">
-                                                    <option value="" disabled selected hidden></option>
-                                                    <option v-for="(zone, index) in Object.keys(zones)" :key="index"
-                                                        :value="zone">
-                                                        {{ zone }}
-                                                    </option>
-                                                </select>
-                                                <label for="zone"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Zone
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-location-marker" />
-                                                </div>
-                                                <div
-                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-chevron-down"
-                                                        class="transition-transform duration-200 peer-focus:rotate-180" />
-                                                </div>
-                                            </div>
-                                            <div class="relative">
-                                                <select id="barangay" v-model="userData.barangay" required
-                                                    class="w-full pl-11 pr-10 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 peer appearance-none transition-all duration-200"
-                                                    :disabled="!userData.zone" placeholder=" ">
-                                                    <option value="" disabled selected hidden></option>
-                                                    <option v-for="(barangay, index) in filteredBarangays" :key="index"
-                                                        :value="barangay">
-                                                        {{ barangay }}
-                                                    </option>
-                                                </select>
-                                                <label for="barangay"
-                                                    class="absolute left-11 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1">
-                                                    Barangay
-                                                </label>
-                                                <div
-                                                    class="absolute left-3 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-map" />
-                                                </div>
-                                                <div
-                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 peer-focus:text-blue-500 transition-colors">
-                                                    <v-icon name="hi-chevron-down"
-                                                        class="transition-transform duration-200 peer-focus:rotate-180" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Role Selection -->
-                                        <div class="space-y-2 mt-6">
-                                            <label class="block text-sm font-medium text-blue-600 mb-2">Role</label>
-                                            <div class="flex space-x-6">
-                                                <label class="inline-flex items-center space-x-2 cursor-pointer group">
-                                                    <div class="relative">
-                                                        <input type="radio" v-model="userData.role" value="staff"
-                                                            class="sr-only peer">
-                                                        <div
-                                                            class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
-                                                            peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
-                                                            flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
-                                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
-                                                                peer-checked:scale-100 transition-transform duration-200">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <span
-                                                        class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
-                                                        <v-icon name="hi-user-group"
-                                                            class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
-                                                        Staff
-                                                    </span>
-                                                </label>
-                                                <label class="inline-flex items-center space-x-2 cursor-pointer group">
-                                                    <div class="relative">
-                                                        <input type="radio" v-model="userData.role" value="customer"
-                                                            class="sr-only peer">
-                                                        <div
-                                                            class="w-5 h-5 rounded-full border-2 border-gray-300 bg-white
-                                                            peer-checked:border-blue-500 peer-focus:ring-2 peer-focus:ring-blue-200
-                                                            flex items-center justify-center transition-all duration-200 group-hover:border-blue-400">
-                                                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 scale-0
-                                                                peer-checked:scale-100 transition-transform duration-200">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <span
-                                                        class="text-gray-700 group-hover:text-blue-600 transition-colors flex items-center gap-1">
-                                                        <v-icon name="hi-users"
-                                                            class="text-gray-500 group-hover:text-blue-500" scale="0.9" />
-                                                        Customer
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Generated Password Preview -->
-                                    <Transition name="fade">
-                                        <div v-if="userData.lastname"
-                                            class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200 shadow-sm">
-                                            <div class="flex items-center gap-3">
-                                                <v-icon name="hi-key" class="text-blue-500" scale="1.1" />
-                                                <div>
-                                                    <p class="text-sm font-medium text-blue-600">Generated Password
-                                                        Preview</p>
-                                                    <p class="text-sm text-gray-700 mt-1 font-mono">
-                                                        {{ generatedPasswordPreview }}_XXXX
-                                                        <span class="text-xs text-gray-500">(XXXX will be replaced with
-                                                            user
-                                                            ID after creation)</span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Transition>
+                        <div>
+                            <label for="firstName"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-user" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
                                 </div>
-                            </form>
+                                <input id="firstName" v-model="userData.name" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="First name">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="lastName"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-user" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="lastName" v-model="userData.lastname" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Last name" @input="updateGeneratedPassword">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="accountNumber"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Account
+                                Number</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-credit-card" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="accountNumber" v-model="userData.accountNumber" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="123-45-678" @input="formatAccountNumber">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="email"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-mail" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="email" v-model="userData.email" type="email" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="name@company.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="phone"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Phone</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-phone" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="phone" v-model="userData.phone" type="tel" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="+12345678901" @input="validatePhoneNumber">
+                            </div>
                         </div>
 
-                        <!-- Footer -->
-                        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-4 border-t border-gray-200">
-                            <button type="button" @click="$emit('close')"
-                                class="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 flex items-center gap-2">
-                                <v-icon name="hi-x" scale="0.9" />
-                                Cancel
-                            </button>
-                            <button type="button" @click="handleSubmit"
-                                class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 shadow-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[120px]"
-                                :disabled="isSubmitting">
-                                <template v-if="isSubmitting">
-                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    Creating...
-                                </template>
-                                <template v-else>
-                                    <v-icon name="hi-check" scale="0.9" />
-                                    Create User
-                                </template>
-                            </button>
+                        <!-- Equipment Information Section -->
+                        <div class="sm:col-span-2 mt-3">
+                            <h4
+                                class="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2 mb-2">
+                                <v-icon name="hi-cube" class="w-5 h-5" />
+                                Equipment Information
+                            </h4>
+                        </div>
+                        <div>
+                            <label for="dateInstalled"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Date
+                                Installed</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-calendar" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="dateInstalled" v-model="userData.date_installed" type="date" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="brand"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-tag" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="brand" v-model="userData.brand" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Brand name">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="serialNumber"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Serial
+                                Number</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-document-text" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="serialNumber" v-model="userData.serial_number" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 pr-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="123456789" @input="validateSerialNumber" maxlength="9">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-gray-500">
+                                    {{ userData.serial_number ? userData.serial_number.length : 0 }}/9
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="size"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Size</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-arrows-expand" class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <input id="size" v-model="userData.size" type="text" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    placeholder="Size">
+                            </div>
+                        </div>
+
+                        <!-- Location and Role Section -->
+                        <div class="sm:col-span-2 mt-3">
+                            <h4
+                                class="text-base font-medium text-gray-900 dark:text-white flex items-center gap-2 mb-2">
+                                <v-icon name="hi-location-marker" class="w-5 h-5" />
+                                Location & Role
+                            </h4>
+                        </div>
+                        <div>
+                            <label for="zone"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Zone</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-location-marker"
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <select id="zone" v-model="userData.zone" @change="updateBarangays" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                    <option value="" disabled selected>Select zone</option>
+                                    <option v-for="(zone, index) in Object.keys(zones)" :key="index" :value="zone">
+                                        {{ zone }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="barangay"
+                                class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Barangay</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <v-icon name="hi-location-marker"
+                                        class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </div>
+                                <select id="barangay" v-model="userData.barangay" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    :disabled="!userData.zone">
+                                    <option value="" disabled selected>Select barangay</option>
+                                    <option v-for="(barangay, index) in filteredBarangays" :key="index"
+                                        :value="barangay">
+                                        {{ barangay }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Role</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" v-model="userData.role" value="staff"
+                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <span class="text-gray-900 dark:text-white flex items-center gap-1">
+                                        <v-icon name="hi-user-group" class="w-4 h-4" />
+                                        Staff
+                                    </span>
+                                </label>
+                                <label class="inline-flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" v-model="userData.role" value="customer"
+                                        class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <span class="text-gray-900 dark:text-white flex items-center gap-1">
+                                        <v-icon name="hi-user" class="w-4 h-4" />
+                                        Customer
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Generated Password Preview -->
+                        <Transition name="fade">
+                            <div v-if="userData.lastname"
+                                class="sm:col-span-2 p-3 rounded-lg border border-blue-200 bg-blue-100 dark:bg-gray-700 dark:border-gray-600">
+                                <div class="flex items-center gap-2">
+                                    <v-icon name="hi-key" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                                    <div>
+                                        <p class="text-sm font-medium text-blue-700 dark:text-white">Generated Password
+                                            Preview</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 font-mono">
+                                            {{ generatedPasswordPreview }}_XXXX
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">(XXXX will be
+                                                replaced with user ID after creation)</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+                    <!-- Modal footer -->
+                    <div
+                        class="flex items-center space-x-2 p-4 border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
+                        <div class="ml-[-15px] flex items-center gap-4">
+                        <button type="button" @click="$emit('close')"
+                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg border border-gray-200 text-sm font-medium px-4 py-2 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex items-center gap-2"
+                            :disabled="isSubmitting">
+                            <template v-if="isSubmitting">
+                                <v-icon name="hi-refresh" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
+                                Creating...
+                            </template>
+                            <template v-else>
+                                <v-icon name="hi-plus" class="mr-1 -ml-1 w-5 h-5" />
+                                Create User
+                            </template>
+                        </button>
                         </div>
                     </div>
-                </div>
-            </Transition>
+                </form>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
+import { OhVueIcon, addIcons } from "oh-vue-icons";
+import {
+    HiUser, HiX, HiCreditCard, HiMail, HiPhone, HiCube,
+    HiCalendar, HiTag, HiDocumentText, HiArrowsExpand,
+    HiLocationMarker, HiUserGroup, HiKey, HiRefresh, HiPlus
+} from "oh-vue-icons/icons";
+
+addIcons(
+    HiUser, HiX, HiCreditCard, HiMail, HiPhone, HiCube,
+    HiCalendar, HiTag, HiDocumentText, HiArrowsExpand,
+    HiLocationMarker, HiUserGroup, HiKey, HiRefresh, HiPlus
+);
 
 const props = defineProps({
     show: Boolean,
@@ -404,12 +345,9 @@ const validatePhoneNumber = (e) => {
     userData.value.phone = value;
 };
 
-// Validate serial number (only digits, exactly 9 characters)
 const validateSerialNumber = (e) => {
     let value = e.target.value;
-    // Remove all non-digit characters
     value = value.replace(/\D/g, '');
-    // Limit to 9 digits
     value = value.substring(0, 9);
     userData.value.serial_number = value;
 };
@@ -447,7 +385,6 @@ const resetForm = () => {
 const handleSubmit = async () => {
     isSubmitting.value = true;
 
-    // Validate serial number length
     if (userData.value.serial_number.length !== 9) {
         alert('Serial number must be exactly 9 digits');
         isSubmitting.value = false;
@@ -460,7 +397,6 @@ const handleSubmit = async () => {
         phone: userData.value.phone.replace(/\D/g, '')
     };
 
-    console.log('Submitting:', submitData);
     emit('submit', submitData);
     resetForm();
     isSubmitting.value = false;
@@ -468,7 +404,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Your existing styles remain the same */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.2s ease;
@@ -479,63 +414,56 @@ const handleSubmit = async () => {
     opacity: 0;
 }
 
-.modal-enter-active,
+/* Modal animation */
+.modal-enter-active {
+    animation: slideDown 0.3s ease-out;
+}
+
 .modal-leave-active {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.2s ease-in;
 }
 
-.modal-enter-from,
-.modal-leave-to {
-    opacity: 0;
-    transform: translateY(-20px);
-}
-
-input:focus~label,
-input:not(:placeholder-shown)~label,
-select:focus~label,
-select:not(:placeholder-shown)~label {
-    transform: translateY(-1.5rem) scale(0.75);
-    color: #2563eb;
-}
-
-input::placeholder,
-select::placeholder {
-    color: transparent;
-}
-
-input[type="radio"]:checked~div>div {
-    transform: scale(1);
-}
-
-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-}
-
-select:disabled {
-    @apply bg-gray-100 cursor-not-allowed;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23d1d5db' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-}
-
-select:disabled~label {
-    @apply text-gray-400;
-}
-
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
+@keyframes slideDown {
     from {
-        transform: rotate(0deg);
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
     }
 
     to {
-        transform: rotate(360deg);
+        transform: translateY(0) scale(1);
+        opacity: 1;
     }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
+    }
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Fix sticky header flush to top */
+:deep(.sticky.top-0) {
+    top: 0 !important;
+    margin-top: 0 !important;
+    padding-top:
+        0 !important;
 }
 </style>

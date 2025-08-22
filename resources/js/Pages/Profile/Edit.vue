@@ -116,7 +116,7 @@ const layout = computed(() => {
 
         <Head title="Profile Settings" />
 
-        <div class="px-4 py-6 sm:px-0">
+        <div class="px-4 sm:px-0">
             <div class="flex flex-col space-y-6">
                 <!-- Profile Information -->
                 <div class="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">

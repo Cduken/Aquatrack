@@ -1,102 +1,182 @@
 <template>
-    <div class="relative">
-        <nav class="sticky top-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-[26.5px] shadow-lg flex justify-between items-center"
-            role="navigation" aria-label="Dashboard navigation">
-            <!-- Left side - Logo and title -->
-            <div class="flex items-center space-x-3 pl-10">
-
-                <div class="flex items-center">
-
-
-                    <span class="text-md font-medium text-gray-600 capitalize">
-                        {{ currentPage }}
-                    </span>
+    <nav
+        class="bg-white border-b border-gray-200 px-4 py-2.5  dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
+        <div class="flex flex-wrap justify-between items-center">
+            <div class="flex justify-start items-center">
+                <div class="flex items-center justify-between mr-4">
+                    <img src="/images/MainLogo.png" class="w-12 h-12 object-cover mr-2" alt="Logo">
+                    <span
+                        class="self-center text-[25px] font-semibold whitespace-nowrap dark:text-white">AquaTrack</span>
+                    <button @click="$emit('toggle-sidebar')"
+                        class="p-2 ml-2 text-gray-600 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                        <span>
+                            <svg aria-hidden="true"
+                                class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center"
+                                :class="{ 'rotate-180': !isSidebarOpen }" fill="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"></path>
+                                <path d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"></path>
+                            </svg>
+                            <span class="sr-only">Toggle sidebar</span>
+                        </span>
+                    </button>
                 </div>
             </div>
-
-            <!-- Right side - Navigation controls -->
-            <div class="flex items-center space-x-4">
-                <!-- Notifications button -->
-                <button v-if="showNotificationsButton" @click="openNotifications"
-                    class="relative flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 focus:outline-none transition-all duration-200"
-                    aria-label="View notifications">
-                    <v-icon name="bi-bell" class="text-[1rem]" />
+            <div class="flex items-center lg:order-2">
+                <!-- Dynamic Breadcrumbs -->
+                <nav class="flex items-center mr-4 text-sm text-gray-700 dark:text-gray-400" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-2">
+                        <li class="inline-flex items-center">
+                            <Link :href="dashboardRoute"
+                                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                            {{ userRole.charAt(0).toUpperCase() + userRole.slice(1) }}
+                            </Link>
+                        </li>
+                        <li v-if="currentRouteName">
+                            <div class="flex items-center">
+                                <svg class="w-3 h-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-400 capitalize">
+                                    {{ currentRouteName }}
+                                </span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                <!-- Notifications -->
+                <button type="button" data-dropdown-toggle="notification-dropdown"
+                    class="relative p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+                    <span class="sr-only">View notifications</span>
+                    <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
+                        </path>
+                    </svg>
                     <span v-if="unreadCount > 0"
                         class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white">
                         {{ unreadCount > 9 ? '9+' : unreadCount }}
                     </span>
                 </button>
-
-                <!-- User dropdown -->
-                <div class="relative">
-                    <button @click.stop="toggleDropdown"
-                        class="flex items-center space-x-2 group focus:outline-none transition-all duration-200 px-2 py-1 rounded-lg hover:bg-gray-50"
-                        aria-label="Toggle user menu" :aria-expanded="isDropdownOpen" ref="dropdownButton">
-                        <div class="flex items-center space-x-2">
-                            <div
-                                class="relative w-8 h-8 rounded-lg overflow-hidden border border-gray-200 group-hover:border-blue-300 transition-colors duration-200">
-                                <img v-if="user.avatar_url" :src="user.avatar_url" :alt="userDisplayName"
-                                    class="w-full h-full object-cover">
-                                <div v-else
-                                    class="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-medium text-sm">
-                                    {{ userInitials }}
-                                </div>
-                            </div>
-                            <span class="hidden md:inline text-sm font-medium text-gray-700">
-                                {{ userDisplayName }}
-                            </span>
-                        </div>
-                        <v-icon :name="isDropdownOpen ? 'bi-chevron-up' : 'bi-chevron-down'"
-                            class="text-gray-400 text-xs transition-transform duration-200" />
-                    </button>
-
-                    <!-- Enhanced dropdown menu -->
-                    <transition name="dropdown">
-                        <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
-                            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 border border-gray-100 overflow-hidden"
-                            role="menu" aria-label="User menu" ref="dropdownMenu">
-                            <div class="p-1">
-                                <div
-                                    class="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-gray-100">
-                                    <p class="text-sm font-medium text-gray-900 truncate">{{ userDisplayName }}</p>
-                                    <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
-                                </div>
-
-                                <Link href="/profile"
-                                    class="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150"
-                                    role="menuitem">
-                                <v-icon name="bi-gear" class="mr-3 text-blue-400" />
-                                Account Settings
-                                </Link>
-
-                                <button @click.prevent="handleLogout"
-                                    class="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
-                                    role="menuitem">
-                                    <v-icon name="bi-box-arrow-right" class="mr-3 text-red-400" />
-                                    Sign Out
-                                </button>
+                <!-- Notification Dropdown -->
+                <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl"
+                    id="notification-dropdown">
+                    <div
+                        class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
+                        Notifications
+                    </div>
+                    <div>
+                        <Link v-for="report in initialReports" :key="report.id" :href="report.href || '#'"
+                            class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600">
+                        <div class="flex-shrink-0">
+                            <img class="w-11 h-11 rounded-full"
+                                :src="report.avatar_url || 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png'"
+                                :alt="report.name || 'User avatar'" />
+                            <div v-if="report.unread"
+                                class="flex absolute justify-center items-center ml-6 -mt-5 w-5 h-5 rounded-full border border-white bg-primary-700 dark:border-gray-700">
+                                <svg aria-hidden="true" class="w-3 h-3 text-white" fill="currentColor"
+                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z">
+                                    </path>
+                                    <path
+                                        d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z">
+                                    </path>
+                                </svg>
                             </div>
                         </div>
-                    </transition>
+                        <div class="pl-3 w-full">
+                            <div class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400">
+                                {{ report.message }}
+                            </div>
+                            <div class="text-xs font-medium text-primary-600 dark:text-primary-500">
+                                {{ report.time }}
+                            </div>
+                        </div>
+                        </Link>
+                    </div>
+                    <Link :href="notificationRoute"
+                        class="block py-2 text-md font-medium text-center text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:underline">
+                    <div class="inline-flex items-center">
+                        <svg aria-hidden="true" class="mr-2 w-4 h-4 text-gray-500 dark:text-gray-400"
+                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                            <path fill-rule="evenodd"
+                                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        View all
+                    </div>
+                    </Link>
+                </div>
+                <!-- User Dropdown -->
+                <button type="button" @click.stop="toggleDropdown"
+                    class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    id="user-menu-button" :aria-expanded="isDropdownOpen" ref="dropdownButton">
+                    <span class="sr-only">Open user menu</span>
+                    <img v-if="user.avatar_url" class="w-8 h-8 rounded-full" :src="user.avatar_url"
+                        :alt="userDisplayName" />
+                    <div v-else
+                        class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-medium text-sm">
+                        {{ userInitials }}
+                    </div>
+                </button>
+                <!-- User Dropdown Menu -->
+                <div v-show="isDropdownOpen" v-click-outside="closeDropdown"
+                    class="absolute right-0 top-full mt-2 z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
+                    id="dropdown" ref="dropdownMenu">
+                    <div class="py-3 px-4">
+                        <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ userDisplayName
+                            }}</span>
+                        <span class="block text-sm text-gray-900 truncate dark:text-white">{{ user?.email }}</span>
+                    </div>
+                    <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+                        <li>
+                            <Link href="/profile"
+                                class="flex items-center gap-2 py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">
+                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Profile Settings
+                            </Link>
+                        </li>
+                    </ul>
+                    <ul class="py-1 text-gray-700 dark:text-gray-300" aria-labelledby="dropdown">
+                        <li>
+                            <button @click.prevent="handleLogout"
+                                class="flex items-center w-full gap-2 py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                <svg class="w-4 h-4 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                                </svg>
+                                Sign out
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </nav>
-
-        <NotificationModal v-if="showNotificationsButton" :isOpen="showNotifications" @close="closeNotifications"
-            :initial-reports="initialReports" />
-    </div>
+        </div>
+    </nav>
 </template>
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
-import NotificationModal from '../Modals/NotificationModal.vue';
+import { usePage, Link } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
-    title: {
-        type: String,
-        default: 'Dashboard',
+    isSidebarOpen: {
+        type: Boolean,
+        default: true,
     },
     initialReports: {
         type: Array,
@@ -104,48 +184,37 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['toggle-sidebar', 'logout']);
 
 const { props: pageProps } = usePage();
 
-// Get current page name from URL
-const currentPage = computed(() => {
-    const path = window.location.pathname;
-    if (path === '/') return 'dashboard';
-    if (path.startsWith('/reports')) return 'reports';
-    if (path.startsWith('/users')) return 'users';
-    if (path.startsWith('/staff')) return 'staff';
-    if (path.startsWith('/analytics')) return 'analytics';
-    if (path.startsWith('/profile')) return 'profile';
-    return path.split('/').pop() || 'dashboard';
-});
-
-const isAdmin = computed(() => {
-    return pageProps.auth?.user?.role === 'admin';
-});
-
-const isAdminRoute = computed(() => {
-    return window.location.pathname.startsWith('/admin');
-});
-
-const showNotificationsButton = computed(() => {
-    return isAdmin.value || isAdminRoute.value;
-});
-
-const showNotifications = ref(false);
-const unreadCount = computed(() => {
-    return props.initialReports.length;
-});
-
-const openNotifications = () => {
-    showNotifications.value = true;
-};
-
-const closeNotifications = () => {
-    showNotifications.value = false;
-};
-
+// User data
 const user = computed(() => pageProps.auth?.user ?? {});
+const userRole = computed(() => user.value?.role || 'customer');
+
+// Dynamic dashboard and notification routes based on role
+const dashboardRoute = computed(() => {
+    return userRole.value === 'admin' ? '/admin/dashboard' : '/staff/dashboard';
+});
+
+const notificationRoute = computed(() => {
+    return userRole.value === 'admin' ? '/admin/notifications' : '/staff/notifications';
+});
+
+// Compute current route name for breadcrumbs
+const currentRouteName = computed(() => {
+    const path = window.location.pathname;
+    if (path === '/admin/dashboard' || path === '/staff/dashboard') return 'Dashboard';
+    if (path.startsWith('/admin/reports') || path.startsWith('/staff/reports')) return 'Reports';
+    if (path.startsWith('/admin/users')) return 'Users';
+    if (path.startsWith('/admin/staff')) return 'Staff';
+    if (path.startsWith('/admin/records') || path.startsWith('/staff/records')) return 'Records';
+    if (path.startsWith('/admin/announcements') || path.startsWith('/staff/announcements')) return 'Announcements';
+    if (path.startsWith('/staff/reading')) return 'Reading';
+    if (path.startsWith('/admin/analytics') || path.startsWith('/staff/analytics')) return 'Analytics';
+    if (path.startsWith('/admin/profile') || path.startsWith('/staff/profile')) return 'Profile';
+    return path.split('/').pop()?.charAt(0).toUpperCase() + path.split('/').pop()?.slice(1).replace(/-/g, ' ') || 'Dashboard';
+});
 
 const userDisplayName = computed(() => {
     if (user.value?.name) return user.value.name;
@@ -168,6 +237,11 @@ const userInitials = computed(() => {
     return 'G';
 });
 
+const unreadCount = computed(() => {
+    return props.initialReports.length;
+});
+
+// Dropdown handling
 const isDropdownOpen = ref(false);
 const dropdownButton = ref(null);
 const dropdownMenu = ref(null);
@@ -185,11 +259,25 @@ const closeDropdown = () => {
     isDropdownOpen.value = false;
 };
 
-const handleLogout = () => {
-    closeDropdown();
-    emit('logout');
+const handleLogout = async () => {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to log out?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, log out!',
+        cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+        closeDropdown();
+        emit('logout');
+    }
 };
 
+// Accessibility
 const handleKeydown = (e) => {
     if (e.key === 'Escape' && isDropdownOpen.value) {
         closeDropdown();
@@ -229,6 +317,12 @@ const vClickOutside = {
 
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
+    if (typeof Flowbite !== 'undefined') {
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const userDropdown = document.getElementById('dropdown');
+        if (notificationDropdown) new Flowbite.Dropdown(notificationDropdown);
+        if (userDropdown) new Flowbite.Dropdown(userDropdown);
+    }
 });
 
 onUnmounted(() => {
@@ -249,7 +343,6 @@ onUnmounted(() => {
     transform: translateY(-2px);
 }
 
-/* Water ripple effect on buttons */
 button:active {
     transform: scale(0.98);
 }
@@ -257,24 +350,5 @@ button:active {
 button:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-/* Subtle wave animation for the logo */
-@keyframes wave {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-2px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-.wave-animate {
-    animation: wave 2s ease-in-out infinite;
 }
 </style>

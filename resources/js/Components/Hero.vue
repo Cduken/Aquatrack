@@ -6,13 +6,14 @@ import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
 import TrackReportModal from '@/Components/Modals/TrackReportModal.vue';
 import Swal from 'sweetalert2';
 import Navigation from './Header/Navigation.vue';
-import AquatrackLogo from './AquatrackLogo.vue';
+
 
 defineProps({
     canLogin: {
         type: Boolean,
         default: true
     },
+
     canRegister: {
         type: Boolean,
         default: true

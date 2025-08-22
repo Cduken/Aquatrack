@@ -14,7 +14,7 @@
                             efficient.
                         </p>
                         <p class="text-base sm:text-md lg:text-lg text-gray-600 text-left">
-                            With features like real-time usage monitoring, digital bill payments, and instant issue
+                            With features like real-time usage monitoring, can view monthly bill, and instant issue
                             reporting, we're revolutionizing how communities interact with their water services.
                         </p>
                         <div class="space-y-3 sm:space-y-4">
@@ -48,6 +48,8 @@
                                 </div>
                                 <p class="text-base sm:text-md lg:text-lg text-gray-600">Community Announcements</p>
                             </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -63,4 +65,5 @@
         </div>
     </section>
 </template>
+
 
