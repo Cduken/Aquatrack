@@ -29,7 +29,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create or update admin user
         $admin = User::updateOrCreate(
-            ['email' => 'admin@email.com'],
+            ['email' => 'admin@clarinwaterdistrict.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('admin123'),
@@ -42,7 +42,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create or update staff user
         $staff = User::updateOrCreate(
-            ['email' => 'staff@email.com'],
+            ['email' => 'staff@clarinwaterdistrict.com'],
             [
                 'name' => 'Staff',
                 'password' => Hash::make('staff123'),

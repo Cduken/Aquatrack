@@ -8,13 +8,11 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerUsageController;
-use App\Http\Controllers\FlowbiteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Roles\SelectRolesController;
 use App\Http\Controllers\Staff\StaffDashboardController;
 use App\Http\Controllers\Staff\StaffReadingController;
-use App\Http\Controllers\TestDashboardController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +48,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/admin/users/toggle-status', [AdminUsersController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 
     Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
         ->name('admin.reports.updateStatus');
@@ -105,9 +104,5 @@ Route::get('/reports/create', [ReportController::class, 'create'])->name('report
 Route::get('/debug/customers', function () {
     return User::where('role', 'customer')->get();
 });
-
-
-
-
 
 require __DIR__ . '/auth.php';

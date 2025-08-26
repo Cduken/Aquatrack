@@ -2,7 +2,7 @@
     <aside
         :class="['fixed top-0 left-0 z-40 h-screen pt-14 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition-all duration-300 ease-in-out', isOpen ? 'w-64' : 'w-16']"
         aria-label="Sidenav" id="drawer-navigation">
-        <div class="h-full overflow-y-auto py-5 px-3 bg-white dark:bg-gray-800">
+        <div class="h-full overflow-hidden py-5 px-3 bg-white dark:bg-gray-800">
             <form action="#" method="GET" class="md:hidden mb-2" :class="{ 'hidden': !isOpen }">
                 <label for="sidebar-search" class="sr-only">Search</label>
                 <div class="relative">
@@ -18,7 +18,7 @@
                         placeholder="Search" />
                 </div>
             </form>
-            <ul class="space-y-2 pt-[6px]">
+            <ul class="space-y-6 pt-[6px]">
                 <li v-for="link in links" :key="link.url">
                     <Link :href="link.url"
                         class="flex items-center p-3 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all duration-300 relative"

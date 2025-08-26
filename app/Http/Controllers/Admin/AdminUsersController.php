@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
@@ -30,6 +30,13 @@ class AdminUsersController extends Controller
                     $q->where('name', $role);
                 });
             })
+            ->when($request->filled('enabled'), function ($query) use ($request) {
+                if ($request->enabled === '0' || $request->enabled === 0 || $request->enabled === false || $request->enabled === 'false') {
+                    $query->where('enabled', false);
+                } elseif ($request->enabled === '1' || $request->enabled === 1 || $request->enabled === true || $request->enabled === 'true') {
+                    $query->where('enabled', true);
+                }
+            })
             ->orderBy($request->sort ?? 'id', $request->order ?? 'desc')
             ->paginate($request->per_page ?? 10)
             ->through(function ($user) {
@@ -47,12 +54,30 @@ class AdminUsersController extends Controller
                     'brand' => $user->brand,
                     'serial_number' => $user->serial_number,
                     'size' => $user->size,
+                    'enabled' => $user->enabled,
                 ];
             });
 
+        // Define zones for the frontend
+        $zones = [
+            "Zone 1" => ["Poblacion Sur"],
+            "Zone 2" => ["Poblacion Centro"],
+            "Zone 3" => ["Poblacion Centro"],
+            "Zone 4" => ["Poblacion Norte"],
+            "Zone 5" => ["Candajec", "Buangan"],
+            "Zone 6" => ["Bonbon"],
+            "Zone 7" => ["Bonbon"],
+            "Zone 8" => ["Nahawan"],
+            "Zone 9" => ["Caboy", "Villaflor", "Cantuyoc"],
+            "Zone 10" => ["Bacani", "Mataub", "Comaang", "Tangaran"],
+            "Zone 11" => ["Cantuyoc", "Nahawan"],
+            "Zone 12" => ["Lajog", "Buacao"],
+        ];
+
         return Inertia::render('Admin/Users', [
             'users' => $users,
-            'filters' => $request->only(['search', 'role', 'sort', 'order', 'per_page'])
+            'filters' => $request->only(['search', 'role', 'sort', 'order', 'per_page', 'enabled', 'action']),
+            'zones' => $zones,
         ]);
     }
 
@@ -96,22 +121,110 @@ class AdminUsersController extends Controller
             'serial_number' => $validated['serial_number'],
             'size' => $validated['size'],
             'password' => Hash::make('temporary_password'),
+            'enabled' => true,
         ]);
 
-        // Generate actual password
         $password = strtoupper(substr($validated['lastname'], 0, 3)) . '_' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
-
-        // Update with actual password
-        $user->update([
-            'password' => Hash::make($password)
-        ]);
-
-        // Assign role
+        $user->update(['password' => Hash::make($password)]);
         $user->assignRole($validated['role']);
 
         return redirect()->route('admin.users')->with([
             'success' => 'User created successfully',
             'generated_password' => $password
+        ]);
+    }
+
+    public function toggleStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+            'enabled' => 'required|boolean',
+        ]);
+
+        $userIds = $validated['user_ids'];
+        $enabled = $validated['enabled'];
+
+        // Perform the update and check the result
+        $updated = User::whereIn('id', $userIds)->update(['enabled' => $enabled]);
+
+        if ($updated === 0) {
+            return response()->json(['message' => 'No users were updated.'], 400);
+        }
+
+        // Re-fetch the full paginated data with the current filters
+        $users = User::with('roles')
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'like', "%{$request->search}%")
+                        ->orWhere('email', 'like', "%{$request->search}%")
+                        ->orWhere('phone', 'like', "%{$request->search}%")
+                        ->orWhere('lastname', 'like', "%{$request->search}%")
+                        ->orWhere('serial_number', 'like', "%{$request->search}%");
+                });
+            })
+            ->when($request->role, function ($query) use ($request) {
+                $query->whereHas('roles', function ($q) use ($request) {
+                    $q->where('name', $request->role);
+                });
+            })
+            ->when($request->filled('enabled'), function ($query) use ($request) {
+                if (in_array($request->enabled, ['0', 'false', 0, false])) {
+                    $query->where('enabled', false);
+                } elseif (in_array($request->enabled, ['1', 'true', 1, true])) {
+                    $query->where('enabled', true);
+                }
+            })
+            ->orderBy($request->sort ?? 'id', $request->order ?? 'desc')
+            ->paginate($request->per_page ?? 10)
+            ->through(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'lastname' => $user->lastname,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'avatar_url' => $user->avatar_url,
+                    'role' => $user->roles->first()?->name ?? 'none',
+                    'zone' => $user->zone,
+                    'barangay' => $user->barangay,
+                    'date_installed' => $user->date_installed,
+                    'brand' => $user->brand,
+                    'serial_number' => $user->serial_number,
+                    'size' => $user->size,
+                    'enabled' => $user->enabled,
+                ];
+            });
+
+        // Define zones for the frontend
+        $zones = [
+            "Zone 1" => ["Poblacion Sur"],
+            "Zone 2" => ["Poblacion Centro"],
+            "Zone 3" => ["Poblacion Centro"],
+            "Zone 4" => ["Poblacion Norte"],
+            "Zone 5" => ["Candajec", "Buangan"],
+            "Zone 6" => ["Bonbon"],
+            "Zone 7" => ["Bonbon"],
+            "Zone 8" => ["Nahawan"],
+            "Zone 9" => ["Caboy", "Villaflor", "Cantuyoc"],
+            "Zone 10" => ["Bacani", "Mataub", "Comaang", "Tangaran"],
+            "Zone 11" => ["Cantuyoc", "Nahawan"],
+            "Zone 12" => ["Lajog", "Buacao"],
+        ];
+
+        return Inertia::render('Admin/Users', [
+            'users' => $users,
+            'filters' => $request->only(['search', 'role', 'sort', 'order', 'per_page', 'enabled', 'action']),
+            'zones' => $zones,
+            'flash' => ['success' => 'User status updated successfully'],
+        ]);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return redirect()->route('admin.users')->with([
+            'success' => 'User deleted successfully'
         ]);
     }
 }

@@ -156,6 +156,7 @@ addIcons(
     BiIcons.Bi123,
     BiIcons.BiTag,
     BiIcons.BiInbox,
+    BiIcons.BiArrowDownCircleFill,
 
 
     // Heroicons

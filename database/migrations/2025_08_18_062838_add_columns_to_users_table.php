@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('brand')->after('date_installed')->nullable();
             $table->string('serial_number')->after('brand')->unique()->nullable();
             $table->string('size')->after('serial_number')->nullable();
+            $table->boolean('enabled')->default(true)->after('role');
         });
     }
 
@@ -33,7 +34,8 @@ return new class extends Migration
                 'date_installed',
                 'brand',
                 'serial_number',
-                'size'
+                'size',
+                'enabled'
             ]);
         });
     }

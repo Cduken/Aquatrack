@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
-defineProps({
+import { ref, computed } from 'vue';
+
+const props = defineProps({
     show: {
         type: Boolean,
         required: true
@@ -10,6 +11,8 @@ defineProps({
         default: null
     }
 });
+
+const report = computed(() => props.report);
 
 const emit = defineEmits(['close']);
 const showVideoModal = ref(false);
@@ -29,12 +32,31 @@ const isVideoFile = (file) => {
     return file.type === 'video' ||
         (file.mime_type && file.mime_type.includes('video'));
 };
+
+const statusClass = computed(() => {
+    if (!report.value || !report.value.status) return '';
+    switch (report.value.status.toLowerCase()) {
+        case 'in progress':
+            return 'bg-blue-100 text-blue-800';
+        case 'resolved':
+            return 'bg-green-100 text-green-800';
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+});
+
+const statusLabel = computed(() => {
+    if (!report.value || !report.value.status) return '';
+    return report.value.status.charAt(0).toUpperCase() + report.value.status.slice(1);
+});
 </script>
 
 <template>
     <!-- Single transition wrapper for both overlay and panel -->
     <transition name="modal">
-        <div v-if="show" class="fixed inset-0 z-40 overflow-hidden">
+        <div v-if="show" class="fixed inset-0 z-[1000] overflow-hidden">
             <!-- Overlay -->
             <div class="absolute inset-0 bg-black/50 transition-opacity duration-300" @click="emit('close')"></div>
 
@@ -44,7 +66,8 @@ const isVideoFile = (file) => {
                 <div class="relative w-full h-full transform transition-transform duration-300 ease-in-out">
                     <div class="h-full flex flex-col bg-white shadow-xl">
                         <!-- Header -->
-                        <div class="flex items-center justify-between px-4 py-6 bg-gradient-to-r from-[#062F64] to-[#1E4272]">
+                        <div
+                            class="flex items-center justify-between px-4 py-6 bg-gradient-to-r from-[#062F64] to-[#1E4272]">
                             <div class="flex items-center space-x-2">
                                 <v-icon name="bi-file-earmark-text" class="text-white" />
                                 <span class="text-white font-medium">Report Details</span>
@@ -145,16 +168,16 @@ const isVideoFile = (file) => {
                                             <div>
                                                 <p class="text-xs text-gray-500">Submitted</p>
                                                 <p class="font-medium">{{ new Date(report.created_at).toLocaleString()
-                                                }}</p>
+                                                    }}</p>
                                             </div>
                                         </div>
                                         <div class="flex items-start">
                                             <v-icon name="bi-check-circle" class="mr-2 mt-0.5 text-gray-500" />
                                             <div>
                                                 <p class="text-xs text-gray-500">Status</p>
-                                                <span
-                                                    class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Verified
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                                                    :class="statusClass">
+                                                    {{ statusLabel }}
                                                 </span>
                                             </div>
                                         </div>

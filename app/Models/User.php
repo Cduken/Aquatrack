@@ -33,6 +33,8 @@ class User extends Authenticatable
         'brand',
         'serial_number',
         'size',
+        'role',
+        'enabled'
     ];
 
     /**
@@ -43,6 +45,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'enabled' => 'boolean',
     ];
 
     /**

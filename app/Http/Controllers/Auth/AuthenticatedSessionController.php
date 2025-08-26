@@ -103,6 +103,18 @@ class AuthenticatedSessionController extends Controller
             $user = Auth::user();
             $selectedRole = strtolower($request->input('role', 'customer'));
 
+            // Prevent login if user is disabled
+            if (!$user->enabled) {
+                Activity::log('login_disabled', "Disabled user attempted login", $user, [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => ['Your account has been disabled. Please contact the administrator.'],
+                ]);
+            }
+
             // Prevent admin/staff from logging in through customer form
             if ($selectedRole === 'customer' && $user->hasAnyRole(['admin', 'staff'])) {
                 Activity::log('unauthorized_access', "Admin/staff attempted customer login", $user, [
