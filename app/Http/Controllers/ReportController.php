@@ -37,8 +37,6 @@ class ReportController extends Controller
     }
     public function store(Request $request)
     {
-
-
         try {
             $validated = $request->validate([
                 'municipality' => 'required|string|max:255',
@@ -63,13 +61,10 @@ class ReportController extends Controller
                     'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi',
                     'max:15360', // 15MB
                     function ($attribute, $value, $fail) {
-                        // Get the original file name to check extension
                         $originalName = $value->getClientOriginalName();
                         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-
                         $imageExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp'];
                         $videoExtensions = ['mp4', 'mov', 'avi'];
-
                         if (!in_array($extension, array_merge($imageExtensions, $videoExtensions))) {
                             $fail('The file must be an image (jpeg,png,jpg,gif,webp) or video (mp4,mov,avi).');
                         }
@@ -78,10 +73,10 @@ class ReportController extends Controller
                 'reporter_name' => 'required|string|max:255',
                 'reporter_phone' => 'nullable|string|max:11',
                 'priority' => 'required|in:low,medium,high',
-
+                'latitude' => 'required|numeric|between:-90,90',
+                'longitude' => 'required|numeric|between:-180,180',
             ]);
 
-            // Generate tracking code (AQT-yyyymmdd-4random)
             $datePart = now()->format('Ymd');
             $randomPart = substr(md5(uniqid()), 0, 4);
             $trackingCode = 'AQT' . $datePart . '-' . strtoupper($randomPart);
@@ -99,6 +94,8 @@ class ReportController extends Controller
                 'status' => 'pending',
                 'tracking_code' => $trackingCode,
                 'priority' => $validated['priority'],
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
             ];
 
             $report = Report::create($reportData);
@@ -117,7 +114,6 @@ class ReportController extends Controller
                 ]
             ]);
 
-            // Handle photo uploads
             foreach ($request->file('photos') as $photo) {
                 $originalName = $photo->getClientOriginalName();
                 $extension = $photo->getClientOriginalExtension();
@@ -135,15 +131,12 @@ class ReportController extends Controller
                 ]);
             }
 
-            // Check if user is authenticated
             if (Auth::check()) {
-                // For authenticated users, redirect back to reports list with success message
                 return redirect()->route('customer.reports')->with([
                     'success' => 'Report submitted successfully!',
                     'trackingCode' => $trackingCode
                 ]);
             } else {
-
                 return Inertia::render('Reports/Index', [
                     'trackingCode' => $trackingCode,
                     'dateSubmitted' => now()->toISOString(),

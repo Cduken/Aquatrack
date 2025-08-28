@@ -26,10 +26,11 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-       return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+        return [
             'role' => ['required', 'string', 'in:customer,admin,staff'],
+            'email' => ['required_if:role,admin,staff', 'nullable', 'string', 'email'],
+            'serial_number' => ['required_if:role,customer', 'nullable', 'string'],
+            'password' => ['required', 'string'],
         ];
     }
 
@@ -42,16 +43,31 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = [];
+
+        if ($this->role === 'customer') {
+            $credentials = [
+                'serial_number' => $this->serial_number,
+                'password' => $this->password,
+            ];
+        } else {
+            $credentials = [
+                'email' => $this->email,
+                'password' => $this->password,
+            ];
+        }
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                $this->role === 'customer' ? 'serial_number' : 'email' => trans('auth.failed'),
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
     }
+
 
     /**
      * Ensure the login request is not rate limited.
@@ -81,6 +97,10 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        $identifier = $this->role === 'customer'
+            ? $this->string('serial_number')
+            : $this->string('email');
+
+        return Str::transliterate(Str::lower($identifier) . '|' . $this->ip());
     }
 }

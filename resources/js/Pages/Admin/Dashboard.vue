@@ -200,7 +200,7 @@ onMounted(() => {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <!-- Total Users Card -->
             <div
-                class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm border border-blue-100 hover:shadow-md transition-all duration-200 group">
+                class=" rounded-2xl p-6 shadow-sm border border-blue-100 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm font-medium text-blue-600 mb-1">Total Users</p>
@@ -234,7 +234,7 @@ onMounted(() => {
 
             <!-- Active Staff Card -->
             <div
-                class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-sm border border-green-100 hover:shadow-md transition-all duration-200 group">
+                class=" rounded-2xl p-6 shadow-sm border border-green-100 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm font-medium text-green-600 mb-1">Active Staff</p>
@@ -268,7 +268,7 @@ onMounted(() => {
 
             <!-- Customers Card -->
             <div
-                class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 shadow-sm border border-purple-100 hover:shadow-md transition-all duration-200 group">
+                class=" rounded-2xl p-6 shadow-sm border border-purple-100 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm font-medium text-purple-600 mb-1">Customers</p>
@@ -304,7 +304,7 @@ onMounted(() => {
 
             <!-- Reports Card -->
             <div
-                class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all duration-200 group">
+                class=" rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all duration-200 group">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm font-medium text-amber-600 mb-1">Reports</p>
@@ -312,12 +312,7 @@ onMounted(() => {
                     </div>
                     <div
                         class="p-3 rounded-xl bg-white/50 text-amber-600 shadow-inner group-hover:bg-white transition-all">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
-                            </path>
-                        </svg>
+                        <v-icon name="bi-flag" />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-between">

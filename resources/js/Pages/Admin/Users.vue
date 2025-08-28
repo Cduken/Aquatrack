@@ -3,10 +3,14 @@
 <template>
     <AdminLayout title="Users">
         <div class="mx-auto w-full">
+
+        <h1 class="py-6 font-semibold text-2xl">Users Management</h1>
             <!-- Header Section -->
             <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg mb-6">
+
                 <div
                     class="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4">
+
                     <div class="w-full md:w-1/2">
                         <form class="flex items-center">
                             <label for="simple-search" class="sr-only">Search</label>

@@ -37,7 +37,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('reports', function (Blueprint $table) {
-            $table->dropUnique('reports_tracking_code_unique');
+            if (Schema::hasIndex('reports', 'reports_tracking_code_unique')) {
+                $table->dropIndex('reports_tracking_code_unique');
+            }
         });
     }
 };

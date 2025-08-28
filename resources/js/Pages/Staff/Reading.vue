@@ -169,7 +169,7 @@
                                         </div>
 
                                         <div
-                                            class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-600 text-sm sm:text-base"
+                                            class="flex flex-col gap-2 text-gray-600 text-sm sm:text-base"
                                         >
                                             <div
                                                 class="flex items-center gap-2"

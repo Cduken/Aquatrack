@@ -6,11 +6,24 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
-import Toast from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
+// Make Leaflet globally available
+window.L = L;
 
-
+// Fix for default Leaflet markers (optional but recommended)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    iconUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+});
 
 // Import ALL icons directly from their sets
 import * as BiIcons from "oh-vue-icons/icons/bi";
@@ -20,6 +33,7 @@ import * as RiIcons from "oh-vue-icons/icons/ri";
 import * as MdIcons from "oh-vue-icons/icons/md";
 import * as SiIcons from "oh-vue-icons/icons/si";
 import * as IoIcons from "oh-vue-icons/icons/io";
+import * as OiIcons from "oh-vue-icons/icons/oi";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -166,8 +180,12 @@ addIcons(
     BiIcons.BiSearchHeart,
     BiIcons.BiPersonCircle,
     BiIcons.BiFilter,
-
-
+    BiIcons.BiArrowDownUp,
+    BiIcons.BiCreditCardFill,
+    BiIcons.BiGeoAltFill,
+    BiIcons.BiCompass,
+    BiIcons.BiArrowBarLeft,
+    BiIcons.BiCalendarCheckFill,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -196,6 +214,9 @@ addIcons(
     HiIcons.HiUserCircle,
     HiIcons.HiCube,
     HiIcons.HiSolidSearch,
+    HiIcons.HiSearch,
+    HiIcons.HiClipboardList,
+    HiIcons.HiMenu,
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -211,7 +232,7 @@ addIcons(
     FaIcons.FaFolderOpen,
     FaIcons.FaWater,
     FaIcons.FaRegularTrashAlt,
-
+    FaIcons.FaFileInvoiceDollar,
 
     // Remix Icons
     RiIcons.RiDashboardLine,
@@ -222,7 +243,6 @@ addIcons(
     RiIcons.RiSave3Fill,
     RiIcons.RiEdit2Fill,
     RiIcons.RiEditBoxLine,
-
 
     // Material Design
     MdIcons.MdLoginOutlined,
@@ -237,6 +257,10 @@ addIcons(
     IoIcons.IoDesktop,
     IoIcons.IoSearch,
     IoIcons.IoSpeedometer,
+
+    // Octicons
+    OiIcons.OiReport,
+
 );
 
 createInertiaApp({
@@ -252,16 +276,16 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(Toast, {
                 timeout: 5000,
-    closeOnClick: true,
-    pauseOnFocusLoss: true,
-    pauseOnHover: true,
-    draggable: true,
-    draggablePercent: 0.6,
-    showCloseButtonOnHover: false,
-    hideProgressBar: false,
-    closeButton: 'button',
-    icon: true,
-    rtl: false
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: false,
+                closeButton: "button",
+                icon: true,
+                rtl: false,
             })
             .component("v-icon", OhVueIcon);
 

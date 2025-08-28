@@ -27,11 +27,7 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-700">No announcements yet</h3>
                     <p class="mt-1 text-sm text-gray-500 mb-6">Get started by creating your first announcement.</p>
-                    <button @click="openCreateModal"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm">
-                        <v-icon name="bi-plus-circle" class="w-4 h-4" />
-                        Create Announcement
-                    </button>
+
                 </div>
 
                 <div v-else>

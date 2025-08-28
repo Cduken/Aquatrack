@@ -24,6 +24,8 @@ class Report extends Model
         'tracking_code',
         'zone',
         'priority',
+        'latitude',
+        'longitude',
     ];
 
     protected $attributes = [

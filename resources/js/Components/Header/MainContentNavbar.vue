@@ -216,24 +216,7 @@
                                 href="/profile"
                                 class="flex items-center gap-2 py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
                             >
-                                <svg
-                                    class="w-4 h-4 text-gray-400 dark:text-gray-300"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                </svg>
+                                <v-icon name="bi-people" />
                                 Profile Settings
                             </Link>
                         </li>

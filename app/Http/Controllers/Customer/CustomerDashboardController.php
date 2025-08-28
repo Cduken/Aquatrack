@@ -18,7 +18,7 @@ class CustomerDashboardController extends Controller
         $announcements = Announcements::count();
 
         $user = Auth::user();
-
+        $customer_name = $user->name;
         // Get the latest 12 months of readings
         $readings = MeterReading::where('user_id', $user->id)
             ->orderBy('reading_date', 'desc')
@@ -47,6 +47,7 @@ class CustomerDashboardController extends Controller
 
 
         return Inertia::render('Customer/Dashboard', [
+            'customerName' => $customer_name,
             'announcements' => $announcements,
             'monthlyUsage' => $monthlyUsage,
             'currentBill' => $currentBill,

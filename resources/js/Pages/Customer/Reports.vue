@@ -111,7 +111,7 @@
         </div>
 
         <!-- Add Report Modal -->
-        <AddReportModal :show="showAddModal" @close="showAddModal = false" @success="handleReportAdded" />
+        <AddReportModal :show="showAddModal" @close="showAddModal = false" @submitted="handleReportAdded" />
 
         <!-- Report Details Modal -->
         <ReportDetailsModal :show="showDetailsModal" :report="selectedReport" @close="showDetailsModal = false" />
