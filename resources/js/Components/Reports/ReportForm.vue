@@ -62,7 +62,10 @@
                         type="tel"
                         id="reporter_phone"
                         v-model="form.reporter_phone"
+                        @input="restrictPhoneInput"
                         class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
+                        pattern="[0-9]{1,11}"
+                        maxlength="11"
                         placeholder="Your contact number"
                     />
                     <p
@@ -404,6 +407,14 @@ watch(
 
 const isVideoFile = (file) => {
     return file?.type?.match("video.*");
+};
+
+const restrictPhoneInput = (event) => {
+    let value = event.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+    if (value.length > 11) {
+        value = value.slice(0, 11); // Limit to 11 digits
+    }
+    form.reporter_phone = value;
 };
 
 const handleFileUpload = (event) => {

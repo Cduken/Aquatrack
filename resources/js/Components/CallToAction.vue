@@ -4,6 +4,7 @@ import { Link } from "@inertiajs/vue3";
 
 <template>
     <section
+        id="cta"
         class="cta-section mt-10 sm:mt-20 bg-gradient-to-r from-blue-600 to-blue-900 pt-16 pb-16 sm:pt-32 sm:pb-32 text-white"
     >
         <div class="text-center px-4">

@@ -1,6 +1,5 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
-import Navigation from "@/Components/Header/Navigation.vue";
 import Hero from "@/Components/Hero.vue";
 import Features from "@/Components/Features.vue";
 import About from "@/Components/About.vue";
@@ -35,7 +34,6 @@ const animationInitialized = ref(false);
 // Setup scroll animations
 onMounted(() => {
     if (!animationInitialized.value) {
-        // Wait for components to be fully rendered
         setTimeout(() => {
             setupScrollAnimations();
             animationInitialized.value = true;
@@ -46,13 +44,10 @@ onMounted(() => {
 function setupScrollAnimations() {
     if (typeof window === "undefined") return;
 
-    // Clear existing triggers
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
-    // Create a master timeline for better control
     const masterTL = gsap.timeline();
 
-    // Features animation
     const featureItems = document.querySelectorAll(".feature-item");
     if (featureItems.length > 0) {
         featureItems.forEach((item, index) => {
@@ -73,7 +68,6 @@ function setupScrollAnimations() {
         });
     }
 
-    // About content animation
     const aboutContent = document.querySelector(".about-content");
     if (aboutContent) {
         const animation = gsap.fromTo(
@@ -92,7 +86,6 @@ function setupScrollAnimations() {
         });
     }
 
-    // About image animation
     const aboutImage = document.querySelector(".about-image");
     if (aboutImage) {
         const animation = gsap.fromTo(
@@ -111,7 +104,6 @@ function setupScrollAnimations() {
         });
     }
 
-    // CTA animation
     const ctaSection = document.querySelector(".cta-section");
     if (ctaSection) {
         const animation = gsap.fromTo(
@@ -133,10 +125,8 @@ function setupScrollAnimations() {
     ScrollTrigger.refresh();
 }
 
-// Optional: Add scroll event listener to refresh animations on route changes
 if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
-        // This ensures animations work when scrolling back up
         ScrollTrigger.refresh();
     });
 }
@@ -146,15 +136,10 @@ if (typeof window !== "undefined") {
     <Head title="Landing" />
 
     <div class="overflow-hidden">
-
-        <Hero :can-login="canLogin" :can-register="canRegister" />
-
-        <Features />
-
-        <About />
-
-        <CallToAction />
-
+        <Hero id="home" :can-login="canLogin" :can-register="canRegister" />
+        <Features id="features" />
+        <About id="about" />
+        <CallToAction id="cta" />
         <Footer />
     </div>
 </template>

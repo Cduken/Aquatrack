@@ -186,6 +186,8 @@ addIcons(
     BiIcons.BiCompass,
     BiIcons.BiArrowBarLeft,
     BiIcons.BiCalendarCheckFill,
+    BiIcons.BiHddNetwork,
+    BiIcons.BiArrowBarRight,
 
     // Heroicons
     HiIcons.HiSolidUser,

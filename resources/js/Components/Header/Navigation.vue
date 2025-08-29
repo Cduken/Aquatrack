@@ -1,7 +1,12 @@
+//Navigation.vue
 <script setup>
 import { ref, computed } from "vue";
 import { Link, usePage, router } from "@inertiajs/vue3";
 import AquatrackLogo from "../AquatrackLogo.vue";
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
+gsap.registerPlugin(ScrollToPlugin); // Register ScrollToPlugin
 
 const page = usePage();
 
@@ -41,6 +46,26 @@ const isSelectRolesPage = computed(() => page.url.startsWith("/select-roles"));
 const showBackToHome = computed(
     () => isReportsPage.value || isSelectRolesPage.value
 );
+
+// Check if we should show the back arrow instead of the burger menu
+const showBackArrow = computed(
+    () => isSelectRolesPage.value || isReportsPage.value
+);
+
+// Method to handle smooth scrolling
+const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        gsap.to(window, {
+            duration: 1,
+            scrollTo: {
+                y: element.offsetTop, // Use offsetTop for the element's position
+                offsetY: 80, // Adjust for fixed header height
+            },
+            ease: "power2.inOut",
+        });
+    }
+};
 </script>
 
 <template>
@@ -55,103 +80,33 @@ const showBackToHome = computed(
                 </div>
 
                 <!-- Desktop Navigation -->
-                <!-- Desktop Navigation -->
-                <div
-                    v-if="!isSelectRolesPage && !isReportsPage"
-                    class="hidden md:flex items-center bg-[#1E4272]/80 rounded-[50px] px-8 py-[12px] gap-14 border border-gray-200/20 mr-12"
-                >
-                    <button class="font-semibold text-white text-sm">
-                        Home
-                    </button>
-                    <button class="font-semibold text-gray-300 text-sm">
-                        Features
-                    </button>
-                    <button class="font-semibold text-gray-300 text-sm">
-                        About
-                    </button>
-                    <button class="font-semibold text-gray-300 text-sm">
-                        CTA
-                    </button>
-                </div>
-
                 <div class="flex items-center gap-3">
+                    <!-- Back arrow for specific pages -->
                     <Link
                         v-if="showBackToHome"
                         href="/"
-                        class="hidden sm:inline-flex items-center px-4 py-[12px] text-sm bg-white text-black rounded-[50px] hover:bg-[#E6E8EB] transition duration-300"
+                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/20 text-white rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/50 transition duration-300"
                     >
-                        <v-icon name="bi-arrow-bar-left" class="mr-2" />
-                        Back to Home
+                        <v-icon name="bi-arrow-bar-left" class="h-6 w-6" />
+                        <span class="hidden md:inline ">Back to Home</span>
                     </Link>
+
+                    <!-- Get Started button for home page -->
                     <Link
                         v-else
                         :href="route('select-roles')"
-                        class="lg:block hidden sm:inline-flex items-center px-4 py-[12px] text-sm bg-white text-black rounded-[50px] hover:bg-[#E6E8EB] transition duration-300"
+                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/20 text-white rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/50 transition duration-300"
                     >
-                        <v-icon name="bi-person-circle" class="mr-2" />
-                        Get Started
-                    </Link>
-
-                    <!-- Mobile menu button -->
-                    <button
-                        @click="toggleMobileMenu"
-                        class="md:hidden sm:hidden lg:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-[#1E4272] focus:outline-none"
-                    >
+                        <!-- Right arrow icon (visible only on small screens) -->
                         <v-icon
-                            v-if="!isMobileMenuOpen"
-                            name="hi-menu"
-                            class="h-6 w-6"
+                            name="bi-arrow-bar-right"
+                            class="h-6 w-6 md:hidden"
                         />
-                        <v-icon v-else name="hi-x" class="h-6 w-6" />
-                    </button>
-                </div>
-            </div>
+                        <span class="hidden md:inline ">Get Started</span>
 
-            <!-- Mobile Navigation Menu -->
-            <div
-                v-if="isMobileMenuOpen"
-                class="md:hidden mt-4 pb-4 border-t border-white/20 pt-4"
-            >
-                <div class="flex flex-col space-y-3">
-                    <button
-                        class="font-semibold text-white text-sm py-2 px-4 bg-[#1E4272]/50 rounded-lg"
-                    >
-                        Home
-                    </button>
-                    <button
-                        class="font-semibold text-gray-300 text-sm py-2 px-4"
-                    >
-                        Features
-                    </button>
-                    <button
-                        class="font-semibold text-gray-300 text-sm py-2 px-4"
-                    >
-                        About
-                    </button>
-                    <button
-                        class="font-semibold text-gray-300 text-sm py-2 px-4"
-                    >
-                        CTA
-                    </button>
 
-                    <div class="border-t border-white/20">
-                        <Link
-                            v-if="showBackToHome"
-                            href="/"
-                            class="inline-flex items-center justify-center px-4 py-2 text-sm bg-white text-black rounded-[50px] hover:bg-[#E6E8EB] transition duration-300 w-full"
-                        >
-                            <v-icon name="bi-arrow-bar-left" class="mr-2" />
-                            Back to Home
-                        </Link>
-                        <Link
-                            v-else
-                            :href="route('select-roles')"
-                            class="inline-flex items-center justify-center px-4 py-2 text-sm bg-white text-black rounded-[50px] hover:bg-[#E6E8EB] transition duration-300 w-full"
-                        >
-                            <v-icon name="bi-person-circle" class="mr-2" />
-                            Get Started
-                        </Link>
-                    </div>
+
+                    </Link>
                 </div>
             </div>
         </div>
@@ -161,3 +116,21 @@ const showBackToHome = computed(
         <slot></slot>
     </main>
 </template>
+
+<style scoped>
+/* Ensure main content isn't affected by the overlay */
+main {
+    position: relative;
+    z-index: 10;
+}
+
+/* Smooth transition for the overlay background */
+.fixed.bg-black {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.fixed.bg-black[style="display: none"] {
+    opacity: 0;
+}
+</style>
