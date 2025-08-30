@@ -196,6 +196,14 @@ onMounted(() => {
 
 <template>
     <AdminLayout title="Dashboard">
+            <div class="lg:items-center lg:flex mb-4 hidden">
+                <v-icon
+                    name="md-dashboard-sharp"
+                    class="mr-2 text-green-500"
+                    scale="1.5"
+                />
+                <h1 class="text-2xl">Dashboard Management</h1>
+            </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <!-- Total Users Card -->

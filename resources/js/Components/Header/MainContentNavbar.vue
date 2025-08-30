@@ -1,56 +1,114 @@
+[file name]: MainContentNavbar.vue [file content begin]
 <template>
-  <nav class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
-    <div class="flex flex-wrap justify-between items-center">
-      <div class="flex justify-start items-center">
-        <!-- Mobile menu button -->
-        <button @click="$emit('toggle-mobile-menu')" class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+    <nav
+        class="bg-white border-b border-gray-200 px-4 py-2.5 shadow-md dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
+    >
+        <div class="flex flex-wrap justify-between items-center">
+            <div class="flex justify-start items-center">
+                <!-- Mobile menu button -->
+                <button
+                    @click="$emit('toggle-mobile-menu')"
+                    class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            v-if="!isMobileMenuOpen"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        ></path>
+                        <path
+                            v-else
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                    </svg>
+                </button>
 
-        <div class="flex items-center justify-between mr-4">
-          <img src="/images/MainLogo.png" class="w-12 h-12 object-cover mr-2" alt="Logo">
-          <span class="self-center text-[25px] font-semibold whitespace-nowrap dark:text-white">AquaTrack</span>
-          <button @click="$emit('toggle-sidebar')" class="p-2 ml-2 text-gray-600 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hidden md:block">
-            <span>
-              <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center" :class="{ 'rotate-180': !isSidebarOpen }" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"></path>
-                <path d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"></path>
-              </svg>
-              <span class="sr-only">Toggle sidebar</span>
-            </span>
-          </button>
-        </div>
+                <div class="flex items-center justify-between mr-4">
+                    <img
+                        src="/images/MainLogo.png"
+                        class="w-12 h-12 object-cover mr-2"
+                        alt="Logo"
+                    />
+                    <span
+                        class="self-center text-[25px] font-semibold whitespace-nowrap dark:text-white md:inline"
+                        >AquaTrack</span
+                    >
+                    <button
+                        @click="$emit('toggle-sidebar')"
+                        class="p-2 ml-2 text-gray-600 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hidden md:block"
+                    >
+                        <span>
+                            <svg
+                                aria-hidden="true"
+                                class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center"
+                                :class="{ 'rotate-180': !isSidebarOpen }"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"
+                                ></path>
+                                <path
+                                    d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"
+                                ></path>
+                            </svg>
+                            <span class="sr-only">Toggle sidebar</span>
+                        </span>
+                    </button>
+                </div>
 
-                <!-- Dynamic Breadcrumbs -->
-                 <nav class="hidden md:flex items-center mr-4 text-sm text-gray-700 dark:text-gray-400" aria-label="Breadcrumb">
+                <nav
+                    class="hidden md:flex items-center mr-4 text-sm text-gray-700 dark:text-gray-400"
+                    aria-label="Breadcrumb"
+                >
                     <ol class="inline-flex items-center space-x-1 md:space-x-2">
                         <li class="inline-flex items-center">
-                        <Link :href="dashboardRoute" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                            {{ userRole.charAt(0).toUpperCase() + userRole.slice(1) }}
-                        </Link>
+                            <Link
+                                :href="dashboardRoute"
+                                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+                            >
+                                {{
+                                    userRole.charAt(0).toUpperCase() +
+                                    userRole.slice(1)
+                                }}
+                            </Link>
                         </li>
                         <li v-if="currentRouteName">
-                        <div class="flex items-center">
-                            <svg class="w-3 h-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-400 capitalize">
-                            {{ currentRouteName }}
-                            </span>
-                        </div>
+                            <div class="flex items-center">
+                                <svg
+                                    class="w-3 h-3 text-gray-400 mx-1"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd"
+                                    ></path>
+                                </svg>
+                                <span
+                                    class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-400 capitalize"
+                                >
+                                    {{ currentRouteName }}
+                                </span>
+                            </div>
                         </li>
                     </ol>
-                    </nav>
-                </div>
-                <div class="flex items-center lg:order-2">
-        <!-- Mobile breadcrumb (simplified) -->
-        <div class="md:hidden text-sm font-medium text-gray-700 dark:text-gray-400 mr-2 capitalize">
-          {{ currentRouteName }}
-        </div>
+                </nav>
             </div>
+            <div class="flex items-center lg:order-2"></div>
 
             <div class="flex items-center lg:order-2">
                 <!-- Notifications -->
@@ -60,17 +118,7 @@
                     class="relative p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                 >
                     <span class="sr-only">View notifications</span>
-                    <svg
-                        aria-hidden="true"
-                        class="w-6 h-6"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
-                        ></path>
-                    </svg>
+                    <v-icon name="bi-bell-fill" class="w-6 h-6" />
                     <span
                         v-if="unreadCount > 0"
                         class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white"
@@ -169,7 +217,7 @@
                 <button
                     type="button"
                     @click.stop="toggleDropdown"
-                    class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    class="flex mx-3 text-sm rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-200 hover:ring-2 hover:ring-gray-200 dark:hover:ring-gray-600"
                     id="user-menu-button"
                     :aria-expanded="isDropdownOpen"
                     ref="dropdownButton"
@@ -177,13 +225,13 @@
                     <span class="sr-only">Open user menu</span>
                     <img
                         v-if="user.avatar_url"
-                        class="w-8 h-8 rounded-full"
+                        class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
                         :src="user.avatar_url"
                         :alt="userDisplayName"
                     />
                     <div
                         v-else
-                        class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-medium text-sm"
+                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-500 text-white flex items-center justify-center font-medium text-sm border-2 border-white dark:border-gray-700 shadow-sm"
                     >
                         {{ userInitials }}
                     </div>
@@ -193,60 +241,79 @@
                 <div
                     v-show="isDropdownOpen"
                     v-click-outside="closeDropdown"
-                    class="absolute right-0 top-full mt-2 z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
+                    class="absolute right-0 top-full mt-2 z-50 my-4 w-auto text-base list-none bg-white rounded-lg shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
                     id="dropdown"
                     ref="dropdownMenu"
                 >
-                    <div class="py-3 px-4">
+                    <!-- User info section -->
+                    <div
+                        class="py-4 px-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-600"
+                    >
                         <span
-                            class="block text-sm font-semibold text-gray-900 dark:text-white"
+                            class="block text-sm font-semibold text-gray-900 dark:text-white truncate"
                             >{{ userDisplayName }}</span
                         >
                         <span
-                            class="block text-sm text-gray-900 truncate dark:text-white"
+                            class="block text-sm text-gray-600 dark:text-gray-300 truncate mt-1"
                             >{{ user?.email }}</span
                         >
                     </div>
-                    <ul
-                        class="py-1 text-gray-700 dark:text-gray-300"
-                        aria-labelledby="dropdown"
-                    >
+
+                    <!-- Menu items -->
+                    <ul class="py-2">
                         <li>
                             <Link
                                 href="/profile"
-                                class="flex items-center gap-2 py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white"
+                                class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                                @click="closeDropdown"
                             >
-                                <v-icon name="bi-people" />
-                                Profile Settings
+                                <div
+                                    class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
+                                >
+                                    <v-icon name="bi-person" class="w-4 h-4" />
+                                </div>
+                                <span>Profile Settings</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href="/settings"
+                                class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                                @click="closeDropdown"
+                            >
+                                <div
+                                    class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
+                                >
+                                    <v-icon name="bi-gear" class="w-4 h-4" />
+                                </div>
+                                <span>Account Settings</span>
                             </Link>
                         </li>
                     </ul>
-                    <ul
-                        class="py-1 text-gray-700 dark:text-gray-300"
-                        aria-labelledby="dropdown"
+
+                    <!-- Logout section -->
+                    <div
+                        class="border-t border-gray-100 dark:border-gray-700 pt-2"
                     >
-                        <li>
-                            <button
-                                @click.prevent="handleLogout"
-                                class="flex items-center w-full gap-2 py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-gray-400 dark:text-gray-300"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
+                        <ul>
+                            <li>
+                                <button
+                                    @click.prevent="handleLogout"
+                                    class="flex items-center w-full gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"
-                                    />
-                                </svg>
-                                Sign out
-                            </button>
-                        </li>
-                    </ul>
+                                    <div
+                                        class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
+                                    >
+                                        <v-icon
+                                            name="bi-box-arrow-right"
+                                            class="w-4 h-4"
+                                        />
+                                    </div>
+                                    <span>Sign out</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -482,4 +549,16 @@ button:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
+
+/* Smooth dropdown animation */
+#dropdown {
+    transition: all 0.2s ease-out;
+    transform-origin: top right;
+}
+
+/* Hover effects for dropdown items */
+.hover-lift:hover {
+    transform: translateY(-1px);
+}
 </style>
+[file content end]

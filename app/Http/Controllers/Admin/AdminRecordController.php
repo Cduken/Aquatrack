@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MeterReading;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AdminRecordController extends Controller
@@ -38,7 +39,10 @@ class AdminRecordController extends Controller
         $perPage = $request->get('perPage', 10);
         $records = $query->paginate($perPage);
 
+        $serial_number = Auth::user()->serial_number;
+
         return Inertia::render('Admin/Records', [
+            'serial_number' => $serial_number,
             'records' => $records,
             'filters' => $request->only(['search', 'status', 'perPage']),
             'sortField' => $sortField,
@@ -49,6 +53,13 @@ class AdminRecordController extends Controller
     public function show(MeterReading $record)
     {
         $record->load('user');
+
+        // Return JSON if it's an AJAX request (for modal)
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json($record);
+        }
+
+        // Otherwise return the Inertia page
         return Inertia::render('Admin/Records/Show', [
             'record' => $record,
         ]);
@@ -83,5 +94,12 @@ class AdminRecordController extends Controller
 
         return redirect()->back()
             ->with('success', 'Record deleted successfully.');
+    }
+
+
+    public function details(MeterReading $record)
+    {
+        $record->load('user');
+        return response()->json($record);
     }
 }

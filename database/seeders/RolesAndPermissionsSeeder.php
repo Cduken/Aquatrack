@@ -27,7 +27,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web'
         ]);
 
-        // Create or update admin user
+
         $admin = User::updateOrCreate(
             ['email' => 'admin@clarinwaterdistrict.com'],
             [
@@ -37,7 +37,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $admin->syncRoles([$adminRole]);
-        $admin->role = 'admin'; // Update the custom role column
+        $admin->role = 'admin';
         $admin->save();
 
         // Create or update staff user
@@ -50,14 +50,15 @@ class RolesAndPermissionsSeeder extends Seeder
             ]
         );
         $staff->syncRoles([$staffRole]);
-        $staff->role = 'staff'; // Update the custom role column
+        $staff->role = 'staff';
         $staff->save();
 
-        // Create or update customer user
+
         $customer = User::updateOrCreate(
             ['email' => 'customer@email.com'],
             [
                 'name' => 'Concessioner',
+                'serial_number' => '123456789',
                 'password' => Hash::make('customer123'),
                 'email_verified_at' => now()
             ]

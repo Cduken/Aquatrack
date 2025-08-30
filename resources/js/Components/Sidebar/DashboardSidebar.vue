@@ -1,7 +1,7 @@
 <template>
     <aside
         :class="[
-            'fixed top-0 left-0 z-50 h-screen pt-14 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition-all duration-300 ease-in-out',
+            'fixed top-0 left-0 z-50 h-screen pt-14 bg-white border-r border-gray-200 shadow-xl dark:bg-gray-800 dark:border-gray-700 transition-all duration-300 ease-in-out',
             isOpen ? 'w-64' : 'w-16',
             isMobileMenuOpen
                 ? 'translate-x-0'
@@ -37,6 +37,7 @@
                 <li v-for="link in links" :key="link.url">
                     <Link
                         :href="link.url"
+                        :title="!isOpen ? link.name : ''"
                         class="flex items-center p-3 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group transition-all duration-300 relative"
                         :class="{
                             'bg-primary-50 dark:bg-primary-900/30 border-l-4 border-primary-500 font-semibold text-primary-700 dark:text-primary-200':
@@ -117,14 +118,15 @@ const isActive = (url) => {
     return window.location.pathname === url;
 };
 
+// Destructure emit from defineEmits
+const emit = defineEmits(["toggle-sidebar", "toggle-mobile-menu"]);
+
 // Close mobile menu when a link is clicked
 const handleLinkClick = () => {
     if (window.innerWidth < 768) {
         emit("toggle-mobile-menu");
     }
 };
-
-defineEmits(["toggle-sidebar", "toggle-mobile-menu"]);
 </script>
 
 <style scoped>

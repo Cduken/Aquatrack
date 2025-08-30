@@ -34,6 +34,10 @@ import * as MdIcons from "oh-vue-icons/icons/md";
 import * as SiIcons from "oh-vue-icons/icons/si";
 import * as IoIcons from "oh-vue-icons/icons/io";
 import * as OiIcons from "oh-vue-icons/icons/oi";
+import { LaUserEditSolid } from "oh-vue-icons/icons";
+
+
+
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -188,6 +192,17 @@ addIcons(
     BiIcons.BiCalendarCheckFill,
     BiIcons.BiHddNetwork,
     BiIcons.BiArrowBarRight,
+    BiIcons.BiExclamationCircleFill,
+    BiIcons.BiListUl,
+    BiIcons.BiCash,
+    BiIcons.BiExclamationOctagon,
+    BiIcons.BiAlarm,
+    BiIcons.BiCheckLg,
+    BiIcons.BiArrowRepeat,
+    BiIcons.BiCalendarX,
+    BiIcons.BiArrowLeftRight,
+    BiIcons.BiCashCoin,
+    BiIcons.BiArrowClockwise,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -219,6 +234,26 @@ addIcons(
     HiIcons.HiSearch,
     HiIcons.HiClipboardList,
     HiIcons.HiMenu,
+    HiIcons.HiSolidPlus,
+    HiIcons.HiSolidFilter,
+    HiIcons.HiCheckCircle,
+    HiIcons.HiRefresh,
+    HiIcons.HiEye,
+    HiIcons.HiPencil,
+    HiIcons.HiTrash,
+    HiIcons.HiShieldCheck,
+    HiIcons.HiXCircle,
+    HiIcons.HiLockOpen,
+    HiIcons.HiTrendingUp,
+    HiIcons.HiArrowSmUp,
+    HiIcons.HiSpeakerphone,
+    HiIcons.HiDocumentText,
+    HiIcons.HiClock,
+    HiIcons.HiPlus,
+    HiIcons.HiDesktopComputer,
+    HiIcons.HiExclamationCircle,
+
+
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -251,6 +286,12 @@ addIcons(
     MdIcons.MdStartTwotone,
     MdIcons.MdDashboard,
     MdIcons.MdWarningamberRound,
+    MdIcons.MdLockreset,
+    MdIcons.MdReportproblem,
+    MdIcons.MdPeoplealtOutlined,
+    MdIcons.MdDashboardSharp,
+
+
 
     // Simple Icons
     SiIcons.SiGoogleanalytics,
@@ -259,9 +300,13 @@ addIcons(
     IoIcons.IoDesktop,
     IoIcons.IoSearch,
     IoIcons.IoSpeedometer,
+    IoIcons.IoMegaphoneSharp,
 
     // Octicons
     OiIcons.OiReport,
+
+    // Line Awesome
+    LaUserEditSolid,
 
 );
 

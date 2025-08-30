@@ -236,11 +236,11 @@ const getHeading = computed(() => {
                         >
                             <div class="flex items-center space-x-2">
                                 <v-icon
-                                    name="bi-file-earmark-text"
-                                    class="text-white"
+                                    name="oi-report"
+                                    class="text-amber-300" scale="1.5"
                                 />
-                                <span class="text-white font-medium"
-                                    >Report Details</span
+                                <span class="text-white font-[200] text-xl"
+                                    >Concessioner's Report Details</span
                                 >
                             </div>
                             <button

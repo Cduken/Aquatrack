@@ -45,6 +45,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
 
+    Route::get('/admin/records/{record}/details', [AdminRecordController::class, 'details'])
+    ->name('admin.records.details');
+
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
