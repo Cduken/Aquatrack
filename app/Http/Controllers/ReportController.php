@@ -15,7 +15,6 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
-
     protected $zones = [
         'Zone 1' => ['Poblacion Sur'],
         'Zone 2' => ['Poblacion Centro'],
@@ -35,9 +34,24 @@ class ReportController extends Controller
     {
         return Inertia::render('Reports/Index');
     }
+
     public function store(Request $request)
     {
         try {
+            // Get client IP address
+            $ipAddress = $request->ip();
+
+            // Check if IP has exceeded daily limit
+            $dailyReportCount = Report::where('ip_address', $ipAddress)
+                ->whereDate('created_at', today())
+                ->count();
+
+            if ($dailyReportCount >= 3) {
+                return Inertia::render('Reports/Index', [
+                    'error' => 'You have exceeded the daily report limit (3 reports per day). Please try again tomorrow.'
+                ]);
+            }
+
             $validated = $request->validate([
                 'municipality' => 'required|string|max:255',
                 'province' => 'required|string|max:255',
@@ -96,13 +110,14 @@ class ReportController extends Controller
                 'priority' => $validated['priority'],
                 'latitude' => $validated['latitude'],
                 'longitude' => $validated['longitude'],
+                'ip_address' => $ipAddress, // Add IP address to report data
             ];
 
             $report = Report::create($reportData);
 
             Activity::create([
                 'event' => 'report_created',
-                'description' => 'New report submitted: ' . $report->tracking_code,
+                'description' => 'New report submitted: ' . $report->tracking_code . ' from IP: ' . $ipAddress,
                 'subject_type' => get_class($report),
                 'subject_id' => $report->id,
                 'causer_type' => Auth::check() ? get_class(Auth::user()) : null,
@@ -110,7 +125,8 @@ class ReportController extends Controller
                 'properties' => [
                     'tracking_code' => $report->tracking_code,
                     'zone' => $report->zone,
-                    'status' => $report->status
+                    'status' => $report->status,
+                    'ip_address' => $ipAddress,
                 ]
             ]);
 
@@ -150,7 +166,6 @@ class ReportController extends Controller
 
     public function success(Request $request)
     {
-
         if (!$request->session()->has('trackingCode')) {
             return redirect()->route('home');
         }
@@ -200,7 +215,7 @@ class ReportController extends Controller
             'reports' => $query->paginate(10)
                 ->appends($request->query()),
             'filters' => $request->only(['userType', 'status', 'search']),
-            'canEdit' => true // Add this line to always enable editing for admin
+            'canEdit' => true
         ]);
     }
 
@@ -224,7 +239,6 @@ class ReportController extends Controller
         ]);
     }
 
-    // In your ReportController.php
     public function track(Request $request)
     {
         // If it's a GET request, just show the tracking form

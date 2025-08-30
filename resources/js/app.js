@@ -203,6 +203,10 @@ addIcons(
     BiIcons.BiArrowLeftRight,
     BiIcons.BiCashCoin,
     BiIcons.BiArrowClockwise,
+    BiIcons.BiGlobe,
+    BiIcons.BiCamera,
+    BiIcons.BiCameraVideo,
+    BiIcons.BiCameraVideoOff,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -252,6 +256,8 @@ addIcons(
     HiIcons.HiPlus,
     HiIcons.HiDesktopComputer,
     HiIcons.HiExclamationCircle,
+    HiIcons.HiExclamation,
+    HiIcons.HiInformationCircle,
 
 
 

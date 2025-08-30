@@ -26,6 +26,7 @@ class Report extends Model
         'priority',
         'latitude',
         'longitude',
+         'ip_address',
     ];
 
     protected $attributes = [

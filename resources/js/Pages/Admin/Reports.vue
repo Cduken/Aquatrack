@@ -829,7 +829,7 @@ const getStatusIcon = (status) => {
 const getPriorityIcon = (priority) => {
     switch (priority) {
         case "high":
-            return "hi-exclamation-triangle";
+            return "hi-exclamation";
         case "medium":
             return "hi-exclamation-circle";
         case "low":

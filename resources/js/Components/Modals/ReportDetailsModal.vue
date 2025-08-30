@@ -1,218 +1,3 @@
-<script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-
-const props = defineProps({
-    show: {
-        type: Boolean,
-        required: true,
-    },
-    report: {
-        type: Object,
-        default: null,
-    },
-});
-
-const report = computed(() => props.report);
-
-const emit = defineEmits(["close"]);
-const showVideoModal = ref(false);
-const currentVideo = ref(null);
-const map = ref(null);
-const mapContainer = ref(null);
-const heading = ref(0); // Default heading (north)
-const mapLoaded = ref(false);
-
-// Initialize Leaflet map
-const initializeMap = () => {
-    if (
-        report.value &&
-        report.value.latitude !== undefined &&
-        report.value.latitude !== null &&
-        report.value.longitude !== undefined &&
-        report.value.longitude !== null &&
-        mapContainer.value
-    ) {
-        // Convert to numbers if they are strings
-        const lat = Number(report.value.latitude);
-        const lon = Number(report.value.longitude);
-
-        // Get heading if available (for arrow direction)
-        if (
-            report.value.heading !== undefined &&
-            report.value.heading !== null
-        ) {
-            heading.value = Number(report.value.heading);
-        }
-
-        // Validate coordinates
-        if (
-            !isNaN(lat) &&
-            !isNaN(lon) &&
-            Math.abs(lat) <= 90 &&
-            Math.abs(lon) <= 180
-        ) {
-            const L = window.L;
-            if (L && !map.value) {
-                // Small delay to ensure DOM is ready
-                setTimeout(() => {
-                    if (mapContainer.value) {
-                        map.value = L.map(mapContainer.value).setView(
-                            [lat, lon],
-                            15
-                        );
-
-                        L.tileLayer(
-                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            {
-                                maxZoom: 19,
-                                attribution:
-                                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                            }
-                        ).addTo(map.value);
-
-                        // Create a simple marker with a standard icon
-                        const markerIcon = L.icon({
-                            iconUrl:
-                                "data:image/svg+xml;base64," +
-                                btoa(`
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40">
-                                    <g transform="rotate(${heading.value} 15 15)">
-                                        <path d="M15,1.5 C8.1,1.5 2.5,7.1 2.5,14 C2.5,23.8 15,38.5 15,38.5 C15,38.5 27.5,23.8 27.5,14 C27.5,7.1 21.9,1.5 15,1.5 Z" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
-                                        <circle cx="15" cy="13" r="5" fill="#ffffff"/>
-                                        <polygon points="15,5 12,15 15,12 18,15" fill="#ffffff"/>
-                                    </g>
-                                </svg>
-                            `),
-                            iconSize: [30, 40],
-                            iconAnchor: [15, 40],
-                            popupAnchor: [0, -40],
-                        });
-
-                        // Add marker
-                        L.marker([lat, lon], { icon: markerIcon }).addTo(
-                            map.value
-                        );
-
-                        // Force map to resize after a short delay
-                        setTimeout(() => {
-                            if (map.value) {
-                                map.value.invalidateSize();
-                                mapLoaded.value = true;
-                            }
-                        }, 100);
-                    }
-                }, 100);
-            }
-        }
-    }
-};
-
-// Watch for changes in show prop to initialize map
-watch(
-    () => props.show,
-    (newVal) => {
-        if (newVal) {
-            // Small delay to ensure the modal is fully rendered
-            setTimeout(() => {
-                initializeMap();
-            }, 200);
-        } else {
-            mapLoaded.value = false;
-        }
-    }
-);
-
-onMounted(() => {
-    if (props.show) {
-        initializeMap();
-    }
-});
-
-onUnmounted(() => {
-    if (map.value) {
-        map.value.remove();
-        map.value = null;
-    }
-});
-
-// Clean up map when modal closes
-watch(
-    () => props.show,
-    (newVal) => {
-        if (!newVal && map.value) {
-            map.value.remove();
-            map.value = null;
-            mapLoaded.value = false;
-        }
-    }
-);
-
-const openVideoModal = (videoPath) => {
-    currentVideo.value = "/storage/" + videoPath;
-    showVideoModal.value = true;
-};
-
-const closeVideoModal = () => {
-    showVideoModal.value = false;
-    currentVideo.value = null;
-};
-
-const isVideoFile = (file) => {
-    return (
-        file.type === "video" ||
-        (file.mime_type && file.mime_type.includes("video"))
-    );
-};
-
-const statusClass = computed(() => {
-    if (!report.value || !report.value.status) return "";
-    switch (report.value.status.toLowerCase()) {
-        case "in progress":
-            return "bg-blue-100 text-blue-800";
-        case "resolved":
-            return "bg-green-100 text-green-800";
-        case "pending":
-            return "bg-yellow-100 text-yellow-800";
-        default:
-            return "bg-gray-100 text-gray-800";
-    }
-});
-
-const statusLabel = computed(() => {
-    if (!report.value || !report.value.status) return "";
-    return (
-        report.value.status.charAt(0).toUpperCase() +
-        report.value.status.slice(1)
-    );
-});
-
-// Safely get coordinates with fallback
-const getLatitude = computed(() => {
-    return report.value &&
-        report.value.latitude !== undefined &&
-        report.value.latitude !== null
-        ? Number(report.value.latitude).toFixed(6)
-        : "N/A";
-});
-
-const getLongitude = computed(() => {
-    return report.value &&
-        report.value.longitude !== undefined &&
-        report.value.longitude !== null
-        ? Number(report.value.longitude).toFixed(6)
-        : "N/A";
-});
-
-// Format the heading for display
-const getHeading = computed(() => {
-    if (!report.value || !report.value.heading) return "N/A";
-
-    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-    const index = Math.round((Number(report.value.heading) % 360) / 45) % 8;
-    return `${directions[index]} (${Math.round(report.value.heading)}°)`;
-});
-</script>
-
 <template>
     <!-- Single transition wrapper for both overlay and panel -->
     <transition name="modal">
@@ -237,7 +22,8 @@ const getHeading = computed(() => {
                             <div class="flex items-center space-x-2">
                                 <v-icon
                                     name="oi-report"
-                                    class="text-amber-300" scale="1.5"
+                                    class="text-amber-300"
+                                    scale="1.5"
                                 />
                                 <span class="text-white font-[200] text-xl"
                                     >Concessioner's Report Details</span
@@ -617,6 +403,25 @@ const getHeading = computed(() => {
                                                 </p>
                                             </div>
                                         </div>
+                                        <div class="flex items-start">
+                                            <v-icon
+                                                name="bi-globe"
+                                                class="mr-2 mt-0.5 text-blue-500"
+                                            />
+                                            <div>
+                                                <p
+                                                    class="text-xs text-gray-500"
+                                                >
+                                                    IP Address
+                                                </p>
+                                                <p class="font-medium">
+                                                    {{
+                                                        report.ip_address ||
+                                                        "N/A"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -808,6 +613,221 @@ const getHeading = computed(() => {
         </div>
     </transition>
 </template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+
+const props = defineProps({
+    show: {
+        type: Boolean,
+        required: true,
+    },
+    report: {
+        type: Object,
+        default: null,
+    },
+});
+
+const report = computed(() => props.report);
+
+const emit = defineEmits(["close"]);
+const showVideoModal = ref(false);
+const currentVideo = ref(null);
+const map = ref(null);
+const mapContainer = ref(null);
+const heading = ref(0); // Default heading (north)
+const mapLoaded = ref(false);
+
+// Initialize Leaflet map
+const initializeMap = () => {
+    if (
+        report.value &&
+        report.value.latitude !== undefined &&
+        report.value.latitude !== null &&
+        report.value.longitude !== undefined &&
+        report.value.longitude !== null &&
+        mapContainer.value
+    ) {
+        // Convert to numbers if they are strings
+        const lat = Number(report.value.latitude);
+        const lon = Number(report.value.longitude);
+
+        // Get heading if available (for arrow direction)
+        if (
+            report.value.heading !== undefined &&
+            report.value.heading !== null
+        ) {
+            heading.value = Number(report.value.heading);
+        }
+
+        // Validate coordinates
+        if (
+            !isNaN(lat) &&
+            !isNaN(lon) &&
+            Math.abs(lat) <= 90 &&
+            Math.abs(lon) <= 180
+        ) {
+            const L = window.L;
+            if (L && !map.value) {
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    if (mapContainer.value) {
+                        map.value = L.map(mapContainer.value).setView(
+                            [lat, lon],
+                            15
+                        );
+
+                        L.tileLayer(
+                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            {
+                                maxZoom: 19,
+                                attribution:
+                                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            }
+                        ).addTo(map.value);
+
+                        // Create a simple marker with a standard icon
+                        const markerIcon = L.icon({
+                            iconUrl:
+                                "data:image/svg+xml;base64," +
+                                btoa(`
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40">
+                                    <g transform="rotate(${heading.value} 15 15)">
+                                        <path d="M15,1.5 C8.1,1.5 2.5,7.1 2.5,14 C2.5,23.8 15,38.5 15,38.5 C15,38.5 27.5,23.8 27.5,14 C27.5,7.1 21.9,1.5 15,1.5 Z" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+                                        <circle cx="15" cy="13" r="5" fill="#ffffff"/>
+                                        <polygon points="15,5 12,15 15,12 18,15" fill="#ffffff"/>
+                                    </g>
+                                </svg>
+                            `),
+                            iconSize: [30, 40],
+                            iconAnchor: [15, 40],
+                            popupAnchor: [0, -40],
+                        });
+
+                        // Add marker
+                        L.marker([lat, lon], { icon: markerIcon }).addTo(
+                            map.value
+                        );
+
+                        // Force map to resize after a short delay
+                        setTimeout(() => {
+                            if (map.value) {
+                                map.value.invalidateSize();
+                                mapLoaded.value = true;
+                            }
+                        }, 100);
+                    }
+                }, 100);
+            }
+        }
+    }
+};
+
+// Watch for changes in show prop to initialize map
+watch(
+    () => props.show,
+    (newVal) => {
+        if (newVal) {
+            // Small delay to ensure the modal is fully rendered
+            setTimeout(() => {
+                initializeMap();
+            }, 200);
+        } else {
+            mapLoaded.value = false;
+        }
+    }
+);
+
+onMounted(() => {
+    if (props.show) {
+        initializeMap();
+    }
+});
+
+onUnmounted(() => {
+    if (map.value) {
+        map.value.remove();
+        map.value = null;
+    }
+});
+
+// Clean up map when modal closes
+watch(
+    () => props.show,
+    (newVal) => {
+        if (!newVal && map.value) {
+            map.value.remove();
+            map.value = null;
+            mapLoaded.value = false;
+        }
+    }
+);
+
+const openVideoModal = (videoPath) => {
+    currentVideo.value = "/storage/" + videoPath;
+    showVideoModal.value = true;
+};
+
+const closeVideoModal = () => {
+    showVideoModal.value = false;
+    currentVideo.value = null;
+};
+
+const isVideoFile = (file) => {
+    return (
+        file.type === "video" ||
+        (file.mime_type && file.mime_type.includes("video"))
+    );
+};
+
+const statusClass = computed(() => {
+    if (!report.value || !report.value.status) return "";
+    switch (report.value.status.toLowerCase()) {
+        case "in progress":
+            return "bg-blue-100 text-blue-800";
+        case "resolved":
+            return "bg-green-100 text-green-800";
+        case "pending":
+            return "bg-yellow-100 text-yellow-800";
+        default:
+            return "bg-gray-100 text-gray-800";
+    }
+});
+
+const statusLabel = computed(() => {
+    if (!report.value || !report.value.status) return "";
+    return (
+        report.value.status.charAt(0).toUpperCase() +
+        report.value.status.slice(1)
+    );
+});
+
+// Safely get coordinates with fallback
+const getLatitude = computed(() => {
+    return report.value &&
+        report.value.latitude !== undefined &&
+        report.value.latitude !== null
+        ? Number(report.value.latitude).toFixed(6)
+        : "N/A";
+});
+
+const getLongitude = computed(() => {
+    return report.value &&
+        report.value.longitude !== undefined &&
+        report.value.longitude !== null
+        ? Number(report.value.longitude).toFixed(6)
+        : "N/A";
+});
+
+// Format the heading for display
+const getHeading = computed(() => {
+    if (!report.value || !report.value.heading) return "N/A";
+
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round((Number(report.value.heading) % 360) / 45) % 8;
+    return `${directions[index]} (${Math.round(report.value.heading)}°)`;
+});
+</script>
 
 <style scoped>
 /* Custom scrollbar for the content */

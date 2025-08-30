@@ -1,302 +1,285 @@
 <template>
-    <div class="fixed inset-0 z-50 overflow-hidden">
-        <!-- Backdrop -->
-        <Transition name="fade">
-            <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" @click="closeModal"></div>
-        </Transition>
+    <transition name="modal">
+        <div v-if="show" class="fixed inset-0 z-[1000] overflow-hidden">
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/50 transition-opacity duration-300" @click="closeModal"></div>
 
-        <!-- Slide Panel -->
-        <Transition name="slide">
-            <div class="fixed inset-y-0 right-0 w-[50vw] max-w-2xl bg-white shadow-2xl flex flex-col">
-                <!-- Header -->
-                <div class="flex items-center justify-between p-6 border-b border-blue-700 bg-gradient-to-r from-[#062F64] to-[#2a5298] text-white">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-700 rounded-lg">
-                            <v-icon name="bi-speedometer2" scale="1.2" class="text-white" />
+            <!-- Sliding panel container -->
+            <div class="fixed inset-y-0 right-0 w-full max-w-2xl flex">
+                <!-- Panel with transform class for animation -->
+                <div class="relative w-full h-full transform transition-transform duration-300 ease-in-out">
+                    <div class="h-full flex flex-col bg-white dark:bg-gray-800 shadow-xl">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-[#062F64] to-[#1E4272]">
+                            <div class="flex items-center space-x-2">
+                                <v-icon name="bi-speedometer2" class="text-amber-300" scale="1.5" />
+                                <span class="text-white font-[200] text-xl">Meter Reading Card</span>
+                            </div>
+                            <button
+                                @click="closeModal"
+                                class="text-white hover:text-gray-200 transition-colors duration-200 p-1 rounded-full hover:bg-white/10"
+                            >
+                                <v-icon name="bi-x-lg" class="h-6 w-6" />
+                            </button>
                         </div>
-                        <div>
-                            <h3 class="text-xl font-semibold">Meter Reading Card</h3>
-                            <p class="text-blue-100 text-sm mt-1">Record water consumption for billing</p>
-                        </div>
-                    </div>
-                    <button @click="closeModal" class="p-2 rounded-lg hover:bg-blue-800 transition-colors">
-                        <v-icon name="bi-x-lg" class="text-white text-lg" />
-                    </button>
-                </div>
 
-                <!-- Content -->
-                <div class="flex-1 overflow-y-auto">
-                    <div class="p-6">
-                        <!-- Customer Summary Card -->
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 shadow-sm mb-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 bg-blue-100 rounded-xl">
-                                        <v-icon name="bi-person-circle" class="text-blue-600 text-2xl" />
-                                    </div>
-                                    <div>
-                                        <h2 class="text-xl font-bold text-gray-800">{{ user.name }} {{ user.lastname }}</h2>
-                                        <p class="text-gray-600 mt-1">{{ user.address }}</p>
-                                        <div class="flex gap-4 mt-2">
-                                            <span class="flex items-center gap-1 text-sm text-gray-500">
-                                                <v-icon name="bi-credit-card" class="text-blue-500" />
-                                                #{{ user.account_number }}
-                                            </span>
-                                            <span class="flex items-center gap-1 text-sm text-gray-500">
-                                                <v-icon name="bi-telephone" class="text-blue-500" />
-                                                {{ user.phone }}
-                                            </span>
+                        <!-- Content -->
+                        <div class="flex-1 overflow-y-auto p-6">
+                            <!-- Customer Summary Card -->
+                            <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg mb-6">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                            <v-icon name="bi-person-circle" class="text-blue-600 dark:text-blue-400 text-xl" />
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
-                                        <v-icon name="bi-check-circle" class="mr-1" /> Active
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2">Installed: {{ formatDate(user.date_installed) || 'N/A' }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Meter Details Grid -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                                <div class="flex items-center gap-2 text-blue-600 mb-2">
-                                    <v-icon name="bi-tag" class="text-blue-500" />
-                                    <span class="text-xs font-medium">Brand</span>
-                                </div>
-                                <div class="text-sm font-semibold text-gray-800">{{ user.brand || 'Not specified' }}</div>
-                            </div>
-
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                                <div class="flex items-center gap-2 text-blue-600 mb-2">
-                                    <v-icon name="bi-upc-scan" class="text-blue-500" />
-                                    <span class="text-xs font-medium">Serial No.</span>
-                                </div>
-                                <div class="text-sm font-semibold text-gray-800">{{ user.serial_number || 'N/A' }}</div>
-                            </div>
-
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                                <div class="flex items-center gap-2 text-blue-600 mb-2">
-                                    <v-icon name="bi-rulers" class="text-blue-500" />
-                                    <span class="text-xs font-medium">Size</span>
-                                </div>
-                                <div class="text-sm font-semibold text-gray-800">{{ user.size || 'N/A' }} mm</div>
-                            </div>
-
-                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                                <div class="flex items-center gap-2 text-blue-600 mb-2">
-                                    <v-icon name="bi-calendar-check" class="text-blue-500" />
-                                    <span class="text-xs font-medium">Last Reading</span>
-                                </div>
-                                <div class="text-sm font-semibold text-gray-800">{{ lastReadingDate || 'No records' }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Meter Reading Form -->
-                        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-6">
-                            <div class="flex items-center gap-3 mb-5">
-                                <div class="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-                                <div>
-                                    <h4 class="text-lg font-semibold text-gray-800">New Meter Reading</h4>
-                                    <p class="text-sm text-gray-500">Enter current meter values</p>
-                                </div>
-                            </div>
-
-                            <!-- Year Transition Warning -->
-                            <div v-if="showYearTransitionWarning" class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 flex items-start gap-3">
-                                <div class="p-2 bg-yellow-100 rounded-lg mt-0.5">
-                                    <v-icon name="bi-exclamation-triangle" class="text-yellow-600" />
-                                </div>
-                                <div>
-                                    <div class="font-medium text-yellow-800">Year Transition Detected</div>
-                                    <p class="text-sm text-yellow-700 mt-1">
-                                        You're entering a reading for January after December. Please ensure this is correct
-                                        as it represents a new billing year.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-123" class="text-blue-500" />
-                                        Previous Reading (m³)
-                                    </label>
-                                    <div class="relative">
-                                        <input v-model="newReading.previous_reading" type="number" step="0.01"
-                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
-                                            disabled>
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500">Last recorded reading</p>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-123" class="text-blue-500" />
-                                        Current Reading (m³) *
-                                    </label>
-                                    <div class="relative">
-                                        <input v-model="newReading.reading" type="number" step="0.01"
-                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12"
-                                            :class="{'border-red-300': readingError}"
-                                            :disabled="isSubmitting"
-                                            @input="calculateConsumptionAndAmount"
-                                            placeholder="Enter current reading">
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
-                                    </div>
-                                    <p v-if="readingError" class="text-xs text-red-500">{{ readingError }}</p>
-                                    <p v-else class="text-xs text-gray-500">Must be higher than previous reading</p>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-lightning-charge" class="text-blue-500" />
-                                        Consumption (m³)
-                                    </label>
-                                    <div class="relative">
-                                        <input v-model="newReading.consumption" type="number" step="0.01"
-                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
-                                            disabled>
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500">Calculated automatically</p>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-currency-dollar" class="text-blue-500" />
-                                        Amount (₱)
-                                    </label>
-                                    <div class="relative">
-                                        <input v-model="newReading.amount" type="number" step="0.01"
-                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
-                                            disabled>
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">₱</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500">Based on consumption rate</p>
-                                </div>
-                            </div>
-
-                            <!-- Summary Card -->
-                            <div v-if="newReading.consumption > 0" class="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-5">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <div class="text-sm text-blue-700 font-medium">Billing Summary</div>
-                                        <div class="text-2xl font-bold text-blue-800 mt-1">₱{{ newReading.amount.toFixed(2) }}</div>
-                                        <div class="text-sm text-blue-600 mt-1">{{ newReading.consumption }} m³ consumption</div>
-                                    </div>
-                                    <div class="p-3 bg-blue-100 rounded-xl">
-                                        <v-icon name="bi-receipt" class="text-blue-600 text-2xl" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Previous Readings Section -->
-                        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-                            <div class="flex items-center justify-between mb-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-1 h-6 bg-gradient-to-b from-gray-400 to-gray-500 rounded-full"></div>
-                                    <h4 class="text-md font-semibold text-gray-700">Reading History</h4>
-                                </div>
-
-                                <!-- Year Filter -->
-                                <div class="flex items-center gap-2">
-                                    <v-icon name="bi-filter" class="text-gray-500" />
-                                    <select v-model="selectedYear"
-                                        class="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm">
-                                        <option value="">All Years</option>
-                                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div v-if="isLoadingPreviousReadings" class="text-center py-8">
-                                <div class="inline-flex items-center text-blue-600">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    <span>Loading reading history...</span>
-                                </div>
-                            </div>
-
-                            <div v-else>
-                                <div v-if="filteredPreviousReadings.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-xl">
-                                    <v-icon name="bi-clock-history" class="text-3xl mb-2 opacity-50" />
-                                    <p>No previous readings found</p>
-                                    <p class="text-sm mt-1">Start by submitting a new reading above</p>
-                                </div>
-
-                                <div v-else class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                                    <div v-for="(reading, index) in filteredPreviousReadings" :key="index"
-                                        class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-colors group">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center gap-4">
-                                                <div class="p-2 bg-white rounded-lg border border-gray-200 group-hover:border-blue-200">
-                                                    <v-icon name="bi-droplet" class="text-blue-500" />
-                                                </div>
-                                                <div>
-                                                    <div class="font-medium text-gray-800">{{ reading.billing_month }} {{ reading.year }}</div>
-                                                    <div class="text-sm text-gray-600">{{ formatDate(reading.reading_date) }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <div class="font-semibold text-blue-600">{{ reading.reading }} m³</div>
-                                                <div class="text-sm text-gray-600">{{ reading.consumption }} m³ consumed</div>
+                                        <div>
+                                            <h2 class="text-lg font-bold text-gray-800 dark:text-white">{{ user.name }} {{ user.lastname }}</h2>
+                                            <p class="text-gray-600 dark:text-gray-300 mt-1">{{ user.address }}</p>
+                                            <div class="flex gap-4 mt-2">
+                                                <span class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                                                    <v-icon name="bi-credit-card" class="text-blue-500" />
+                                                    #{{ user.account_number }}
+                                                </span>
+                                                <span class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                                                    <v-icon name="bi-telephone" class="text-blue-500" />
+                                                    {{ user.phone }}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-200 group-hover:border-blue-200">
-                                            <div class="text-sm text-gray-600">Amount billed</div>
-                                            <div class="font-medium text-green-600">₱{{ reading.amount.toFixed(2) }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                                            <v-icon name="bi-check-circle" class="mr-1" /> Active
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Installed: {{ formatDate(user.date_installed) || 'N/A' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Meter Details Grid -->
+                            <div class="grid grid-cols-2 gap-3 mb-6">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-700">
+                                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+                                        <v-icon name="bi-tag" class="text-blue-500" />
+                                        <span class="text-xs font-medium">Brand</span>
+                                    </div>
+                                    <div class="text-sm font-semibold text-gray-800 dark:text-white">{{ user.brand || 'Not specified' }}</div>
+                                </div>
+
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-700">
+                                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+                                        <v-icon name="bi-upc-scan" class="text-blue-500" />
+                                        <span class="text-xs font-medium">Serial No.</span>
+                                    </div>
+                                    <div class="text-sm font-semibold text-gray-800 dark:text-white">{{ user.serial_number || 'N/A' }}</div>
+                                </div>
+
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-700">
+                                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+                                        <v-icon name="bi-rulers" class="text-blue-500" />
+                                        <span class="text-xs font-medium">Size</span>
+                                    </div>
+                                    <div class="text-sm font-semibold text-gray-800 dark:text-white">{{ user.size || 'N/A' }} mm</div>
+                                </div>
+
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-700">
+                                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
+                                        <v-icon name="bi-calendar-check" class="text-blue-500" />
+                                        <span class="text-xs font-medium">Last Reading</span>
+                                    </div>
+                                    <div class="text-sm font-semibold text-gray-800 dark:text-white">{{ lastReadingDate || 'No records' }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Meter Reading Form -->
+                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-5 mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                                    <v-icon name="bi-speedometer2" class="mr-2" />
+                                    New Meter Reading
+                                </h3>
+
+                                <!-- Year Transition Warning -->
+                                <div v-if="showYearTransitionWarning" class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-600 mb-4 flex items-start gap-3">
+                                    <div class="p-2 bg-yellow-100 dark:bg-yellow-800 rounded-lg mt-0.5">
+                                        <v-icon name="bi-exclamation-triangle" class="text-yellow-600 dark:text-yellow-400" />
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-yellow-800 dark:text-yellow-300">Year Transition Detected</div>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                                            You're entering a reading for January after December. Please ensure this is correct
+                                            as it represents a new billing year.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Previous Reading (m³)
+                                        </label>
+                                        <div class="relative">
+                                            <input v-model="newReading.previous_reading" type="number" step="0.01"
+                                                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                disabled>
+                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">m³</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Last recorded reading</p>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Current Reading (m³) *
+                                        </label>
+                                        <div class="relative">
+                                            <input v-model="newReading.reading" type="number" step="0.01"
+                                                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                :class="{'border-red-300 dark:border-red-500': readingError}"
+                                                :disabled="isSubmitting"
+                                                @input="calculateConsumptionAndAmount"
+                                                placeholder="Enter current reading">
+                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">m³</span>
+                                        </div>
+                                        <p v-if="readingError" class="text-xs text-red-500 dark:text-red-400 mt-1">{{ readingError }}</p>
+                                        <p v-else class="text-xs text-gray-500 dark:text-gray-400 mt-1">Must be higher than previous reading</p>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Consumption (m³)
+                                        </label>
+                                        <div class="relative">
+                                            <input v-model="newReading.consumption" type="number" step="0.01"
+                                                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                disabled>
+                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">m³</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Calculated automatically</p>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Amount (₱)
+                                        </label>
+                                        <div class="relative">
+                                            <input v-model="newReading.amount" type="number" step="0.01"
+                                                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                disabled>
+                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">₱</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Based on consumption rate</p>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Card -->
+                                <div v-if="newReading.consumption > 0" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-sm text-blue-700 dark:text-blue-300 font-medium">Billing Summary</div>
+                                            <div class="text-xl font-bold text-blue-800 dark:text-blue-200 mt-1">₱{{ newReading.amount.toFixed(2) }}</div>
+                                            <div class="text-sm text-blue-600 dark:text-blue-400 mt-1">{{ newReading.consumption }} m³ consumption</div>
+                                        </div>
+                                        <div class="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
+                                            <v-icon name="bi-receipt" class="text-blue-600 dark:text-blue-300 text-xl" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Previous Readings Section -->
+                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Reading History</h3>
+
+                                    <!-- Year Filter -->
+                                    <div class="flex items-center gap-2">
+                                        <v-icon name="bi-filter" class="text-gray-500 dark:text-gray-400" />
+                                        <select v-model="selectedYear"
+                                            class="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                            <option value="">All Years</option>
+                                            <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div v-if="isLoadingPreviousReadings" class="text-center py-8">
+                                    <div class="inline-flex items-center text-blue-600 dark:text-blue-400">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                            fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span>Loading reading history...</span>
+                                    </div>
+                                </div>
+
+                                <div v-else>
+                                    <div v-if="filteredPreviousReadings.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-600 rounded-lg">
+                                        <v-icon name="bi-clock-history" class="text-2xl mb-2 opacity-50" />
+                                        <p>No previous readings found</p>
+                                        <p class="text-sm mt-1">Start by submitting a new reading above</p>
+                                    </div>
+
+                                    <div v-else class="space-y-3 max-h-[300px] overflow-y-auto">
+                                        <div v-for="(reading, index) in filteredPreviousReadings" :key="index"
+                                            class="bg-gray-50 dark:bg-gray-600 p-3 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-blue-200 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="p-2 bg-white dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+                                                        <v-icon name="bi-droplet" class="text-blue-500" />
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-800 dark:text-white">{{ reading.billing_month }} {{ reading.year }}</div>
+                                                        <div class="text-sm text-gray-600 dark:text-gray-300">{{ formatDate(reading.reading_date) }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="font-semibold text-blue-600 dark:text-blue-400">{{ reading.reading }} m³</div>
+                                                    <div class="text-sm text-gray-600 dark:text-gray-400">{{ reading.consumption }} m³ consumed</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-200 dark:border-gray-500">
+                                                <div class="text-sm text-gray-600 dark:text-gray-400">Amount billed</div>
+                                                <div class="font-medium text-green-600 dark:text-green-400">₱{{ reading.amount.toFixed(2) }}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Footer -->
-                <div class="border-t border-gray-200 p-6 bg-white sticky bottom-0 shadow-lg">
-                    <div class="flex gap-3 justify-end">
-                        <button @click="closeModal" type="button"
-                            class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 font-medium"
-                            :disabled="isSubmitting">
-                            <v-icon name="bi-x-circle" />
-                            Cancel
-                        </button>
-                        <button @click="submitReading" type="button"
-                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 transition-all duration-200 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl"
-                            :disabled="isSubmitting || !isFormValid">
-                            <template v-if="!isSubmitting">
-                                <v-icon name="bi-check-circle" />
-                                Submit Reading
-                            </template>
-                            <template v-else>
-                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                Submitting...
-                            </template>
-                        </button>
+                        <!-- Footer -->
+                        <div class="border-t border-gray-200 dark:border-gray-600 p-6 bg-white dark:bg-gray-800">
+                            <div class="flex gap-3 justify-end">
+                                <button @click="closeModal" type="button"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md transition-colors duration-200"
+                                    :disabled="isSubmitting">
+                                    Cancel
+                                </button>
+                                <button @click="submitReading" type="button"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors duration-200 flex items-center min-w-[120px] justify-center"
+                                    :disabled="isSubmitting || !isFormValid">
+                                    <span v-if="!isSubmitting" class="flex items-center">
+                                        <v-icon name="bi-check-circle" class="mr-1" />
+                                        Submit Reading
+                                    </span>
+                                    <span v-else class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Submitting...
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </Transition>
-    </div>
+        </div>
+    </transition>
 </template>
 
 <script setup>
@@ -304,6 +287,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
+    show: {
+        type: Boolean,
+        required: true
+    },
     user: {
         type: Object,
         required: true
@@ -628,72 +615,67 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Enhanced Slide animations */
-.slide-enter-active,
-.slide-leave-active {
-    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
-}
-
-.slide-enter-from {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-.slide-leave-to {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-.slide-enter-to,
-.slide-leave-from {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* Enhanced Fade animation for backdrop */
-.fade-enter-active,
-.fade-leave-active {
+/* Modal transition styles */
+.modal-enter-active,
+.modal-leave-active {
     transition: opacity 0.3s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.modal-enter-from,
+.modal-leave-to {
     opacity: 0;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
+.modal-enter-active .transform,
+.modal-leave-active .transform {
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+.modal-enter-from .transform {
+    transform: translateX(100%);
 }
 
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
+.modal-leave-to .transform {
+    transform: translateX(100%);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+/* Custom scrollbar for the content */
+.overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #e2e8f0 #f8fafc;
 }
 
-/* Smooth transitions for all interactive elements */
-button,
-input,
-select {
-    transition: all 0.2s ease;
+.overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* Hover effects for cards */
-.bg-gradient-to-br {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f8fafc;
 }
 
-.bg-gradient-to-br:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0;
+    border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background-color: #cbd5e1;
+}
+
+/* Dark mode scrollbar */
+.dark .overflow-y-auto {
+    scrollbar-color: #4b5563 #1f2937;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
 }
 </style>

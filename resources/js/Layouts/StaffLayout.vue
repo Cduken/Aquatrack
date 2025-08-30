@@ -2,13 +2,6 @@
     <div
         class="antialiased min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
     >
-        <!-- Mobile Menu Overlay -->
-        <div
-            v-if="isMobileMenuOpen"
-            class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-            @click="closeMobileMenu"
-        ></div>
-
         <DashboardSidebar
             :links="staffLinks"
             :is-open="isSidebarOpen"
@@ -16,23 +9,17 @@
             @toggle-sidebar="toggleSidebar"
             @toggle-mobile-menu="toggleMobileMenu"
         />
-
         <MainContentNavbar
-            :isSidebarOpen="isSidebarOpen"
-            :isMobileMenuOpen="isMobileMenuOpen"
+            :is-sidebar-open="isSidebarOpen"
+            :is-mobile-menu-open="isMobileMenuOpen"
             @toggle-sidebar="toggleSidebar"
             @toggle-mobile-menu="toggleMobileMenu"
             @logout="handleLogout"
         />
-
         <main
             :class="[
-                'p-4 pt-16 flex-1 transition-all duration-300 ease-in-out',
-                {
-                    'md:ml-64': isSidebarOpen && !isMobile,
-                    'md:ml-16': !isSidebarOpen && !isMobile,
-                    'ml-0': isMobile,
-                },
+                'p-4 pt-20 flex-1 transition-all duration-300 ease-in-out',
+                { 'md:ml-64': isSidebarOpen, 'md:ml-16': !isSidebarOpen },
             ]"
         >
             <slot />
@@ -43,22 +30,13 @@
 <script setup>
 import DashboardSidebar from "@/Components/Sidebar/DashboardSidebar.vue";
 import MainContentNavbar from "@/Components/Header/MainContentNavbar.vue";
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
-import { initFlowbite } from "flowbite";
+
 import Swal from "sweetalert2";
 
 const isSidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
-
-// Detect mobile screen size
-const isMobile = ref(window.innerWidth < 768);
-const handleResize = () => {
-    isMobile.value = window.innerWidth < 768;
-    if (!isMobile.value) {
-        isMobileMenuOpen.value = false;
-    }
-};
 
 const staffLinks = [
     { name: "Dashboard", url: "/staff/dashboard", icon: "md-dashboard" },
@@ -73,10 +51,6 @@ const toggleSidebar = () => {
 
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;
-};
-
-const closeMobileMenu = () => {
-    isMobileMenuOpen.value = false;
 };
 
 const handleLogout = () => {
@@ -99,21 +73,4 @@ const handleLogout = () => {
         },
     });
 };
-
-onMounted(() => {
-    initFlowbite();
-    window.addEventListener("resize", handleResize);
-});
-
-onUnmounted(() => {
-    window.removeEventListener("resize", handleResize);
-});
 </script>
-
-<style scoped>
-@media (max-width: 767px) {
-    main {
-        padding-top: 4rem !important;
-    }
-}
-</style>
