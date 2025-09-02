@@ -25,9 +25,9 @@
 
         <!-- Main content -->
         <div
-            class="relative z-10 min-h-[85vh] flex flex-col items-center justify-center px-4"
+            class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4"
         >
-            <div class="w-full max-w-6xl text-center">
+            <div class="w-full min-h-[85vh] max-w-6xl text-center">
                 <!-- Header -->
                 <div class="mb-12 select-roles-header">
                     <h1

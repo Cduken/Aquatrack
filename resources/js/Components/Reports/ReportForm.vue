@@ -92,33 +92,6 @@
 
             <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                    <label for="zone" class="text-white text-sm"
-                        >Zone <span class="text-red-500">*</span></label
-                    >
-                    <select
-                        id="zone"
-                        v-model="form.zone"
-                        required
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
-                    >
-                        <option value="" disabled selected>Select Zone</option>
-                        <option
-                            v-for="(zone, index) in Object.keys(zones)"
-                            :key="index"
-                            :value="zone"
-                        >
-                            {{ zone }}
-                        </option>
-                    </select>
-                    <p
-                        v-if="form.errors.zone"
-                        class="mt-1 text-xs text-red-400"
-                    >
-                        {{ form.errors.zone }}
-                    </p>
-                </div>
-
-                <div>
                     <label for="barangay" class="text-white text-sm"
                         >Barangay <span class="text-red-500">*</span></label
                     >
@@ -126,14 +99,13 @@
                         id="barangay"
                         v-model="form.barangay"
                         required
-                        :disabled="!form.zone"
                         class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
                     >
                         <option value="" disabled selected>
                             Select Barangay
                         </option>
                         <option
-                            v-for="barangay in filteredBarangays"
+                            v-for="barangay in allBarangays"
                             :key="barangay"
                             :value="barangay"
                         >
@@ -145,6 +117,26 @@
                         class="mt-1 text-xs text-red-400"
                     >
                         {{ form.errors.barangay }}
+                    </p>
+                </div>
+
+                <div>
+                    <label for="zone" class="text-white text-sm"
+                        >Zone <span class="text-red-500">*</span></label
+                    >
+                    <input
+                        type="text"
+                        id="zone"
+                        v-model="form.zone"
+                        readonly
+                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed text-sm"
+                        placeholder="Zone will be auto-filled"
+                    />
+                    <p
+                        v-if="form.errors.zone"
+                        class="mt-1 text-xs text-red-400"
+                    >
+                        {{ form.errors.zone }}
                     </p>
                 </div>
             </div>
@@ -426,8 +418,20 @@ const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS;
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 15 * 1024 * 1024;
 
-const filteredBarangays = computed(() => {
-    return props.zones[form.zone] || [];
+// Compute all barangays from zones object
+const allBarangays = computed(() => {
+    return Object.values(props.zones).flat();
+});
+
+// Map barangay to zone
+const barangayToZone = computed(() => {
+    const mapping = {};
+    Object.entries(props.zones).forEach(([zone, barangays]) => {
+        barangays.forEach((barangay) => {
+            mapping[barangay] = zone;
+        });
+    });
+    return mapping;
 });
 
 const hasErrors = computed(() => {
@@ -868,10 +872,11 @@ onUnmounted(() => {
 });
 
 watch(
-    () => form.zone,
-    () => {
-        form.barangay = "";
-        console.log("Zone changed, resetting barangay:", form.zone);
+    () => form.barangay,
+    (newBarangay) => {
+        // Automatically set the zone based on the selected barangay
+        form.zone = barangayToZone.value[newBarangay] || "";
+        console.log("Barangay changed, setting zone to:", form.zone);
     }
 );
 

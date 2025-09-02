@@ -681,7 +681,7 @@ const isVideoFile = (media) => {
                                                     {{
                                                         reportDetails.municipality
                                                     }},
-                                                    {{ reportDetails.province }}
+                                                    {{ reportDetails.province }}, {{ reportDetails.zone }}
                                                 </p>
                                             </div>
 

@@ -2,7 +2,6 @@
     <div class="relative w-full min-h-screen overflow-hidden">
         <Navigation />
 
-        <!-- Background elements - image with gradient overlay -->
         <div
             class="fixed inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/AquatrackIMG.jpg')"
@@ -17,7 +16,7 @@
 
         <!-- Floating water drop decoration -->
         <div
-            class="fixed top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-500 opacity-10 blur-3xl"
+        class="fixed top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-500 opacity-10 blur-3xl"
         ></div>
         <div
             class="fixed bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-teal-500 opacity-10 blur-3xl"
@@ -106,7 +105,7 @@ const handleTrackReport = (trackingCode) => {
     showTrackModal.value = true;
 };
 
-// Zones data
+// Zones data - restructured to easily find zone by barangay
 const zones = {
     "Zone 1": ["Poblacion Sur"],
     "Zone 2": ["Poblacion Centro"],
@@ -121,6 +120,16 @@ const zones = {
     "Zone 11": ["Cantuyoc", "Nahawan"],
     "Zone 12": ["Lajog", "Buacao"],
 };
+
+// Create a flat list of all barangays
+const allBarangays = ref([]);
+for (const zone in zones) {
+    zones[zone].forEach((barangay) => {
+        allBarangays.value.push(barangay);
+    });
+}
+// Remove duplicates and sort alphabetically
+allBarangays.value = [...new Set(allBarangays.value)].sort();
 </script>
 
 <style scoped>

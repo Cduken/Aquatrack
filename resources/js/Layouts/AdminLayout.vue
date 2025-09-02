@@ -33,8 +33,8 @@ import DashboardSidebar from "@/Components/Sidebar/DashboardSidebar.vue";
 import MainContentNavbar from "@/Components/Header/MainContentNavbar.vue";
 import { ref } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
-
 import Swal from "sweetalert2";
+
 
 const isSidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
@@ -53,6 +53,7 @@ const adminLinks = [
         icon: "bi-megaphone-fill",
     },
     { name: "Users", url: "/admin/users", icon: "fa-users" },
+    { name: "Activity Logs", url: "/admin/activity-logs", icon: "fa-list" },
 ];
 
 const form = useForm({});

@@ -86,6 +86,7 @@ import {
     DocumentTextIcon,
 } from "@heroicons/vue/24/outline";
 
+
 defineProps({
     links: {
         type: Array,
@@ -108,6 +109,7 @@ const iconMap = {
     "bi-megaphone-fill": MegaphoneIcon,
     "fa-users": UsersIcon,
     "bi-file-earmark-text-fill": DocumentTextIcon,
+
 };
 
 const getIconComponent = (iconName) => {

@@ -160,7 +160,7 @@ const handleReportSubmitted = async (response) => {
 </script>
 
 <template>
-    <main id="home" class="relative w-full min-h-[100vh] overflow-hidden">
+    <main id="home" class="relative w-full min-h-screen overflow-hidden">
         <Navigation />
 
         <div
@@ -183,83 +183,90 @@ const handleReportSubmitted = async (response) => {
         ></div>
 
         <div
-            class="relative z-10 container mx-auto px-4 sm:px-6 h-[95vh] lg:h-[85vh] flex flex-col justify-center md:justify-start pt-16 lg:pt-32"
+            class="relative z-10 min-h-screen container mx-auto px-4 sm:px-6 flex flex-col justify-center pt-16 lg:pt-32"
         >
-            <div class="main-content max-w-4xl mx-auto text-center px-2">
+            <div
+                class="main-content max-w-4xl mx-auto text-center px-2 flex-1 flex flex-col justify-center"
+            >
                 <h1
-                    class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[80px] font-[200] text-white leading-tight tracking-[-0.05em] mb-4 md:mb-6"
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px] font-[200] text-white leading-tight tracking-[-0.05em] mb-6 md:mb-8"
                 >
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200 bg-[length:200%_100%] inline-block sm:inline"
-                        >Track, </span
-                    >
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200 bg-[length:200%_100%] inline-block"
+                        >Track,</span>
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200 bg-[length:200%_100%] inline-block sm:inline"
-                        >Report, </span
-                    >
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200 bg-[length:200%_100%] inline-block"
+                        >Report,
+                    </span>
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-200 bg-[length:200%_100%] inline-block sm:inline"
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-200 bg-[length:200%_100%] inline-block"
                         >Resolve</span
                     >
                 </h1>
 
                 <p
-                    class="subheadline text-sm sm:text-md md:text-lg text-[#A2A8AF] max-w-[90%] sm:max-w-[550px] mx-auto leading-relaxed mb-6 md:mb-10"
+                    class="subheadline text-base sm:text-lg md:text-xl text-[#A2A8AF] max-w-[95%] sm:max-w-[600px] mx-auto leading-relaxed mb-8 md:mb-10 px-4"
                 >
                     AquaTrack empowers you to monitor water usage, report issues
                     instantly, and track resolutions - all in one seamless
                     platform.
                 </p>
 
-                <Link
-                    :href="route('reports.index')"
-                    class="button-glow cta-button inline-flex items-center rounded-full px-6 py-3 sm:px-8 sm:py-3 gap-2 text-sm sm:text-[16px] font-semibold text-white bg-gradient-to-r from-blue-400/60 to-cyan-400/60 shadow-lg shadow-blue-900/30 transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-blue-400/80 hover:to-cyan-400/80 hover:scale-105 hover:shadow-2xl hover:shadow-blue-900/50"
-                >
-                    <v-icon
-                        name="oi-report"
-                        scale="1.1 sm:1.2"
-                        class="text-white"
-                    />
-                    <span>Report Water Issue</span>
-                </Link>
+                <div class="flex justify-center">
+                    <Link
+                        :href="route('reports.index')"
+                        class="button-glow cta-button inline-flex items-center justify-center rounded-full px-6 py-3 sm:px-8 sm:py-4 gap-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-400/60 to-cyan-400/60 shadow-lg shadow-blue-900/30 transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-blue-400/80 hover:to-cyan-400/80 hover:scale-105 hover:shadow-2xl hover:shadow-blue-900/50 mb-12 md:mb-16"
+                    >
+                        <v-icon
+                            name="oi-report"
+                            scale="1.2 sm:1.4"
+                            class="text-white"
+                        />
+                        <span>Report Water Issue</span>
+                    </Link>
+                </div>
             </div>
 
-            <div
-                class="stats-section lg:mb-10 md:mb-5 sm:mb-0 md:absolute lg:bottom-4 md:bottom-5 md:left-0 md:right-0"
-            >
+            <div class="stats-section w-full px-2 pb-12 md:pb-14">
                 <div
-                    class="max-w-4xl mx-auto p-3 lg:p-4 md:p-3 sm:p-2 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10"
+                    class="max-w-3xl bottom-10 mx-auto p-4 sm:p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10"
                 >
-                    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                        <div class="stat-item p-2 sm:p-3">
+                    <div class="grid grid-cols-3 gap-4 sm:gap-6 text-center">
+                        <div class="stat-item p-3 sm:p-4">
                             <div
-                                class="text-lg sm:text-xl md:text-2xl font-semibold text-blue-300"
+                                class="text-xl sm:text-2xl md:text-3xl font-semibold text-blue-300 mb-1"
                             >
                                 1,200+
                             </div>
-                            <div class="text-xs sm:text-sm text-blue-100">
+                            <div
+                                class="text-sm sm:text-base text-blue-100 leading-tight"
+                            >
                                 Issues Resolved
                             </div>
                         </div>
                         <div
-                            class="stat-item p-2 sm:p-3 border-x border-white/10"
+                            class="stat-item p-3 sm:p-4 border-x border-white/20"
                         >
                             <div
-                                class="text-lg sm:text-xl md:text-2xl font-semibold text-teal-300"
+                                class="text-xl sm:text-2xl md:text-3xl font-semibold text-teal-300 mb-1"
                             >
                                 342
                             </div>
-                            <div class="text-xs sm:text-sm text-blue-100">
+                            <div
+                                class="text-sm sm:text-base text-blue-100 leading-tight"
+                            >
                                 Customers
                             </div>
                         </div>
-                        <div class="stat-item p-2 sm:p-3">
+                        <div class="stat-item p-3 sm:p-4">
                             <div
-                                class="text-lg sm:text-xl md:text-2xl font-semibold text-cyan-300"
+                                class="text-xl sm:text-2xl md:text-3xl font-semibent text-cyan-300 mb-1"
                             >
                                 98%
                             </div>
-                            <div class="text-xs sm:text-sm text-blue-100">
+                            <div
+                                class="text-sm sm:text-base text-blue-100 leading-tight"
+                            >
                                 Customer Satisfaction
                             </div>
                         </div>
@@ -273,12 +280,12 @@ const handleReportSubmitted = async (response) => {
         >
             <button
                 @click="handleTrackReport"
-                class="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl hover:shadow-2xl transition-all"
+                class="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110"
             >
-                <v-icon name="io-search" scale="1.1 sm:1.3" />
+                <v-icon name="io-search" scale="1.3 sm:1.5" />
                 <span class="sr-only">Track Report</span>
                 <div
-                    class="absolute -right-1 -top-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 rounded-full border-2 border-white animate-pulse"
+                    class="absolute -right-1 -top-1 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 rounded-full border-2 border-white animate-pulse"
                 ></div>
             </button>
         </div>
@@ -316,87 +323,94 @@ const handleReportSubmitted = async (response) => {
     animation: glow 2s infinite;
 }
 
+/* Mobile optimizations */
 @media (max-width: 640px) {
-    .water-drop-top {
-        top: 5%;
-        left: 5%;
-        width: 20vw;
-        height: 20vw;
-        max-width: 4rem;
-        max-height: 4rem;
-    }
-    .water-drop-bottom {
-        bottom: 10%;
-        right: 5%;
-        width: 25vw;
-        height: 25vw;
-        max-width: 5rem;
-        max-height: 5rem;
-    }
-    h1 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-    h1 span {
-        display: inline;
-        margin: 0 0.25rem;
-    }
-    .subheadline {
-        font-size: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    .cta-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
-    .stats-section {
-        position: relative;
-        margin-top: 1.5rem;
-    }
-    .stats-section .grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    .stat-item {
-        padding: 0.5rem;
-    }
-    .stat-item div:first-child {
-        font-size: 1rem;
-    }
-    .track-button {
-        bottom: 1rem;
-        right: 1rem;
-    }
-    .track-button button {
-        width: 10vw;
-        height: 10vw;
-        min-width: 2.5rem;
-        min-height: 2.5rem;
-    }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
     .water-drop-top {
         top: 10%;
         left: 10%;
-        width: 15vw;
-        height: 15vw;
+        width: 16vw;
+        height: 16vw;
+        max-width: 5rem;
+        max-height: 5rem;
+    }
+    .water-drop-bottom {
+        bottom: 20%;
+        right: 10%;
+        width: 20vw;
+        height: 20vw;
+        max-width: 6rem;
+        max-height: 6rem;
+    }
+
+    h1 {
+        font-size: 2.5rem !important;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+
+    .subheadline {
+        font-size: 1rem;
+        line-height: 1.4;
+        margin-bottom: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-section {
+        padding: 0 0.5rem 1.5rem;
+    }
+
+    .stats-section .grid {
+        gap: 0.75rem;
+    }
+
+    .stat-item {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .stat-item div:first-child {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-item div:last-child {
+        font-size: 0.875rem;
+        line-height: 1.2;
+    }
+
+    .track-button button {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .water-drop-top {
+        top: 15%;
+        left: 15%;
+        width: 12vw;
+        height: 12vw;
         max-width: 8rem;
         max-height: 8rem;
     }
     .water-drop-bottom {
-        bottom: 15%;
-        right: 10%;
-        width: 20vw;
-        height: 20vw;
+        bottom: 20%;
+        right: 15%;
+        width: 16vw;
+        height: 16vw;
         max-width: 10rem;
         max-height: 10rem;
     }
-    .stats-section {
-        bottom: 2rem;
-    }
 }
 
+/* Desktop optimizations */
 @media (min-width: 1025px) {
     .water-drop-top {
         width: 24rem;

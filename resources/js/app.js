@@ -207,6 +207,7 @@ addIcons(
     BiIcons.BiCamera,
     BiIcons.BiCameraVideo,
     BiIcons.BiCameraVideoOff,
+    BiIcons.BiClockHistory,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -276,6 +277,7 @@ addIcons(
     FaIcons.FaWater,
     FaIcons.FaRegularTrashAlt,
     FaIcons.FaFileInvoiceDollar,
+
 
     // Remix Icons
     RiIcons.RiDashboardLine,

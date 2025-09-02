@@ -13,13 +13,13 @@ class AdminDashboardController extends Controller
 {
     // app/Http/Controllers/Admin/AdminDashboardController.php
     public function index()
+
     {
         return Inertia::render('Admin/Dashboard', [
             'total_users' => User::count(),
             'total_staffs' => User::role('staff')->count(),
             'total_reports' => Report::count(),
             'total_customers' => User::role('customer')->count(),
-
             'recent_activities' => Activity::latest()
                 ->take(5)
                 ->get()
@@ -31,6 +31,7 @@ class AdminDashboardController extends Controller
                         'created_at' => $activity->created_at,
                         'causer_name' => $activity->causer?->name ?? 'System',
                         'properties' => $activity->properties,
+                        'subject_type' => $activity->subject_type,
                     ];
                 }),
         ]);
