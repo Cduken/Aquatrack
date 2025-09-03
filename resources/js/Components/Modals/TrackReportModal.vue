@@ -722,10 +722,10 @@ const isVideoFile = (media) => {
                                                             "
                                                         >
                                                             <div
-                                                                class="w-full h-full bg-gray-800 flex items-center justify-center"
+                                                                class="w-full h-full bg-gray-500 flex items-center justify-center"
                                                             >
                                                                 <video
-                                                                    class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100"
+                                                                    class="absolute inset-0 w-full h-full opacity-100 object-cover"
                                                                 >
                                                                     <source
                                                                         :src="
@@ -971,7 +971,7 @@ const isVideoFile = (media) => {
     <Transition name="modal">
         <div
             v-if="mediaModal.show"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+            class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/90"
         >
             <div class="relative w-full max-w-4xl mx-4">
                 <button

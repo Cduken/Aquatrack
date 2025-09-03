@@ -205,127 +205,491 @@
                 </p>
             </div>
 
+            <!-- Enhanced Camera Section with Video -->
             <div class="mt-4">
-                <label class="text-white text-sm">
-                    Capture Photos/Videos
+                <label class="text-white text-sm block mb-2">
+                    Capture Evidence
                     <span class="text-red-500">*</span>
+                    <span class="text-xs text-gray-300 ml-2">
+                        ({{ form.photos.length }}/{{ MAX_TOTAL }}) - Photos:
+                        {{
+                            form.photos.filter((file) =>
+                                file.type.startsWith("image")
+                            ).length
+                        }}/{{ MAX_PHOTOS }}, Videos:
+                        {{
+                            form.photos.filter((file) =>
+                                file.type.startsWith("video")
+                            ).length
+                        }}/{{ MAX_VIDEOS }}
+                    </span>
                 </label>
-                <div class="mt-1">
-                    <div v-if="!isCameraActive" class="flex flex-col gap-3">
+
+                <!-- Camera Status Banner -->
+                <div
+                    v-if="cameraError"
+                    class="mb-3 p-3 bg-red-900/50 border border-red-600 rounded-lg"
+                >
+                    <div class="flex items-center text-red-300 text-sm">
+                        <v-icon
+                            name="bi-exclamation-triangle-fill"
+                            class="w-4 h-4 mr-2"
+                        />
+                        {{ cameraError }}
+                    </div>
+                    <button
+                        type="button"
+                        @click="retryCamera"
+                        class="mt-2 text-xs text-blue-300 hover:text-blue-200 underline"
+                    >
+                        Try Again
+                    </button>
+                </div>
+
+                <!-- Camera Interface -->
+                <div
+                    class="bg-gray-800 rounded-lg overflow-hidden border border-gray-600"
+                >
+                    <!-- Camera Not Active State -->
+                    <div v-if="!isCameraActive" class="p-6 text-center">
+                        <div class="mb-4">
+                            <div
+                                class="w-16 h-16 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-3"
+                            >
+                                <v-icon
+                                    name="hi-camera"
+                                    class="w-8 h-8 text-white"
+                                />
+                            </div>
+                            <h3 class="text-white text-lg font-medium mb-2">
+                                Camera Required
+                            </h3>
+                            <p class="text-gray-300 text-sm mb-4">
+                                Take photos and videos to document the water
+                                quality issue
+                            </p>
+                        </div>
+
                         <button
                             type="button"
-                            @click="startCamera"
+                            @click="initializeCamera"
                             :disabled="isCameraLoading"
-                            class="flex items-center justify-center p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                         >
-                            <v-icon name="bi-camera" class="mr-2" />
+                            <v-icon
+                                v-if="isCameraLoading"
+                                name="bi-arrow-repeat"
+                                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            />
+                            <v-icon
+                                v-else
+                                name="hi-camera"
+                                class="w-5 h-5 mr-2"
+                            />
                             {{
                                 isCameraLoading
-                                    ? "Opening Camera..."
+                                    ? "Starting Camera..."
                                     : "Open Camera"
                             }}
                         </button>
-                        <p class="text-xs text-gray-400 text-center">
-                            You need to capture at least one photo for your
-                            report
-                        </p>
+
+                        <div class="mt-4 text-xs text-gray-400">
+                            <p>Your browser will ask for camera permission</p>
+                            <p>
+                                Make sure to allow access to capture photos and
+                                videos
+                            </p>
+                        </div>
                     </div>
 
-                    <div
-                        v-else
-                        class="camera-container bg-black rounded-md overflow-hidden"
-                    >
-                        <div class="relative w-full" style="height: 320px">
+                    <!-- Active Camera View -->
+                    <div v-else class="relative">
+                        <!-- Video Element Container -->
+                        <div
+                            class="relative bg-black"
+                            style="aspect-ratio: 4/3"
+                        >
                             <video
-                                id="webcam"
-                                class="absolute inset-0 w-full h-full object-cover"
+                                ref="videoElement"
+                                class="w-full h-full object-cover"
                                 autoplay
                                 playsinline
-                                ref="webcamRef"
+                                muted
                             ></video>
-                            <!-- Loading overlay -->
+
+                            <!-- Camera Loading Overlay -->
                             <div
                                 v-if="!isCameraReady"
                                 class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
                             >
-                                <div class="text-white text-center">
+                                <div class="text-center text-white">
                                     <div
-                                        class="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"
+                                        class="inline-block animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mb-3"
                                     ></div>
-                                    <p class="text-sm">
-                                        Initializing camera...
-                                    </p>
+                                    <p class="text-sm">{{ cameraStatus }}</p>
+                                    <div
+                                        class="mt-2 w-48 bg-gray-700 rounded-full h-1"
+                                    >
+                                        <div
+                                            class="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                                            :style="{
+                                                width: loadingProgress + '%',
+                                            }"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Camera Ready Indicator -->
+                            <div
+                                v-if="isCameraReady"
+                                class="absolute top-4 left-4"
+                            >
+                                <div
+                                    class="flex items-center bg-green-500 text-white px-2 py-1 rounded-full text-xs"
+                                >
+                                    <div
+                                        class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"
+                                    ></div>
+                                    LIVE
+                                </div>
+                            </div>
+
+                            <!-- Recording Indicator -->
+                            <div
+                                v-if="isRecording"
+                                class="absolute top-4 left-1/2 transform -translate-x-1/2"
+                            >
+                                <div
+                                    class="flex items-center bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium"
+                                >
+                                    <div
+                                        class="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"
+                                    ></div>
+                                    REC {{ formatTime(recordingTime) }}
+                                </div>
+                            </div>
+
+                            <!-- Camera Info -->
+                            <div
+                                v-if="
+                                    isCameraReady && availableCameras.length > 1
+                                "
+                                class="absolute top-4 right-4"
+                            >
+                                <div
+                                    class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs"
+                                >
+                                    {{ currentCameraName }}
+                                </div>
+                            </div>
+
+                            <!-- Media Counter -->
+                            <div
+                                v-if="isCameraReady"
+                                class="absolute bottom-4 left-4"
+                            >
+                                <div
+                                    class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs"
+                                >
+                                    Photos:
+                                    {{
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith("image")
+                                        ).length
+                                    }}/{{ MAX_PHOTOS }}
+                                    <br />
+                                    Videos:
+                                    {{
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith("video")
+                                        ).length
+                                    }}/{{ MAX_VIDEOS }}
                                 </div>
                             </div>
                         </div>
-                        <div
-                            class="camera-controls p-3 bg-gray-900 flex justify-center gap-4"
-                        >
-                            <button
-                                type="button"
-                                @click="capturePhoto"
-                                class="p-3 bg-white rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                :disabled="
-                                    !isCameraReady ||
-                                    form.photos.length >= MAX_PHOTOS
-                                "
+
+                        <!-- Enhanced Camera Controls -->
+                        <div class="bg-gray-900 p-4">
+                            <div class="flex items-center justify-center gap-4">
+                                <!-- Switch Camera Button -->
+                                <button
+                                    type="button"
+                                    @click="switchCamera"
+                                    v-if="
+                                        hasMultipleCameras &&
+                                        isCameraReady &&
+                                        !isRecording
+                                    "
+                                    class="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors duration-200 text-white disabled:opacity-50"
+                                    :disabled="
+                                        !isCameraReady || isSwitchingCamera
+                                    "
+                                    :title="'Switch to ' + getNextCameraName()"
+                                >
+                                    <v-icon
+                                        v-if="isSwitchingCamera"
+                                        name="eo-loading"
+                                        class="animate-spin w-6 h-6"
+                                    />
+                                    <v-icon
+                                        v-else
+                                        name="bi-arrow-repeat"
+                                        class="w-6 h-6"
+                                    />
+                                </button>
+
+                                <!-- Photo Capture Button (Blue) -->
+                                <button
+                                    type="button"
+                                    @click="capturePhoto"
+                                    :disabled="
+                                        !isCameraReady ||
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith('image')
+                                        ).length >= MAX_PHOTOS ||
+                                        isCapturing ||
+                                        isRecording
+                                    "
+                                    class="relative p-4 bg-blue-500 hover:bg-blue-600 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 shadow-lg"
+                                >
+                                    <v-icon
+                                        name="hi-camera"
+                                        class="w-6 h-6 text-white"
+                                    />
+                                    <!-- Capture animation ring -->
+                                    <div
+                                        v-if="isCapturing"
+                                        class="absolute inset-0 border-4 border-white rounded-full animate-ping"
+                                    ></div>
+                                </button>
+
+                                <!-- Video Recording Button (Red) -->
+                                <button
+                                    type="button"
+                                    @click="
+                                        isRecording
+                                            ? stopVideoRecording()
+                                            : startVideoRecording()
+                                    "
+                                    :disabled="
+                                        !isCameraReady ||
+                                        (form.photos.filter((file) =>
+                                            file.type.startsWith('video')
+                                        ).length >= MAX_VIDEOS &&
+                                            !isRecording)
+                                    "
+                                    class="relative p-4 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 shadow-lg"
+                                    :class="
+                                        isRecording
+                                            ? 'bg-red-500 hover:bg-red-600'
+                                            : 'bg-red-500 hover:bg-red-600'
+                                    "
+                                >
+                                    <div
+                                        v-if="isRecording"
+                                        class="w-6 h-6 bg-white rounded-sm"
+                                    ></div>
+                                    <v-icon
+                                        v-else
+                                        name="hi-video-camera"
+                                        class="w-6 h-6 text-white"
+                                    />
+                                </button>
+
+                                <!-- Close Camera Button -->
+                                <button
+                                    type="button"
+                                    @click="stopCamera"
+                                    :disabled="isRecording"
+                                    class="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors duration-200 text-white disabled:opacity-50"
+                                    title="Close Camera"
+                                >
+                                    <v-icon name="hi-solid-x" class="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <!-- Camera Instructions -->
+                            <div
+                                v-if="isCameraReady"
+                                class="mt-3 text-center text-xs text-gray-400"
                             >
-                                <v-icon
-                                    name="bi-camera"
-                                    class="text-2xl text-gray-800"
-                                />
-                            </button>
-                            <button
-                                type="button"
-                                @click="switchCamera"
-                                class="p-3 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors text-white disabled:opacity-50"
-                                v-if="hasMultipleCameras"
-                                :disabled="!isCameraReady"
-                            >
-                                <v-icon name="bi-arrow-repeat" />
-                            </button>
-                            <button
-                                type="button"
-                                @click="stopCamera"
-                                class="p-3 bg-red-600 rounded-full hover:bg-red-700 transition-colors text-white"
-                            >
-                                <v-icon name="bi-x-lg" />
-                            </button>
+                                <p v-if="form.photos.length === 0">
+                                    Tap the blue button for photos or red button
+                                    for videos
+                                </p>
+                                <p
+                                    v-else-if="
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith('image')
+                                        ).length < MAX_PHOTOS ||
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith('video')
+                                        ).length < MAX_VIDEOS
+                                    "
+                                >
+                                    {{
+                                        MAX_PHOTOS -
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith("image")
+                                        ).length
+                                    }}
+                                    photos and
+                                    {{
+                                        MAX_VIDEOS -
+                                        form.photos.filter((file) =>
+                                            file.type.startsWith("video")
+                                        ).length
+                                    }}
+                                    videos remaining
+                                </p>
+                                <p v-else class="text-yellow-400">
+                                    Maximum media reached
+                                </p>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div v-if="form.photo_previews.length > 0" class="mt-3">
-                        <p class="text-xs text-gray-300 mb-2">
-                            Captured photos ({{ form.photo_previews.length }} of
-                            {{ MAX_PHOTOS }})
-                        </p>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <!-- Media Gallery -->
+                <div v-if="form.photo_previews.length > 0" class="mt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-white text-sm font-medium">
+                            Captured Media ({{ form.photo_previews.length }})
+                        </h4>
+                        <button
+                            type="button"
+                            @click="clearAllMedia"
+                            class="text-xs text-red-400 hover:text-red-300 underline"
+                        >
+                            Clear All
+                        </button>
+                    </div>
+
+                    <div
+                        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+                    >
+                        <div
+                            v-for="(preview, index) in form.photo_previews"
+                            :key="'media-' + index"
+                            class="relative group aspect-square"
+                        >
+                            <!-- Photo -->
                             <div
-                                v-for="(preview, index) in form.photo_previews"
-                                :key="index"
-                                class="relative group"
+                                v-if="
+                                    form.photos[index].type.startsWith('image')
+                                "
                             >
                                 <img
                                     :src="preview"
-                                    class="h-20 w-full object-cover rounded border border-gray-200"
-                                    :alt="'Captured photo ' + (index + 1)"
+                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-600 group-hover:border-blue-400 transition-colors"
+                                    :alt="'Photo ' + (index + 1)"
                                 />
                                 <div
-                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200"
+                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center"
                                 >
                                     <button
-                                        @click="removePhoto(index)"
+                                        @click="removeMedia(index)"
                                         type="button"
-                                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200"
                                     >
-                                        <v-icon name="bi-x-lg" scale="0.7" />
+                                        <v-icon
+                                            name="hi-trash"
+                                            class="w-4 h-4"
+                                        />
                                     </button>
+                                </div>
+                                <div
+                                    class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center"
+                                >
+                                    <v-icon
+                                        name="hi-photograph"
+                                        class="w-3 h-3 mr-1"
+                                    />
+                                    {{
+                                        form.photos
+                                            .filter((file) =>
+                                                file.type.startsWith("image")
+                                            )
+                                            .indexOf(form.photos[index]) + 1
+                                    }}
+                                </div>
+                            </div>
+                            <!-- Video -->
+                            <div v-else>
+                                <video
+                                    :src="preview"
+                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-600 group-hover:border-green-400 transition-colors"
+                                    muted
+                                    preload="metadata"
+                                ></video>
+                                <div
+                                    class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-lg"
+                                >
+                                    <div
+                                        class="bg-white bg-opacity-80 rounded-full p-2"
+                                    >
+                                        <v-icon
+                                            name="hi-play"
+                                            class="w-6 h-6 text-gray-800"
+                                        />
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center"
+                                >
+                                    <button
+                                        @click="removeMedia(index)"
+                                        type="button"
+                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 ml-auto mt-2 mr-2 absolute top-0 right-0"
+                                    >
+                                        <v-icon
+                                            name="hi-trash"
+                                            class="w-4 h-4"
+                                        />
+                                    </button>
+                                </div>
+                                <div
+                                    class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center"
+                                >
+                                    <v-icon
+                                        name="hi-video-camera"
+                                        class="w-3 h-3 mr-1"
+                                    />
+                                    {{
+                                        form.photos
+                                            .filter((file) =>
+                                                file.type.startsWith("video")
+                                            )
+                                            .indexOf(form.photos[index]) + 1
+                                    }}
+                                </div>
+                                <div
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded"
+                                >
+                                    {{ getVideoDuration(form.photos[index]) }}s
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <p v-if="form.errors.photos" class="mt-1 text-xs text-red-400">
+
+                <!-- Media requirement message -->
+                <div
+                    v-if="form.photos.length === 0"
+                    class="mt-3 p-3 bg-blue-900/30 border border-blue-600 rounded-lg"
+                >
+                    <div class="flex items-center text-blue-300 text-sm">
+                        <v-icon
+                            name="hi-information-circle"
+                            class="w-4 h-4 mr-2"
+                        />
+                        At least one photo or video is required to submit your
+                        report
+                    </div>
+                </div>
+
+                <p v-if="form.errors.photos" class="mt-2 text-xs text-red-400">
                     {{ form.errors.photos }}
                 </p>
             </div>
@@ -333,31 +697,24 @@
             <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <button
                     type="submit"
-                    :disabled="form.processing || isSubmitting"
+                    :disabled="form.processing || isSubmitting || isRecording"
                     class="w-full p-2 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-75 disabled:cursor-not-allowed text-sm"
                 >
                     <span v-if="isSubmitting" class="flex items-center">
-                        <svg
+                        <v-icon
+                            name="bi-arrow-repeat"
                             class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                class="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
+                        />
                         Submitting...
+                    </span>
+                    <span
+                        v-else-if="isRecording"
+                        class="flex items-center text-yellow-300"
+                    >
+                        <div
+                            class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"
+                        ></div>
+                        Stop recording to submit
                     </span>
                     <span v-else>Submit Report</span>
                 </button>
@@ -390,11 +747,35 @@ const locationStatus = ref("idle");
 const isCameraActive = ref(false);
 const isCameraReady = ref(false);
 const isCameraLoading = ref(false);
+const isSwitchingCamera = ref(false);
+const isCapturing = ref(false);
+const isRecording = ref(false);
+const recordingTime = ref(0);
 const availableCameras = ref([]);
 const currentCameraIndex = ref(0);
-const webcamRef = ref(null);
-const hasMultipleCameras = computed(() => availableCameras.value.length > 1);
+const videoElement = ref(null);
+const cameraError = ref("");
+const cameraStatus = ref("Initializing...");
+const loadingProgress = ref(0);
+
+// Time tracking
+const currentDate = ref("");
+const currentTime = ref("");
+const currentLocation = ref("Clarin, Bohol");
+
 let stream = null;
+let progressInterval = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordingInterval = null;
+let timeUpdateInterval = null;
+
+const hasMultipleCameras = computed(() => availableCameras.value.length > 1);
+const currentCameraName = computed(() => {
+    if (availableCameras.value.length === 0) return "";
+    const camera = availableCameras.value[currentCameraIndex.value];
+    return camera?.label || `Camera ${currentCameraIndex.value + 1}`;
+});
 
 const form = useForm({
     municipality: "Clarin",
@@ -405,6 +786,8 @@ const form = useForm({
     description: "",
     photos: [],
     photo_previews: [],
+    videos: [], // Kept for compatibility but will be empty
+    video_previews: [], // Kept for compatibility but will be empty
     reporter_name: "",
     reporter_phone: "",
     priority: "medium",
@@ -412,11 +795,29 @@ const form = useForm({
     longitude: null,
 });
 
-const MAX_PHOTOS = 5;
-const MAX_VIDEOS = 0;
+const MAX_PHOTOS = 3;
+const MAX_VIDEOS = 2;
 const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS;
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 15 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
+const MAX_VIDEO_DURATION = 30; // 30 seconds
+
+// Update time display
+const updateTimeDisplay = () => {
+    const now = new Date();
+    currentDate.value = now.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+    currentTime.value = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+    });
+};
 
 // Compute all barangays from zones object
 const allBarangays = computed(() => {
@@ -438,451 +839,676 @@ const hasErrors = computed(() => {
     return Object.keys(form.errors).length > 0;
 });
 
+const getNextCameraName = () => {
+    if (availableCameras.value.length <= 1) return "";
+    const nextIndex =
+        (currentCameraIndex.value + 1) % availableCameras.value.length;
+    const camera = availableCameras.value[nextIndex];
+    return camera?.label || `Camera ${nextIndex + 1}`;
+};
+
+const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
+
+const getVideoDuration = (videoFile) => {
+    return (
+        videoFile.duration || Math.floor((videoFile.size / (1024 * 1024)) * 3)
+    ); // Use stored duration or fallback
+};
+
+const startLoadingProgress = () => {
+    loadingProgress.value = 0;
+    progressInterval = setInterval(() => {
+        if (loadingProgress.value < 90) {
+            loadingProgress.value += Math.random() * 15;
+        }
+    }, 200);
+};
+
+const stopLoadingProgress = () => {
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+    loadingProgress.value = 100;
+    setTimeout(() => {
+        loadingProgress.value = 0;
+    }, 500);
+};
+
 const getCameras = async () => {
     try {
+        cameraStatus.value = "Detecting cameras...";
         const devices = await navigator.mediaDevices.enumerateDevices();
         availableCameras.value = devices.filter(
             (device) => device.kind === "videoinput"
         );
+
+        if (
+            availableCameras.value.length > 0 &&
+            !availableCameras.value[0].label
+        ) {
+            try {
+                const tempStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                });
+                tempStream.getTracks().forEach((track) => track.stop());
+                const devicesWithLabels =
+                    await navigator.mediaDevices.enumerateDevices();
+                availableCameras.value = devicesWithLabels.filter(
+                    (device) => device.kind === "videoinput"
+                );
+            } catch (e) {
+                console.warn("Could not get camera labels:", e);
+            }
+        }
+
         console.log("Available cameras:", availableCameras.value);
         return availableCameras.value;
     } catch (error) {
         console.error("Error getting cameras:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Camera Error",
-            text: "Could not access camera devices.",
-            confirmButtonColor: "#3085d6",
-        });
-        return [];
+        throw new Error("Could not detect camera devices");
     }
 };
 
-const startCamera = async () => {
-    try {
-        isCameraLoading.value = true;
-        isCameraReady.value = false;
+const initializeCamera = async () => {
+    cameraError.value = "";
+    isCameraLoading.value = true;
+    startLoadingProgress();
 
-        // Stop existing stream first
+    try {
+        cameraStatus.value = "Requesting camera permission...";
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error("Camera not supported by this browser");
+        }
+
+        await getCameras();
+
+        if (availableCameras.value.length === 0) {
+            throw new Error("No camera devices found");
+        }
+
+        await startCameraStream();
+
+        // Start time updates
+        updateTimeDisplay();
+        timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
+    } catch (error) {
+        console.error("Camera initialization failed:", error);
+        handleCameraError(error);
+    } finally {
+        isCameraLoading.value = false;
+        stopLoadingProgress();
+    }
+};
+
+const startCameraStream = async () => {
+    try {
+        cameraStatus.value = "Starting camera...";
+
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
             stream = null;
         }
 
-        const cameras = await getCameras();
-        if (cameras.length === 0) {
-            Swal.fire({
-                icon: "error",
-                title: "No Camera Found",
-                text: "No camera devices were found on your device.",
-                confirmButtonColor: "#3085d6",
-            });
-            isCameraLoading.value = false;
-            return;
-        }
-
-        // Set camera as active to render the video element
         isCameraActive.value = true;
-
-        // Wait for Vue to update the DOM
         await nextTick();
 
-        // Now try to get the webcam element
-        const webcamElement = document.getElementById("webcam");
-        if (!webcamElement) {
-            console.error("Webcam element still not found after DOM update");
-            isCameraActive.value = false;
-            isCameraLoading.value = false;
-            throw new Error("Webcam element not found");
+        if (!videoElement.value) {
+            throw new Error("Video element not available");
         }
 
-        // Simplified constraints for better compatibility
         const constraints = {
             video: {
-                width: { ideal: 640, max: 1280 },
-                height: { ideal: 480, max: 720 },
-                facingMode: "user",
+                width: { ideal: 1280, max: 1920 },
+                height: { ideal: 720, max: 1080 },
+                frameRate: { ideal: 30, max: 60 },
             },
-            audio: false,
+            audio: true, // Enable audio for video recording
         };
 
-        // If we have multiple cameras and not on first camera, try specific device
-        if (cameras.length > 1 && currentCameraIndex.value > 0) {
-            constraints.video.deviceId = {
-                exact: cameras[currentCameraIndex.value].deviceId,
-            };
-            delete constraints.video.facingMode;
+        if (availableCameras.value.length > 0) {
+            if (currentCameraIndex.value < availableCameras.value.length) {
+                constraints.video.deviceId = {
+                    exact: availableCameras.value[currentCameraIndex.value]
+                        .deviceId,
+                };
+            }
         }
 
         console.log("Starting camera with constraints:", constraints);
+        cameraStatus.value = "Connecting to camera...";
+
         stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-        // Clear any existing src
-        webcamElement.srcObject = null;
+        cameraStatus.value = "Loading video stream...";
+        videoElement.value.srcObject = stream;
 
-        // Set the new stream
-        webcamElement.srcObject = stream;
-
-        // Force attributes
-        webcamElement.autoplay = true;
-        webcamElement.playsInline = true;
-        webcamElement.muted = true;
-
-        // Wait for video to be ready with better error handling
         await new Promise((resolve, reject) => {
-            let resolved = false;
+            const timeout = setTimeout(
+                () => reject(new Error("Video load timeout")),
+                10000
+            );
 
-            const onLoadedData = () => {
-                if (!resolved) {
-                    resolved = true;
-                    webcamElement.removeEventListener(
-                        "loadeddata",
-                        onLoadedData
-                    );
-                    webcamElement.removeEventListener("error", onError);
-                    console.log("Video metadata loaded successfully");
-                    resolve();
-                }
+            const onLoadedMetadata = () => {
+                clearTimeout(timeout);
+                videoElement.value.removeEventListener(
+                    "loadedmetadata",
+                    onLoadedMetadata
+                );
+                videoElement.value.removeEventListener("error", onError);
+                resolve();
             };
 
             const onError = (e) => {
-                if (!resolved) {
-                    resolved = true;
-                    webcamElement.removeEventListener(
-                        "loadeddata",
-                        onLoadedData
-                    );
-                    webcamElement.removeEventListener("error", onError);
-                    console.error("Video error:", e);
-                    reject(new Error("Video failed to load"));
-                }
+                clearTimeout(timeout);
+                videoElement.value.removeEventListener(
+                    "loadedmetadata",
+                    onLoadedMetadata
+                );
+                videoElement.value.removeEventListener("error", onError);
+                reject(new Error("Video failed to load"));
             };
 
-            webcamElement.addEventListener("loadeddata", onLoadedData);
-            webcamElement.addEventListener("error", onError);
+            videoElement.value.addEventListener(
+                "loadedmetadata",
+                onLoadedMetadata
+            );
+            videoElement.value.addEventListener("error", onError);
 
-            // Try to play immediately
-            const playPromise = webcamElement.play();
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log("Video play started successfully");
-                        if (!resolved) {
-                            resolved = true;
-                            webcamElement.removeEventListener(
-                                "loadeddata",
-                                onLoadedData
-                            );
-                            webcamElement.removeEventListener("error", onError);
-                            resolve();
-                        }
-                    })
-                    .catch((playError) => {
-                        console.error("Play error:", playError);
-                        // Don't reject on play error, wait for loadeddata instead
-                    });
+            const playPromise = videoElement.value.play();
+            if (playPromise) {
+                playPromise.catch(console.warn);
             }
-
-            // Fallback timeout
-            setTimeout(() => {
-                if (!resolved) {
-                    resolved = true;
-                    webcamElement.removeEventListener(
-                        "loadeddata",
-                        onLoadedData
-                    );
-                    webcamElement.removeEventListener("error", onError);
-
-                    if (
-                        webcamElement.videoWidth > 0 &&
-                        webcamElement.videoHeight > 0
-                    ) {
-                        console.log("Video ready via timeout check");
-                        resolve();
-                    } else {
-                        reject(new Error("Video initialization timeout"));
-                    }
-                }
-            }, 5000);
         });
 
         isCameraReady.value = true;
-        isCameraLoading.value = false;
-        console.log(
-            "Camera started successfully, dimensions:",
-            webcamElement.videoWidth,
-            "x",
-            webcamElement.videoHeight
-        );
+        cameraStatus.value = "Camera ready";
+        console.log("Camera started successfully");
     } catch (error) {
-        console.error("Error starting camera:", error);
-        isCameraLoading.value = false;
-        isCameraReady.value = false;
-        isCameraActive.value = false;
-
-        // Clean up stream on error
-        if (stream) {
-            stream.getTracks().forEach((track) => track.stop());
-            stream = null;
-        }
-
-        let errorMessage = "Could not initialize the camera.";
-        if (error.name === "NotAllowedError") {
-            errorMessage =
-                "Camera access was denied. Please allow camera permissions and refresh the page.";
-        } else if (error.name === "NotFoundError") {
-            errorMessage = "No camera device found on your device.";
-        } else if (error.name === "NotReadableError") {
-            errorMessage =
-                "Camera is being used by another application. Please close other camera apps.";
-        } else if (error.name === "OverconstrainedError") {
-            errorMessage =
-                "Camera constraints not supported. Trying with basic settings...";
-            // Retry with minimal constraints
-            setTimeout(() => startCameraWithMinimalConstraints(), 1000);
-            return;
-        }
-
-        Swal.fire({
-            icon: "error",
-            title: "Camera Error",
-            text: errorMessage,
-            confirmButtonColor: "#3085d6",
-        });
+        console.error("Camera stream error:", error);
+        throw error;
     }
 };
 
-const startCameraWithMinimalConstraints = async () => {
-    try {
-        console.log("Retrying with minimal constraints");
-        const constraints = { video: true, audio: false };
-
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        isCameraActive.value = true;
-
-        const webcamElement = document.getElementById("webcam");
-        if (webcamElement) {
-            webcamElement.srcObject = stream;
-            webcamElement.autoplay = true;
-            webcamElement.playsInline = true;
-            webcamElement.muted = true;
-
-            await webcamElement.play();
-            isCameraReady.value = true;
-            console.log("Camera started with minimal constraints");
-        }
-    } catch (retryError) {
-        console.error("Retry failed:", retryError);
-        Swal.fire({
-            icon: "error",
-            title: "Camera Initialization Failed",
-            text: "Unable to access camera with any settings.",
-            confirmButtonColor: "#3085d6",
-        });
-    }
-};
-
-const stopCamera = () => {
-    if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        const webcamElement = document.getElementById("webcam");
-        if (webcamElement) {
-            webcamElement.srcObject = null;
-        }
-        console.log("Camera stopped.");
-    }
+const handleCameraError = (error) => {
     isCameraActive.value = false;
     isCameraReady.value = false;
-    isCameraLoading.value = false;
-    stream = null;
-};
 
-const switchCamera = async () => {
-    if (availableCameras.value.length <= 1) {
-        Swal.fire({
-            icon: "info",
-            title: "Single Camera",
-            text: "Only one camera detected on your device.",
-            confirmButtonColor: "#3085d6",
-            timer: 1500,
-        });
-        return;
-    }
-
-    console.log("Switching camera from index:", currentCameraIndex.value);
-
-    // Show loading state
-    isCameraReady.value = false;
-
-    // Stop current stream
     if (stream) {
         stream.getTracks().forEach((track) => track.stop());
         stream = null;
     }
 
-    // Switch to next camera
-    currentCameraIndex.value =
-        (currentCameraIndex.value + 1) % availableCameras.value.length;
-    console.log("Switching to camera index:", currentCameraIndex.value);
+    let errorMessage = "Camera initialization failed";
 
-    // Restart camera with new index
-    await startCamera();
-};
-
-const capturePhoto = () => {
-    console.log("Capturing photo, isCameraReady:", isCameraReady.value);
-    if (!isCameraReady.value || form.photos.length >= MAX_PHOTOS) {
-        console.warn(
-            "Cannot capture photo - camera not ready or max photos reached"
-        );
-        return;
+    if (
+        error.name === "NotAllowedError" ||
+        error.message.includes("permission")
+    ) {
+        errorMessage =
+            "Camera and microphone access denied. Please allow permissions and try again.";
+    } else if (
+        error.name === "NotFoundError" ||
+        error.message.includes("No camera")
+    ) {
+        errorMessage = "No camera found on your device.";
+    } else if (error.name === "NotReadableError") {
+        errorMessage = "Camera is busy or being used by another application.";
+    } else if (error.name === "OverconstrainedError") {
+        errorMessage = "Camera settings not supported by your device.";
+    } else if (error.message.includes("not supported")) {
+        errorMessage = "Camera not supported by this browser.";
     }
 
-    const webcamElement = document.getElementById("webcam");
-    if (!webcamElement || !webcamElement.srcObject) {
-        console.warn("Webcam element or stream not available");
-        Swal.fire({
-            icon: "warning",
-            title: "Camera Not Ready",
-            text: "Please wait for the camera to initialize.",
-            confirmButtonColor: "#3085d6",
-        });
+    cameraError.value = errorMessage;
+};
+
+const retryCamera = () => {
+    cameraError.value = "";
+    initializeCamera();
+};
+
+const stopCamera = () => {
+    if (isRecording.value) {
+        stopVideoRecording();
+    }
+
+    if (timeUpdateInterval) {
+        clearInterval(timeUpdateInterval);
+        timeUpdateInterval = null;
+    }
+
+    if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        if (videoElement.value) {
+            videoElement.value.srcObject = null;
+        }
+        console.log("Camera stopped");
+    }
+
+    isCameraActive.value = false;
+    isCameraReady.value = false;
+    isCameraLoading.value = false;
+    stream = null;
+    cameraError.value = "";
+
+    stopLoadingProgress();
+};
+
+const switchCamera = async () => {
+    if (
+        availableCameras.value.length <= 1 ||
+        !isCameraReady.value ||
+        isRecording.value
+    )
+        return;
+
+    try {
+        isSwitchingCamera.value = true;
+        isCameraReady.value = false;
+        cameraStatus.value = "Switching camera...";
+
+        currentCameraIndex.value =
+            (currentCameraIndex.value + 1) % availableCameras.value.length;
+        console.log("Switching to camera:", currentCameraName.value);
+
+        await startCameraStream();
+    } catch (error) {
+        console.error("Camera switch failed:", error);
+        handleCameraError(error);
+    } finally {
+        isSwitchingCamera.value = false;
+    }
+};
+
+const startVideoRecording = async () => {
+    if (
+        !isCameraReady.value ||
+        form.photos.filter((file) => file.type.startsWith("video")).length >=
+            MAX_VIDEOS ||
+        !stream
+    ) {
         return;
     }
 
     try {
+        recordedChunks = [];
+        recordingTime.value = 0;
+
+        // Create MediaRecorder
+        const options = {
+            mimeType: "video/webm;codecs=vp9,opus",
+        };
+
+        // Fallback mimeTypes
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options.mimeType = "video/webm;codecs=vp8,opus";
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options.mimeType = "video/webm";
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    options.mimeType = "";
+                }
+            }
+        }
+
+        mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(recordedChunks, { type: "video/webm" });
+
+            if (blob.size > MAX_VIDEO_SIZE) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Video Too Large",
+                    text: `Video size exceeds ${
+                        MAX_VIDEO_SIZE / 1024 / 1024
+                    }MB limit.`,
+                    timer: 3000,
+                });
+                return;
+            }
+
+            const filename = `water-report-video-${Date.now()}.webm`;
+            const file = new File([blob], filename, {
+                type: "video/webm",
+                lastModified: Date.now(),
+            });
+
+            file.duration = recordingTime.value; // Store duration in seconds
+
+            // Add to form.photos instead of form.videos
+            form.photos.push(file);
+            form.photo_previews.push(URL.createObjectURL(blob));
+
+            console.log(
+                `Video ${
+                    form.photos.filter((file) => file.type.startsWith("video"))
+                        .length
+                } recorded successfully`
+            );
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: `Video ${
+                    form.photos.filter((file) => file.type.startsWith("video"))
+                        .length
+                } recorded!`,
+            });
+        };
+
+        mediaRecorder.start();
+        isRecording.value = true;
+
+        // Start recording timer
+        recordingInterval = setInterval(() => {
+            recordingTime.value++;
+
+            // Auto-stop at max duration
+            if (recordingTime.value >= MAX_VIDEO_DURATION) {
+                stopVideoRecording();
+            }
+        }, 1000);
+
+        console.log("Video recording started");
+    } catch (error) {
+        console.error("Failed to start recording:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Recording Failed",
+            text: "Failed to start video recording. Please try again.",
+            timer: 3000,
+        });
+    }
+};
+
+const stopVideoRecording = () => {
+    if (!isRecording.value || !mediaRecorder) return;
+
+    try {
+        mediaRecorder.stop();
+        isRecording.value = false;
+
+        if (recordingInterval) {
+            clearInterval(recordingInterval);
+            recordingInterval = null;
+        }
+
+        console.log("Video recording stopped");
+    } catch (error) {
+        console.error("Failed to stop recording:", error);
+    }
+};
+
+const capturePhoto = async () => {
+    if (
+        !isCameraReady.value ||
+        form.photos.filter((file) => file.type.startsWith("image")).length >=
+            MAX_PHOTOS ||
+        isCapturing.value ||
+        isRecording.value
+    ) {
+        return;
+    }
+
+    try {
+        isCapturing.value = true;
+
+        const video = videoElement.value;
+        if (!video || !video.videoWidth || !video.videoHeight) {
+            throw new Error("Video not ready for capture");
+        }
+
         const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
 
-        // Set canvas dimensions to match video dimensions
-        canvas.width = webcamElement.videoWidth || 640;
-        canvas.height = webcamElement.videoHeight || 480;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-        // Draw the video frame
-        context.drawImage(webcamElement, 0, 0, canvas.width, canvas.height);
+        // Draw video frame
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Add timestamp
-        const timestamp = new Date().toLocaleString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-            timeZoneName: "short",
+        // Enhanced timestamp with better visibility
+        const now = new Date();
+        const timestamp = now.toLocaleString("en-US", {
             weekday: "long",
+            year: "numeric",
             month: "long",
             day: "numeric",
-            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
         });
 
-        context.fillStyle = "white";
-        context.strokeStyle = "black";
-        context.lineWidth = 2;
-        context.font = "16px Arial";
+        // Create timestamp background
+        const timestampPadding = 20;
+        const fontSize = Math.max(16, Math.floor(canvas.width / 60));
+        ctx.font = `bold ${fontSize}px Arial`;
 
-        const textMetrics = context.measureText(timestamp);
+        // Measure text
+        const textMetrics = ctx.measureText(timestamp);
         const textWidth = textMetrics.width;
-        const textHeight = 20;
-        const padding = 10;
+        const textHeight = fontSize;
 
-        // Position timestamp at bottom-left
-        const x = padding;
-        const y = canvas.height - padding;
+        const bgX = timestampPadding;
+        const bgY = canvas.height - timestampPadding - textHeight - 10;
+        const bgWidth = textWidth + 20;
+        const bgHeight = textHeight + 20;
 
-        // Draw text with outline for better visibility
-        context.strokeText(timestamp, x, y);
-        context.fillText(timestamp, x, y);
+        // Draw semi-transparent background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+        ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
 
-        console.log("Timestamp added:", timestamp);
+        // Draw white border
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bgX, bgY, bgWidth, bgHeight);
 
-        canvas.toBlob(
-            (blob) => {
-                if (!blob) {
-                    console.error("Failed to convert canvas to blob.");
-                    Swal.fire({
-                        icon: "error",
-                        title: "Capture Failed",
-                        text: "Failed to capture photo. Please try again.",
-                        confirmButtonColor: "#3085d6",
-                    });
-                    return;
-                }
+        // Draw text with heavy outline for better visibility
+        const textX = bgX + 10;
+        const textY = bgY + textHeight + 5;
 
-                console.log("Photo blob created, size:", blob.size);
+        // Multiple stroke layers for better visibility
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "black";
+        ctx.strokeText(timestamp, textX, textY);
 
-                const file = new File(
-                    [blob],
-                    `report-photo-${Date.now()}.jpg`,
-                    {
-                        type: "image/jpeg",
-                        lastModified: Date.now(),
-                    }
-                );
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "white";
+        ctx.strokeText(timestamp, textX, textY);
 
-                form.photos.push(file);
-                form.photo_previews.push(URL.createObjectURL(blob));
-                console.log(
-                    "Photo captured successfully, total photos:",
-                    form.photos.length
-                );
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.strokeText(timestamp, textX, textY);
 
-                // Show success feedback
-                Swal.fire({
-                    icon: "success",
-                    title: "Photo Captured!",
-                    toast: true,
-                    text: `Photo ${form.photos.length} of ${MAX_PHOTOS} captured successfully.`,
-                    confirmButtonColor: "#3085d6",
-                    timer: 1500,
-                    showConfirmButton: false,
-                    position: "top-right",
-                });
+        // Final white text
+        ctx.fillStyle = "white";
+        ctx.fillText(timestamp, textX, textY);
 
-                if (form.photos.length >= MAX_PHOTOS) {
-                    Swal.fire({
-                        icon: "info",
-                        title: "Photo Limit Reached",
-                        text: `You've reached the maximum of ${MAX_PHOTOS} photos.`,
-                        confirmButtonColor: "#3085d6",
-                        timer: 2000,
-                    });
-                }
-            },
-            "image/jpeg",
-            0.9
+        // Add location stamp
+        const locationText = currentLocation.value;
+        ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
+        const locationY = textY + fontSize + 5;
+
+        // Location background
+        const locTextMetrics = ctx.measureText(locationText);
+        const locBgWidth = locTextMetrics.width + 16;
+        const locBgHeight = Math.floor(fontSize * 0.8) + 16;
+
+        ctx.fillStyle = "rgba(0, 100, 200, 0.8)";
+        ctx.fillRect(
+            textX,
+            locationY - Math.floor(fontSize * 0.8) - 8,
+            locBgWidth,
+            locBgHeight
         );
+
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(
+            textX,
+            locationY - Math.floor(fontSize * 0.8) - 8,
+            locBgWidth,
+            locBgHeight
+        );
+
+        // Location text
+        ctx.fillStyle = "white";
+        ctx.fillText(locationText, textX + 8, locationY);
+
+        const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, "image/jpeg", 0.95);
+        });
+
+        if (!blob) {
+            throw new Error("Failed to create image blob");
+        }
+
+        if (blob.size > MAX_PHOTO_SIZE) {
+            throw new Error("Photo size too large");
+        }
+
+        const filename = `water-report-${Date.now()}.jpg`;
+        const file = new File([blob], filename, {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+        });
+
+        form.photos.push(file);
+        form.photo_previews.push(URL.createObjectURL(blob));
+
+        console.log(
+            `Photo ${
+                form.photos.filter((file) => file.type.startsWith("image"))
+                    .length
+            } captured successfully`
+        );
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        });
+
+        Toast.fire({
+            icon: "success",
+            title: `Photo ${
+                form.photos.filter((file) => file.type.startsWith("image"))
+                    .length
+            } captured!`,
+        });
     } catch (error) {
-        console.error("Error capturing photo:", error);
+        console.error("Photo capture failed:", error);
+
         Swal.fire({
             icon: "error",
             title: "Capture Failed",
-            text: "An error occurred while capturing the photo.",
-            confirmButtonColor: "#3085d6",
+            text: error.message || "Failed to capture photo. Please try again.",
+            timer: 3000,
         });
+    } finally {
+        isCapturing.value = false;
     }
 };
 
-onUnmounted(() => {
-    stopCamera();
-    // Clean up photo previews
-    form.photo_previews.forEach((url) => {
-        if (url && !url.includes("video-icon.png")) {
-            URL.revokeObjectURL(url);
+const removeMedia = (index) => {
+    if (index >= 0 && index < form.photo_previews.length) {
+        URL.revokeObjectURL(form.photo_previews[index]);
+        form.photos.splice(index, 1);
+        form.photo_previews.splice(index, 1);
+        console.log(`Media ${index + 1} removed`);
+    }
+};
+
+const clearAllMedia = () => {
+    const totalMedia = form.photos.length;
+    if (totalMedia === 0) return;
+
+    Swal.fire({
+        title: "Clear All Media?",
+        text: `This will remove all ${form.photos.length} media files.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Clear All",
+        cancelButtonText: "Cancel",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Cleanup all preview URLs
+            form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
+
+            // Clear arrays
+            form.photos = [];
+            form.photo_previews = [];
+            form.videos = [];
+            form.video_previews = [];
+
+            Swal.fire({
+                icon: "success",
+                title: "Media Cleared",
+                toast: true,
+                position: "top-end",
+                timer: 2000,
+                showConfirmButton: false,
+            });
         }
     });
-    console.log("Component unmounted, camera and resources cleaned up.");
+};
+
+// Cleanup on unmount
+onUnmounted(() => {
+    stopCamera();
+
+    // Cleanup all preview URLs
+    form.photo_previews.forEach((url) => {
+        URL.revokeObjectURL(url);
+    });
+
+    if (progressInterval) {
+        clearInterval(progressInterval);
+    }
+
+    if (recordingInterval) {
+        clearInterval(recordingInterval);
+    }
+
+    if (timeUpdateInterval) {
+        clearInterval(timeUpdateInterval);
+    }
+
+    console.log("Component unmounted, resources cleaned up");
 });
 
+// Watch for barangay changes
 watch(
     () => form.barangay,
     (newBarangay) => {
-        // Automatically set the zone based on the selected barangay
         form.zone = barangayToZone.value[newBarangay] || "";
-        console.log("Barangay changed, setting zone to:", form.zone);
+        console.log("Barangay changed, zone set to:", form.zone);
     }
 );
-
-const isVideoFile = (file) => {
-    return file?.type?.match("video.*");
-};
 
 const restrictPhoneInput = (event) => {
     let value = event.target.value.replace(/[^0-9]/g, "");
@@ -890,35 +1516,24 @@ const restrictPhoneInput = (event) => {
         value = value.slice(0, 11);
     }
     form.reporter_phone = value;
-    console.log("Phone input restricted:", value);
-};
-
-const removePhoto = (index) => {
-    if (!isVideoFile(form.photos[index])) {
-        URL.revokeObjectURL(form.photo_previews[index]);
-    }
-    form.photos.splice(index, 1);
-    form.photo_previews.splice(index, 1);
-    console.log(
-        "Photo removed at index:",
-        index,
-        "Remaining photos:",
-        form.photos.length
-    );
 };
 
 const submitReport = () => {
     console.log(
-        "Submitting report, photos count:",
+        "Submitting report with",
         form.photos.length,
-        "Location status:",
-        locationStatus.value
+        "media files (",
+        form.photos.filter((file) => file.type.startsWith("image")).length,
+        "photos,",
+        form.photos.filter((file) => file.type.startsWith("video")).length,
+        "videos)"
     );
+
     if (form.photos.length === 0) {
         Swal.fire({
             icon: "error",
             title: "Media Required",
-            text: "Please upload at least one photo or video for your report.",
+            text: "Please capture at least one photo or video for your report.",
             confirmButtonColor: "#3085d6",
         });
         return;
@@ -928,22 +1543,32 @@ const submitReport = () => {
         Swal.fire({
             icon: "error",
             title: "Location Required",
-            text: "Please enable GPS/location services to submit.",
+            text: "Please enable GPS/location services to submit your report.",
             confirmButtonColor: "#3085d6",
         });
         getLocation();
         return;
     }
 
-    isSubmitting.value = true;
-    console.log("Form submission started.");
+    if (isRecording.value) {
+        Swal.fire({
+            icon: "warning",
+            title: "Recording in Progress",
+            text: "Please stop the video recording before submitting your report.",
+            confirmButtonColor: "#3085d6",
+        });
+        return;
+    }
 
-    const loadingTimeout = setTimeout(() => {
+    isSubmitting.value = true;
+
+    // Add a 2-second loading delay
+    setTimeout(() => {
         form.post(route("reports.store"), {
             preserveScroll: true,
             onSuccess: (response) => {
                 isSubmitting.value = false;
-                console.log("Submission success, response:", response.props);
+                console.log("Report submitted successfully");
 
                 if (
                     response.props.error &&
@@ -963,6 +1588,7 @@ const submitReport = () => {
                     dateSubmitted: response.props.dateSubmitted,
                 });
                 emit("update:showSuccessModal", true);
+
                 Swal.fire({
                     position: "top-end",
                     title: "Report Submitted Successfully!",
@@ -973,22 +1599,23 @@ const submitReport = () => {
                     timer: 5000,
                     timerProgressBar: true,
                 });
+
+                // Reset form
                 form.reset();
-                form.photo_previews.forEach((url) => {
-                    if (url !== "/images/video-icon.png") {
-                        URL.revokeObjectURL(url);
-                    }
-                });
+                form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
+                form.photos = [];
                 form.photo_previews = [];
+                form.videos = [];
+                form.video_previews = [];
                 locationStatus.value = "idle";
                 getLocation();
             },
             onError: (errors) => {
                 isSubmitting.value = false;
-                console.error("Submission error:", errors);
+                console.error("Submission failed:", errors);
+
                 let errorMessage =
                     "There was an error submitting your report. Please try again.";
-
                 if (
                     errors.message &&
                     errors.message.includes("daily report limit")
@@ -1005,54 +1632,52 @@ const submitReport = () => {
             },
         });
     }, 2000);
-
-    watch(isSubmitting, (newValue) => {
-        if (!newValue) {
-            clearTimeout(loadingTimeout);
-            console.log("Submission cancelled or completed.");
-        }
-    });
 };
 
 const getLocation = () => {
-    console.log("Getting location, current status:", locationStatus.value);
     if (!navigator.geolocation) {
         locationStatus.value = "error";
         Swal.fire({
             icon: "error",
             title: "Geolocation Not Supported",
-            text: "Your browser does not support geolocation.",
+            text: "Your browser does not support location services.",
             confirmButtonColor: "#3085d6",
         });
         return;
     }
+
     locationStatus.value = "loading";
+
     navigator.geolocation.getCurrentPosition(
         (position) => {
             form.latitude = position.coords.latitude;
             form.longitude = position.coords.longitude;
             locationStatus.value = "success";
-            console.log("GPS acquired:", {
+            console.log("Location acquired:", {
                 latitude: form.latitude,
                 longitude: form.longitude,
             });
         },
         (error) => {
             locationStatus.value = "error";
-            console.log("GPS error:", error);
+            console.warn("Location error:", error);
             Swal.fire({
                 icon: "error",
                 title: "Location Access Denied",
-                text: "Please enable GPS/location services.",
+                text: "Please enable GPS/location services for your browser.",
                 confirmButtonColor: "#3085d6",
             });
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 300000,
+        }
     );
 };
 
 onMounted(() => {
     getLocation();
-    console.log("Component mounted, initiating location fetch.");
+    console.log("Enhanced report form component mounted with video support");
 });
 </script>

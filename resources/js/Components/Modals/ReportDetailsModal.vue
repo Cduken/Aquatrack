@@ -586,7 +586,7 @@
     <transition name="modal">
         <div
             v-if="showVideoModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+            class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/90"
         >
             <div class="relative w-full max-w-4xl mx-4">
                 <button

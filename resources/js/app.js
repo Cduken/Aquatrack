@@ -34,6 +34,7 @@ import * as MdIcons from "oh-vue-icons/icons/md";
 import * as SiIcons from "oh-vue-icons/icons/si";
 import * as IoIcons from "oh-vue-icons/icons/io";
 import * as OiIcons from "oh-vue-icons/icons/oi";
+
 import { LaUserEditSolid } from "oh-vue-icons/icons";
 
 
@@ -208,6 +209,7 @@ addIcons(
     BiIcons.BiCameraVideo,
     BiIcons.BiCameraVideoOff,
     BiIcons.BiClockHistory,
+    BiIcons.BiExclamationTriangleFill,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -259,8 +261,11 @@ addIcons(
     HiIcons.HiExclamationCircle,
     HiIcons.HiExclamation,
     HiIcons.HiInformationCircle,
-
-
+    HiIcons.HiCamera,
+    HiIcons.HiVideoCamera,
+    HiIcons.HiSolidX,
+    HiIcons.HiPlay,
+    HiIcons.HiPhotograph,
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -315,6 +320,9 @@ addIcons(
 
     // Line Awesome
     LaUserEditSolid,
+
+    // Eos Icons
+
 
 );
 

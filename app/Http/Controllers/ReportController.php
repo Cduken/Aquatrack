@@ -69,18 +69,24 @@ class ReportController extends Controller
                 ],
                 'purok' => 'required|string|max:255',
                 'description' => 'required|string',
-                'photos' => 'required|array|min:1',
+                'photos' => 'required|array|min:1|max:5', // Enforce MAX_TOTAL (3 photos + 2 videos)
                 'photos.*' => [
                     'file',
-                    'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi',
-                    'max:15360', // 15MB
+                    'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm', // Added webm
                     function ($attribute, $value, $fail) {
                         $originalName = $value->getClientOriginalName();
                         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
                         $imageExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp'];
-                        $videoExtensions = ['mp4', 'mov', 'avi'];
+                        $videoExtensions = ['mp4', 'mov', 'avi', 'webm']; // Added webm
                         if (!in_array($extension, array_merge($imageExtensions, $videoExtensions))) {
-                            $fail('The file must be an image (jpeg,png,jpg,gif,webp) or video (mp4,mov,avi).');
+                            $fail('The file must be an image (jpeg,png,jpg,gif,webp) or video (mp4,mov,avi,webm).');
+                        }
+                        // Enforce size limits
+                        if (in_array($extension, $imageExtensions) && $value->getSize() > 5 * 1024 * 1024) {
+                            $fail('The photo must not exceed 5MB.');
+                        }
+                        if (in_array($extension, $videoExtensions) && $value->getSize() > 25 * 1024 * 1024) {
+                            $fail('The video must not exceed 25MB.');
                         }
                     }
                 ],
@@ -110,7 +116,7 @@ class ReportController extends Controller
                 'priority' => $validated['priority'],
                 'latitude' => $validated['latitude'],
                 'longitude' => $validated['longitude'],
-                'ip_address' => $ipAddress, // Add IP address to report data
+                'ip_address' => $ipAddress,
             ];
 
             $report = Report::create($reportData);
@@ -136,8 +142,6 @@ class ReportController extends Controller
                 $filename = Str::uuid() . '.' . $extension;
                 $path = $photo->storeAs('report-photos', $filename, 'public');
 
-                $type = in_array(strtolower($extension), ['mp4', 'mov', 'avi']) ? 'video' : 'photo';
-
                 ReportPhoto::create([
                     'report_id' => $report->id,
                     'path' => $path,
@@ -160,7 +164,7 @@ class ReportController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Failed to submit report. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'Failed to submit report: ' . $e->getMessage());
         }
     }
 
