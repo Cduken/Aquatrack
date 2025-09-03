@@ -1,4 +1,3 @@
-[file name]: MainContentNavbar.vue [file content begin]
 <template>
     <nav
         class="bg-white border-b border-gray-200 px-4 py-2.5 shadow-md dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
@@ -108,14 +107,14 @@
                     </ol>
                 </nav>
             </div>
-            <div class="flex items-center lg:order-2"></div>
 
             <div class="flex items-center lg:order-2">
-                <!-- Notifications -->
+                <!-- Notifications Button -->
                 <button
                     type="button"
-                    data-dropdown-toggle="notification-dropdown"
+                    @click="toggleNotificationDropdown"
                     class="relative p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    ref="notificationButton"
                 >
                     <span class="sr-only">View notifications</span>
                     <v-icon name="bi-bell-fill" class="w-6 h-6" />
@@ -129,63 +128,52 @@
 
                 <!-- Notification Dropdown -->
                 <div
-                    class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl"
-                    id="notification-dropdown"
+                    v-show="isNotificationDropdownOpen"
+                    v-click-outside="closeNotificationDropdown"
+                    class="absolute right-0 top-full mt-2 z-50 my-4 w-96 text-base list-none bg-white rounded-lg shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
+                    ref="notificationDropdown"
                 >
                     <div
                         class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300"
                     >
                         Notifications
                     </div>
-                    <div>
-                        <Link
-                            v-for="report in initialReports"
-                            :key="report.id"
-                            :href="report.href || '#'"
-                            class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600"
+                    <div class="max-h-96 overflow-y-auto">
+                        <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
+                            No notifications available
+                        </div>
+                        <div v-else v-for="notification in notifications" :key="notification.id"
+                            class="p-3 border-b border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 dark:border-gray-600"
                         >
-                            <div class="flex-shrink-0">
-                                <img
-                                    class="w-11 h-11 rounded-full"
-                                    :src="
-                                        report.avatar_url ||
-                                        'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png'
-                                    "
-                                    :alt="report.name || 'User avatar'"
-                                />
-                                <div
-                                    v-if="report.unread"
-                                    class="flex absolute justify-center items-center ml-6 -mt-5 w-5 h-5 rounded-full border border-white bg-primary-700 dark:border-gray-700"
-                                >
-                                    <svg
-                                        aria-hidden="true"
-                                        class="w-3 h-3 text-white"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"
-                                        ></path>
-                                        <path
-                                            d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"
-                                        ></path>
-                                    </svg>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 pt-0.5">
+                                    <v-icon :name="getIconName(notification)" :class="getIconClass(notification)" />
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div v-if="hasBadge(notification)" class="flex items-center justify-between">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ getTitle(notification) }}
+                                        </p>
+                                        <span :class="getBadgeClass(notification)"
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                            {{ getBadgeText(notification) }}
+                                        </span>
+                                    </div>
+                                    <p v-else class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ getTitle(notification) }}
+                                    </p>
+                                    <p v-if="notification.type === 'announcement'" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ notification.message }}
+                                    </p>
+                                    <p v-if="['report_update', 'new_report'].includes(notification.type)" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        Location: {{ notification.barangay }}, {{ notification.municipality }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ getDateLabel(notification) }}: {{ formatDate(getDateField(notification)) }}
+                                    </p>
                                 </div>
                             </div>
-                            <div class="pl-3 w-full">
-                                <div
-                                    class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400"
-                                >
-                                    {{ report.message }}
-                                </div>
-                                <div
-                                    class="text-xs font-medium text-primary-600 dark:text-primary-500"
-                                >
-                                    {{ report.time }}
-                                </div>
-                            </div>
-                        </Link>
+                        </div>
                     </div>
                     <Link
                         :href="notificationRoute"
@@ -245,7 +233,6 @@
                     id="dropdown"
                     ref="dropdownMenu"
                 >
-                    <!-- User info section -->
                     <div
                         class="py-4 px-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-600"
                     >
@@ -258,8 +245,6 @@
                             >{{ user?.email }}</span
                         >
                     </div>
-
-                    <!-- Menu items -->
                     <ul class="py-2">
                         <li>
                             <Link
@@ -290,8 +275,6 @@
                             </Link>
                         </li>
                     </ul>
-
-                    <!-- Logout section -->
                     <div
                         class="border-t border-gray-100 dark:border-gray-700 pt-2"
                     >
@@ -334,7 +317,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    initialReports: {
+    initialNotifications: {
         type: Array,
         default: () => [],
     },
@@ -410,11 +393,128 @@ const userInitials = computed(() => {
     return "G";
 });
 
+// Notification handling
+const notifications = ref(props.initialNotifications);
+const isNotificationDropdownOpen = ref(false);
+const notificationButton = ref(null);
+const notificationDropdown = ref(null);
+
 const unreadCount = computed(() => {
-    return props.initialReports.length;
+    return notifications.value.filter(n => n.unread).length; // Assuming notifications have an 'unread' property
 });
 
-// Dropdown handling
+const toggleNotificationDropdown = () => {
+    isNotificationDropdownOpen.value = !isNotificationDropdownOpen.value;
+    if (isNotificationDropdownOpen.value) {
+        setTimeout(() => {
+            notificationDropdown.value?.querySelector("a, button")?.focus();
+        }, 0);
+    }
+};
+
+const closeNotificationDropdown = () => {
+    isNotificationDropdownOpen.value = false;
+};
+
+// Notification formatting functions
+const getIconName = (notification) => {
+    const icons = {
+        announcement: 'bi-megaphone-fill',
+        billing_status: 'bi-wallet-fill',
+        overdue_warning: 'bi-exclamation-triangle-fill',
+        new_report: 'bi-flag-fill',
+        report_update: 'bi-flag-fill'
+    };
+    return icons[notification.type] || 'bi-bell-fill';
+};
+
+const getIconClass = (notification) => {
+    if (['report_update', 'new_report'].includes(notification.type)) {
+        const classes = {
+            pending: 'text-yellow-500',
+            in_progress: 'text-blue-500',
+            resolved: 'text-green-500'
+        };
+        return `h-5 w-5 ${classes[notification.status] || 'text-gray-500'}`;
+    }
+    const classes = {
+        announcement: 'h-5 w-5 text-purple-500',
+        billing_status: 'h-5 w-5 text-blue-500',
+        overdue_warning: 'h-5 w-5 text-red-500',
+        new_report: 'h-5 w-5 text-orange-500'
+    };
+    return classes[notification.type] || 'h-5 w-5 text-gray-500';
+};
+
+const hasBadge = (notification) => {
+    return ['report_update', 'new_report', 'billing_status', 'overdue_warning'].includes(notification.type);
+};
+
+const getBadgeClass = (notification) => {
+    if (notification.type === 'overdue_warning') return 'bg-red-100 text-red-800';
+    if (notification.type === 'billing_status') return 'bg-blue-100 text-blue-800';
+    const classes = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        in_progress: 'bg-blue-100 text-blue-800',
+        resolved: 'bg-green-100 text-green-800'
+    };
+    return classes[notification.status] || 'bg-gray-100 text-gray-800';
+};
+
+const getBadgeText = (notification) => {
+    if (notification.type === 'overdue_warning') return 'Overdue';
+    return formatStatus(notification.status);
+};
+
+const getTitle = (notification) => {
+    switch (notification.type) {
+        case 'report_update':
+            return `Report #${notification.tracking_code}`;
+        case 'new_report':
+            return `New Report #${notification.tracking_code}`;
+        case 'announcement':
+            return notification.title;
+        case 'billing_status':
+            return `Billing Status Update`;
+        case 'overdue_warning':
+            return `Overdue Payment Warning`;
+        default:
+            return 'Notification';
+    }
+};
+
+const getDateLabel = (notification) => {
+    if (notification.type === 'announcement') return 'Announced';
+    if (notification.type === 'overdue_warning') return 'Due';
+    return 'Updated';
+};
+
+const getDateField = (notification) => {
+    if (notification.type === 'overdue_warning') return notification.due_date;
+    if (notification.type === 'announcement') return notification.created_at;
+    return notification.updated_at;
+};
+
+const formatStatus = (status) => {
+    if (!status) return '';
+    return status.split('_').map(word =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
+// Dropdown handling (user menu)
 const isDropdownOpen = ref(false);
 const dropdownButton = ref(null);
 const dropdownMenu = ref(null);
@@ -452,9 +552,31 @@ const handleLogout = async () => {
 
 // Accessibility
 const handleKeydown = (e) => {
-    if (e.key === "Escape" && isDropdownOpen.value) {
-        closeDropdown();
-        dropdownButton.value?.focus();
+    if (e.key === "Escape") {
+        if (isDropdownOpen.value) {
+            closeDropdown();
+            dropdownButton.value?.focus();
+        }
+        if (isNotificationDropdownOpen.value) {
+            closeNotificationDropdown();
+            notificationButton.value?.focus();
+        }
+    }
+    if (isNotificationDropdownOpen.value && e.key === "Tab") {
+        const focusableElements = notificationDropdown.value?.querySelectorAll(
+            "a[href], button:not([disabled])"
+        );
+        if (focusableElements?.length) {
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
     }
     if (isDropdownOpen.value && e.key === "Tab") {
         const focusableElements = dropdownMenu.value?.querySelectorAll(
@@ -492,14 +614,6 @@ const vClickOutside = {
 
 onMounted(() => {
     window.addEventListener("keydown", handleKeydown);
-    if (typeof Flowbite !== "undefined") {
-        const notificationDropdown = document.getElementById(
-            "notification-dropdown"
-        );
-        const userDropdown = document.getElementById("dropdown");
-        if (notificationDropdown) new Flowbite.Dropdown(notificationDropdown);
-        if (userDropdown) new Flowbite.Dropdown(userDropdown);
-    }
 });
 
 onUnmounted(() => {
@@ -508,7 +622,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Improved mobile styles */
 @media (max-width: 767px) {
     nav {
         padding-left: 0.5rem;
@@ -550,15 +663,13 @@ button:focus {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-/* Smooth dropdown animation */
-#dropdown {
+#dropdown,
+#notification-dropdown {
     transition: all 0.2s ease-out;
     transform-origin: top right;
 }
 
-/* Hover effects for dropdown items */
 .hover-lift:hover {
     transform: translateY(-1px);
 }
 </style>
-[file content end]

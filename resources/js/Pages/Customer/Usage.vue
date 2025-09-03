@@ -159,6 +159,7 @@
                                             <v-icon :name="usage.status === 'Paid' ? 'bi-check-circle-fill' : 'bi-clock-fill'" class="w-3 h-3 mr-1" />
                                             {{ usage.status }}
                                         </span>
+
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">

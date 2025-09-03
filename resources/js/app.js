@@ -210,6 +210,7 @@ addIcons(
     BiIcons.BiCameraVideoOff,
     BiIcons.BiClockHistory,
     BiIcons.BiExclamationTriangleFill,
+    BiIcons.BiMegaphone,
 
     // Heroicons
     HiIcons.HiSolidUser,

@@ -121,14 +121,14 @@
                         <h3 class="text-4xl font-bold text-orange-800 mb-2">
                             {{
                                 Math.round(
-                                    ((dashboardData.todaysReadings || 0) / 20) *
+                                    ((dashboardData.todaysReadings || 0) / 50) *
                                         100
                                 )
                             }}%
                         </h3>
                         <p class="text-orange-600 font-medium">Daily Target</p>
                         <p class="text-sm text-orange-500 mt-1">
-                            20 readings goal
+                            50 readings goal
                         </p>
                     </div>
                 </div>

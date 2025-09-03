@@ -139,6 +139,7 @@ class StaffReadingController extends Controller
     }
 
     // In StaffReadingController.php
+    // StaffReadingController.php
     public function storeReading(Request $request)
     {
         $validated = $request->validate([
@@ -146,6 +147,7 @@ class StaffReadingController extends Controller
             'billing_month' => 'required|string',
             'reading_date' => 'required|date',
             'reading' => 'required|numeric|min:0',
+            'previous_reading' => 'nullable|numeric|min:0', // Add this field
         ]);
 
         // Check if reading already exists for this month and year
@@ -161,21 +163,23 @@ class StaffReadingController extends Controller
             ], 422);
         }
 
-        $previousReading = MeterReading::where('user_id', $validated['user_id'])
-            ->latest('reading_date')
-            ->first();
+        // Use the provided previous reading or get from database
+        $previousReadingValue = $validated['previous_reading'] ?? null;
 
-        $consumption = 0;
-        $amount = 0;
+        if ($previousReadingValue === null) {
+            $previousReading = MeterReading::where('user_id', $validated['user_id'])
+                ->latest('reading_date')
+                ->first();
 
-        if ($previousReading) {
-            $consumption = $validated['reading'] - $previousReading->reading;
-            $amount = $this->calculateBillAmount($consumption);
+            $previousReadingValue = $previousReading ? $previousReading->reading : 0;
         }
+
+        $consumption = max(0, $validated['reading'] - $previousReadingValue);
+        $amount = $this->calculateBillAmount($consumption);
 
         $newReading = MeterReading::create([
             'user_id' => $validated['user_id'],
-            'staff_id' => Auth::id(), // Add this line
+            'staff_id' => Auth::id(),
             'billing_month' => $validated['billing_month'],
             'reading_date' => $validated['reading_date'],
             'reading' => $validated['reading'],

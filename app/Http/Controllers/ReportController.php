@@ -32,26 +32,14 @@ class ReportController extends Controller
 
     public function create()
     {
-        return Inertia::render('Reports/Index');
+        return Inertia::render('Reports/Index', [
+            'zones' => $this->zones,
+        ]);
     }
 
     public function store(Request $request)
     {
         try {
-            // Get client IP address
-            $ipAddress = $request->ip();
-
-            // Check if IP has exceeded daily limit
-            $dailyReportCount = Report::where('ip_address', $ipAddress)
-                ->whereDate('created_at', today())
-                ->count();
-
-            if ($dailyReportCount >= 3) {
-                return Inertia::render('Reports/Index', [
-                    'error' => 'You have exceeded the daily report limit (3 reports per day). Please try again tomorrow.'
-                ]);
-            }
-
             $validated = $request->validate([
                 'municipality' => 'required|string|max:255',
                 'province' => 'required|string|max:255',
@@ -116,14 +104,13 @@ class ReportController extends Controller
                 'priority' => $validated['priority'],
                 'latitude' => $validated['latitude'],
                 'longitude' => $validated['longitude'],
-                'ip_address' => $ipAddress,
             ];
 
             $report = Report::create($reportData);
 
             Activity::create([
                 'event' => 'report_created',
-                'description' => 'New report submitted: ' . $report->tracking_code . ' from IP: ' . $ipAddress,
+                'description' => 'New report submitted: ' . $report->tracking_code,
                 'subject_type' => get_class($report),
                 'subject_id' => $report->id,
                 'causer_type' => Auth::check() ? get_class(Auth::user()) : null,
@@ -132,7 +119,6 @@ class ReportController extends Controller
                     'tracking_code' => $report->tracking_code,
                     'zone' => $report->zone,
                     'status' => $report->status,
-                    'ip_address' => $ipAddress,
                 ]
             ]);
 
@@ -153,18 +139,33 @@ class ReportController extends Controller
 
             if (Auth::check()) {
                 return redirect()->route('customer.reports')->with([
-                    'success' => 'Report submitted successfully!',
-                    'trackingCode' => $trackingCode
+                    'swal' => [
+                        'icon' => 'success',
+                        'title' => 'Report Submitted!',
+                        'text' => 'Your report has been submitted successfully.',
+                        'trackingCode' => $trackingCode
+                    ]
                 ]);
             } else {
                 return Inertia::render('Reports/Index', [
                     'trackingCode' => $trackingCode,
                     'dateSubmitted' => now()->toISOString(),
-                    'success' => 'Report submitted successfully!'
+                    'swal' => [
+                        'icon' => 'success',
+                        'title' => 'Report Submitted!',
+                        'text' => 'Your report has been submitted successfully.',
+                        'trackingCode' => $trackingCode
+                    ]
                 ]);
             }
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Failed to submit report: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with([
+                'swal' => [
+                    'icon' => 'error',
+                    'title' => 'Submission Failed',
+                    'text' => 'Failed to submit report: ' . $e->getMessage(),
+                ]
+            ]);
         }
     }
 
@@ -189,10 +190,8 @@ class ReportController extends Controller
 
         return Inertia::render('Customer/Reports', [
             'reports' => $reports,
-            'flash' => [
-                'success' => $request->session()->get('success'),
-                'trackingCode' => $request->session()->get('trackingCode')
-            ]
+            'zones' => $this->zones,
+            'swal' => $request->session()->get('swal')
         ]);
     }
 
@@ -219,7 +218,8 @@ class ReportController extends Controller
             'reports' => $query->paginate(10)
                 ->appends($request->query()),
             'filters' => $request->only(['userType', 'status', 'search']),
-            'canEdit' => true
+            'canEdit' => true,
+            'swal' => $request->session()->get('swal')
         ]);
     }
 
@@ -308,6 +308,12 @@ class ReportController extends Controller
             ]
         ]);
 
-        return redirect()->route('admin.reports')->with('success', 'Report status updated successfully!');
+        return redirect()->route('admin.reports')->with([
+            'swal' => [
+                'icon' => 'success',
+                'title' => 'Status Updated',
+                'text' => 'Report status updated successfully!',
+            ]
+        ]);
     }
 }

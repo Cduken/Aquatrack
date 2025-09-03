@@ -118,17 +118,30 @@
                                             Previous Reading (m³)
                                         </label>
                                         <div class="relative">
-                                            <input v-model="newReading.previous_reading" type="number" step="0.01"
-                                                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10"
-                                                disabled>
+                                            <input
+                                                v-model="newReading.previous_reading"
+                                                type="number"
+                                                step="0.01"
+                                                :class="[
+                                                    'w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 pr-10',
+                                                    hasPreviousReadings ? 'bg-gray-50 dark:bg-gray-600' : 'bg-white dark:bg-gray-700'
+                                                ]"
+                                                :disabled="hasPreviousReadings || isSubmitting"
+                                                @input="calculateConsumptionAndAmount"
+                                                placeholder="Enter previous reading">
                                             <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">m³</span>
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Last recorded reading</p>
+                                        <p v-if="!hasPreviousReadings" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            Enter the initial meter reading
+                                        </p>
+                                        <p v-else class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            Last recorded reading (automatically populated)
+                                        </p>
                                     </div>
 
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Current Reading (m³) *
+                                            Current Reading (m³)
                                         </label>
                                         <div class="relative">
                                             <input v-model="newReading.reading" type="number" step="0.01"
@@ -338,6 +351,11 @@ const isLoadingPreviousReadings = ref(false);
 const isSubmitting = ref(false);
 const showYearTransitionWarning = ref(false);
 
+// Computed property to check if previous readings exist
+const hasPreviousReadings = computed(() => {
+    return previousReadings.value && previousReadings.value.length > 0;
+});
+
 // Computed property for last reading date
 const lastReadingDate = computed(() => {
     if (previousReadings.value.length === 0) return null;
@@ -368,36 +386,47 @@ watch(previousReadings, (newVal) => {
 }, { deep: true });
 
 const updatePreviousReading = () => {
-    if (!newReading.value.billing_month) {
-        newReading.value.previous_reading = 0;
-        return;
-    }
+    // If there are previous readings, use the latest one
+    if (hasPreviousReadings.value) {
+        if (!newReading.value.billing_month) {
+            newReading.value.previous_reading = 0;
+            return;
+        }
 
-    const selectedDate = new Date(newReading.value.reading_date);
-    const selectedYear = selectedDate.getFullYear();
-    const selectedMonthIndex = months.indexOf(newReading.value.billing_month);
+        const selectedDate = new Date(newReading.value.reading_date);
 
-    // Find the most recent reading before the selected date
-    const readingsBeforeCurrent = previousReadings.value.filter(reading => {
-        const readingDate = new Date(`${reading.billing_month} 1, ${reading.year}`);
-        return readingDate < selectedDate;
-    });
-
-    // Check for year transition (December to January)
-    const hasDecemberReading = previousReadings.value.some(r => r.billing_month === 'December' && parseInt(r.year) === selectedYear - 1);
-    showYearTransitionWarning.value = (selectedMonthIndex === 0 && hasDecemberReading);
-
-    if (readingsBeforeCurrent.length > 0) {
-        // Get the latest reading before the selected date
-        const latestReading = readingsBeforeCurrent.reduce((latest, current) => {
-            const latestDate = new Date(`${latest.billing_month} 1, ${latest.year}`);
-            const currentDate = new Date(`${current.billing_month} 1, ${current.year}`);
-            return currentDate > latestDate ? current : latest;
+        // Find the most recent reading before the selected date
+        const readingsBeforeCurrent = previousReadings.value.filter(reading => {
+            const readingDate = new Date(`${reading.billing_month} 1, ${reading.year}`);
+            return readingDate < selectedDate;
         });
 
-        newReading.value.previous_reading = latestReading.reading;
+        // Check for year transition (December to January)
+        const hasDecemberReading = previousReadings.value.some(r => r.billing_month === 'December' && parseInt(r.year) === selectedDate.getFullYear() - 1);
+        showYearTransitionWarning.value = (months.indexOf(newReading.value.billing_month) === 0 && hasDecemberReading);
+
+        if (readingsBeforeCurrent.length > 0) {
+            // Get the latest reading before the selected date
+            const latestReading = readingsBeforeCurrent.reduce((latest, current) => {
+                const latestDate = new Date(`${latest.billing_month} 1, ${latest.year}`);
+                const currentDate = new Date(`${current.billing_month} 1, ${current.year}`);
+                return currentDate > latestDate ? current : latest;
+            });
+
+            newReading.value.previous_reading = latestReading.reading;
+        } else {
+            // If no readings before selected date, use the first reading
+            const firstReading = [...previousReadings.value].sort((a, b) => {
+                const dateA = new Date(`${a.billing_month} 1, ${a.year}`);
+                const dateB = new Date(`${b.billing_month} 1, ${b.year}`);
+                return dateA - dateB;
+            })[0];
+
+            newReading.value.previous_reading = firstReading ? firstReading.reading : 0;
+        }
     } else {
-        newReading.value.previous_reading = 0;
+        // If no previous readings, keep the user's input or default to 0
+        newReading.value.previous_reading = newReading.value.previous_reading || 0;
     }
 
     // Recalculate consumption and amount
@@ -415,11 +444,15 @@ const formatDate = (dateString) => {
 };
 
 const isFormValid = computed(() => {
+    const current = parseFloat(newReading.value.reading) || 0;
+    const previous = parseFloat(newReading.value.previous_reading) || 0;
+
     return (
         newReading.value.billing_month &&
         newReading.value.reading_date &&
         newReading.value.reading !== '' &&
-        parseFloat(newReading.value.reading) >= parseFloat(newReading.value.previous_reading)
+        current >= previous &&
+        (!hasPreviousReadings.value || previous > 0) // If no previous readings, ensure previous is provided
     );
 });
 
@@ -497,11 +530,24 @@ const submitReading = async () => {
     if (!isFormValid.value) return;
 
     // Validate that current reading is not less than previous reading
-    if (parseFloat(newReading.value.reading) < parseFloat(newReading.value.previous_reading)) {
+    const current = parseFloat(newReading.value.reading);
+    const previous = parseFloat(newReading.value.previous_reading);
+
+    if (current < previous) {
         Swal.fire({
             icon: 'error',
             title: 'Invalid Reading',
             text: 'Current reading cannot be less than previous reading',
+        });
+        return;
+    }
+
+    // Additional validation for initial reading
+    if (!hasPreviousReadings.value && previous <= 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Previous Reading',
+            text: 'Previous reading must be greater than 0 for initial reading',
         });
         return;
     }
@@ -553,7 +599,8 @@ const submitReading = async () => {
                 user_id: props.user.id,
                 billing_month: newReading.value.billing_month,
                 reading_date: newReading.value.reading_date,
-                reading: newReading.value.reading
+                reading: newReading.value.reading,
+                previous_reading: newReading.value.previous_reading
             });
 
             if (response.data.error) {
@@ -597,20 +644,24 @@ onMounted(() => {
     // Set default values for new reading
     const today = new Date();
     const currentMonth = months[today.getMonth()];
-    newReading.value = {
-        billing_month: currentMonth,
-        reading_date: today.toISOString().split('T')[0],
-        reading: '',
-        previous_reading: 0,
-        consumption: 0,
-        amount: 0
-    };
+
+    // Fetch previous readings first
+    fetchPreviousReadings().then(() => {
+        newReading.value = {
+            billing_month: currentMonth,
+            reading_date: today.toISOString().split('T')[0],
+            reading: '',
+            previous_reading: hasPreviousReadings.value ? 0 : '',
+            consumption: 0,
+            amount: 0
+        };
+
+        // Update the previous reading based on fetched data
+        updatePreviousReading();
+    });
 
     // Set default year filter to current year
     selectedYear.value = today.getFullYear().toString();
-
-    // Fetch previous readings
-    fetchPreviousReadings();
 });
 </script>
 

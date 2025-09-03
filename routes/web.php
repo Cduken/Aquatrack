@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerUsageController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Roles\SelectRolesController;
@@ -40,6 +41,25 @@ Route::get('/redirect-to-dashboard', [AuthenticatedSessionController::class, 're
     ->name('redirect-to-dashboard');
 
 Route::post('/verify-code', [AuthenticatedSessionController::class, 'verifyCode'])->name('verify-code');
+
+
+// Add this route for generic dashboard access
+Route::get('/dashboard', function () {
+    // Redirect based on user role
+    $user = auth()->Auth::user()();
+
+    if ($user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->hasRole('staff')) {
+        return redirect()->route('staff.dashboard');
+    } elseif ($user->hasRole('customer')) {
+        return redirect()->route('customer.dashboard');
+    }
+
+    return redirect()->route('home');
+})->name('dashboard')->middleware(['auth', 'verified']);
+
+
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -93,12 +113,17 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
     Route::get('/customer/usage', [CustomerUsageController::class, 'index'])->name('customer.usage');
-    Route::get('/customer/reports', [ReportController::class, 'customerIndex'])->name('customer.reports');
+    Route::get('/customer/reports', [ReportController::class, 'customerIndex'])
+    ->middleware(['auth', 'verified'])
+    ->name('customer.reports');
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });
 
 // Select Roles
 Route::get('/select-roles', [SelectRolesController::class, 'index'])->name('select-roles');
+
+//Notifications
+Route::get('/notifications', [NotificationsController::class, 'getNotifications']);
 
 // Report Routes (Public and Authenticated)
 Route::get('/reports', [ReportController::class, 'publicIndex'])->name('reports.index');
