@@ -1,14 +1,13 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
-import AddReportModal from "@/Components/Modals/AddReportModal.vue";
 import { ref, onMounted } from "vue";
-import ReportSuccessModal from "@/Components/Modals/ReportSuccessModal.vue";
+import ReportForm from "@/Components/Reports/ReportForm.vue";
+import GlobalReportSuccessModal from "@/Components/Modals/GlobalReportSuccessModal.vue";
 import TrackReportModal from "@/Components/Modals/TrackReportModal.vue";
-import Swal from "sweetalert2";
 import Navigation from "./Header/Navigation.vue";
 import gsap from "gsap";
 
-defineProps({
+const props = defineProps({
     canLogin: {
         type: Boolean,
         default: true,
@@ -17,97 +16,106 @@ defineProps({
         type: Boolean,
         default: true,
     },
+    trackingCode: {
+        type: [String, null],
+        default: null,
+    },
+    dateSubmitted: {
+        type: [String, null],
+        default: null,
+    },
 });
 
-const showReportModal = ref(false);
 const showSuccessModal = ref(false);
 const showTrackModal = ref(false);
 const trackingInfo = ref(null);
+const showReportSlider = ref(false);
+
+const zones = {
+    "Zone 1": ["Poblacion Sur"],
+    "Zone 2": ["Poblacion Centro"],
+    "Zone 3": ["Poblacion Centro"],
+    "Zone 4": ["Poblacion Norte"],
+    "Zone 5": ["Candajec", "Buangan"],
+    "Zone 6": ["Bonbon"],
+    "Zone 7": ["Bonbon"],
+    "Zone 8": ["Nahawan"],
+    "Zone 9": ["Caboy", "Villaflor", "Cantuyoc"],
+    "Zone 10": ["Bacani", "Mataub", "Comaang", "Tangaran"],
+    "Zone 11": ["Cantuyoc", "Nahawan"],
+    "Zone 12": ["Lajog", "Buacao"],
+};
 
 onMounted(() => {
+    console.log("Received props on mount:", {
+        trackingCode: props.trackingCode,
+        dateSubmitted: props.dateSubmitted,
+    });
+
+    if (props.trackingCode && props.dateSubmitted) {
+        trackingInfo.value = {
+            code: props.trackingCode,
+            date: props.dateSubmitted,
+        };
+        showSuccessModal.value = true;
+    } else {
+        console.log("No trackingCode or dateSubmitted, modal will not show.");
+    }
+    console.log("Modal state:", {
+        showSuccessModal: showSuccessModal.value,
+        trackingInfo: trackingInfo.value,
+    });
+
     const tl = gsap.timeline();
 
+    gsap.to(".purple-float", {
+        y: -20,
+        x: 10,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+    });
+
     tl.fromTo(
-        ".bg-gradient-to-br",
-        { opacity: 0 },
-        { opacity: 1, duration: 0.8, ease: "power2.inOut" }
-    );
-    tl.fromTo(
-        ".water-drop-top",
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 0.1, duration: 0.8, ease: "back.out(1.7)" },
-        "-=0.6"
-    );
-    tl.fromTo(
-        ".water-drop-bottom",
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 0.1, duration: 0.8, ease: "back.out(1.7)" },
-        "-=0.6"
-    );
-    tl.fromTo(
-        ".main-content",
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-        "-=0.4"
+        ".hero-content",
+        { x: -50, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
     );
     tl.fromTo(
         "h1 span",
-        { backgroundPosition: "100% 50%" },
+        { x: -30, opacity: 0 },
         {
-            backgroundPosition: "0% 50%",
-            duration: 1,
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
             stagger: 0.15,
-            ease: "power2.inOut",
+            ease: "back.out(1.7)",
         },
         "-=0.3"
     );
     tl.fromTo(
         ".subheadline",
-        { y: 15, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-        "-=0.3"
+        { x: -20, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
+        "-=0.2"
     );
     tl.fromTo(
         ".cta-button",
         { y: 20, opacity: 0 },
-        {
-            y: 0,
-            opacity: 1,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "back.out(1.7)",
-        },
+        { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" },
         "-=0.2"
     );
     tl.fromTo(
-        ".stats-section",
-        { y: 25, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-        "-=0.2"
-    );
-    tl.fromTo(
-        ".stat-item",
-        { y: 15, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" },
-        "-=0.2"
-    );
-    tl.fromTo(
-        ".track-button",
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" },
-        "-=0.2"
+        ".hero-image",
+        { x: 50, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
+        "-=0.6"
     );
 
-    gsap.to(".water-drop-top", {
-        y: 15,
+    gsap.to(".hero-image", {
+        y: -10,
         duration: 3,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-    });
-    gsap.to(".water-drop-bottom", {
-        y: -15,
-        duration: 4,
         repeat: -1,
         yoyo: true,
         ease: "sine.inOut",
@@ -115,310 +123,318 @@ onMounted(() => {
 });
 
 const handleTrackReport = () => {
+    // Use the trackingCode from props or default to an empty string
+    const trackingCode = trackingInfo.value?.code || props.trackingCode || "";
+    if (trackingCode) {
+        trackingInfo.value = { code: trackingCode, date: props.dateSubmitted };
+    }
+    showSuccessModal.value = false;
     showTrackModal.value = true;
 };
 
-const handleReportSubmitted = async (response) => {
-    try {
-        showReportModal.value = false;
-        if (response.success) {
-            trackingInfo.value = {
-                code: response.trackingCode,
-                date: response.dateSubmitted,
-            };
-            showSuccessModal.value = true;
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Report submitted successfully!",
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true,
-                background: "#4BB543",
-                iconColor: "white",
-                color: "white",
-                timerProgressBar: true,
-            });
-        } else {
-            throw new Error(response.message || "Failed to submit report");
-        }
-    } catch (error) {
-        Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: error.message,
-            showConfirmButton: false,
-            timer: 3000,
-            toast: true,
-            background: "#FF3333",
-            iconColor: "white",
-            color: "white",
-            timerProgressBar: true,
-        });
-    }
+const openReportSlider = () => {
+    showReportSlider.value = true;
+};
+
+const handleReportSuccess = (data) => {
+    console.log("Handling report success:", data);
+    showReportSlider.value = false;
+    trackingInfo.value = {
+        code: data.trackingCode,
+        date: data.dateSubmitted,
+    };
+    showSuccessModal.value = true;
+    console.log("Modal state after handleReportSuccess:", {
+        showSuccessModal: showSuccessModal.value,
+        trackingInfo: trackingInfo.value,
+    });
 };
 </script>
 
 <template>
     <main id="home" class="relative w-full min-h-screen overflow-hidden">
+        <div
+            class="purple-float absolute left-[300px] top-0 w-72 h-72 rounded-full bg-purple-300/50 blur-3xl"
+        ></div>
+        <div
+            class="purple-float absolute left-40 bottom-40 w-48 h-48 rounded-full bg-purple-400/20 blur-3xl"
+            style="animation-delay: 1s"
+        ></div>
+
         <Navigation />
 
         <div
-            class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style="background-image: url('/images/AquatrackIMG.jpg')"
-        ></div>
-        <div
-            class="absolute inset-0 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80"
+            class="relative px-4 sm:px-8 lg:px-[120px] flex flex-col lg:flex-row gap-8 lg:gap-16 items-center justify-center min-h-[80vh] py-12 lg:py-0"
         >
             <div
-                class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"
-            ></div>
-        </div>
-
-        <div
-            class="water-drop-top absolute top-1/4 left-1/4 w-40 h-40 md:w-64 md:h-64 lg:w-96 lg:h-96 rounded-full bg-blue-500 opacity-10 blur-3xl"
-        ></div>
-        <div
-            class="water-drop-bottom absolute bottom-1/3 right-1/4 w-60 h-60 md:w-96 md:h-96 lg:w-128 lg:h-128 rounded-full bg-teal-500 opacity-10 blur-3xl"
-        ></div>
-
-        <div
-            class="relative z-10 min-h-screen container mx-auto px-4 sm:px-6 flex flex-col justify-center pt-16 lg:pt-32"
-        >
-            <div
-                class="main-content max-w-4xl mx-auto text-center px-2 flex-1 flex flex-col justify-center"
+                class="hero-content flex flex-col max-w-[800px] order-2 lg:order-1 text-center lg:text-left lg:w-3/5"
             >
                 <h1
-                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px] font-[200] text-white leading-tight tracking-[-0.05em] mb-6 md:mb-8"
+                    class="text-4xl sm:text-5xl lg:text-6xl mb-4 leading-snug font-light"
                 >
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200 bg-[length:200%_100%] inline-block"
-                        >Track,</span>
-                    <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-200 bg-[length:200%_100%] inline-block"
-                        >Report,
+                        class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800 floating-text"
+                    >
+                        Clarin Water
                     </span>
                     <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-200 bg-[length:200%_100%] inline-block"
-                        >Resolve</span
+                        class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-600 floating-text"
+                        style="animation-delay: 0.2s"
                     >
+                        Management System
+                    </span>
+                    <span
+                        class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 floating-text"
+                        style="animation-delay: 0.4s"
+                    >
+                        For the Community
+                    </span>
                 </h1>
 
                 <p
-                    class="subheadline text-base sm:text-lg md:text-xl text-[#A2A8AF] max-w-[95%] sm:max-w-[600px] mx-auto leading-relaxed mb-8 md:mb-10 px-4"
+                    class="subheadline text-gray-600 max-w-[600px] mb-6 text-lg leading-relaxed floating-text mx-auto lg:mx-0"
+                    style="animation-delay: 0.6s"
                 >
-                    AquaTrack empowers you to monitor water usage, report issues
-                    instantly, and track resolutions - all in one seamless
-                    platform.
+                    Manage your water services with ease. Report issues
+                    instantly, track monthly readings, view bills, and access
+                    analytics—all in one place designed for the people of
+                    Clarin, Bohol.
                 </p>
 
-                <div class="flex justify-center">
-                    <Link
-                        :href="route('reports.index')"
-                        class="button-glow cta-button inline-flex items-center justify-center rounded-full px-6 py-3 sm:px-8 sm:py-4 gap-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-400/60 to-cyan-400/60 shadow-lg shadow-blue-900/30 transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-blue-400/80 hover:to-cyan-400/80 hover:scale-105 hover:shadow-2xl hover:shadow-blue-900/50 mb-12 md:mb-16"
+                <div
+                    class="cta-button floating-text"
+                    style="animation-delay: 0.8s"
+                >
+                    <button
+                        @click="openReportSlider"
+                        class="inline-flex items-center gap-2 border p-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-white"
                     >
-                        <v-icon
-                            name="oi-report"
-                            scale="1.2 sm:1.4"
-                            class="text-white"
-                        />
-                        <span>Report Water Issue</span>
-                    </Link>
+                        <v-icon name="bi-droplet" scale="1" />
+                        Report Issues
+                    </button>
                 </div>
             </div>
 
-            <div class="stats-section w-full px-2 pb-12 md:pb-14">
+            <div
+                class="hero-image w-full lg:w-2/5 flex items-center justify-center order-1 lg:order-2"
+            >
                 <div
-                    class="max-w-3xl bottom-10 mx-auto p-4 sm:p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10"
+                    class="max-w-[500px] max-h-[500px] w-full bg-gray-200 rounded-2xl shadow-2xl floating-image"
                 >
-                    <div class="grid grid-cols-3 gap-4 sm:gap-6 text-center">
-                        <div class="stat-item p-3 sm:p-4">
-                            <div
-                                class="text-xl sm:text-2xl md:text-3xl font-semibold text-blue-300 mb-1"
-                            >
-                                1,200+
+                    <div class="p-4 sm:p-6">
+                        <img
+                            class="rounded-2xl w-full h-auto"
+                            src="/images/AquatrackIMG.jpg"
+                            alt="Water District Office"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed bottom-8 right-8 z-20 group">
+            <button
+                @click="handleTrackReport"
+                class="relative flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-110"
+                title="Track Report"
+            >
+                <v-icon name="io-search" scale="1.5" />
+                <div
+                    class="absolute -right-1 -top-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white animate-pulse"
+                ></div>
+
+                <div
+                    class="absolute right-full mr-4 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-2 rounded-xl text-sm bg-gray-900/90 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/10"
+                >
+                    Track Report
+                    <div
+                        class="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900/90"
+                    ></div>
+                </div>
+            </button>
+        </div>
+
+        <div v-if="showReportSlider" class="fixed inset-0 z-50 overflow-hidden">
+            <div
+                class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+                @click="showReportSlider = false"
+            ></div>
+
+            <div
+                class="fixed inset-y-0 right-0 max-w-full flex"
+                :class="{ 'sm:pl-10': showReportSlider }"
+            >
+                <div
+                    class="relative w-screen max-w-3xl md:max-w-4xl transform transition-transform duration-500 ease-in-out"
+                    :class="{
+                        'translate-x-0': showReportSlider,
+                        'translate-x-full': !showReportSlider,
+                    }"
+                >
+                    <div
+                        class="h-full flex flex-col bg-white shadow-xl overflow-y-auto"
+                    >
+                        <div class="bg-[#062F64] px-4 py-5 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <h2
+                                    class="text-xl font-semibold text-white leading-7"
+                                >
+                                    Report Water Issue
+                                </h2>
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-[#062F64] text-gray-300 hover:text-white focus:outline-none"
+                                    @click="showReportSlider = false"
+                                >
+                                    <span class="sr-only">Close</span>
+                                    <v-icon
+                                        name="hi-x"
+                                        class="h-6 w-6 text-white"
+                                    />
+                                </button>
                             </div>
-                            <div
-                                class="text-sm sm:text-base text-blue-100 leading-tight"
-                            >
-                                Issues Resolved
+                            <div class="mt-1">
+                                <p class="text-sm text-gray-300">
+                                    Report water emergencies, leaks, or other
+                                    issues in your area
+                                </p>
                             </div>
                         </div>
-                        <div
-                            class="stat-item p-3 sm:p-4 border-x border-white/20"
-                        >
-                            <div
-                                class="text-xl sm:text-2xl md:text-3xl font-semibold text-teal-300 mb-1"
-                            >
-                                342
-                            </div>
-                            <div
-                                class="text-sm sm:text-base text-blue-100 leading-tight"
-                            >
-                                Customers
-                            </div>
-                        </div>
-                        <div class="stat-item p-3 sm:p-4">
-                            <div
-                                class="text-xl sm:text-2xl md:text-3xl font-semibent text-cyan-300 mb-1"
-                            >
-                                98%
-                            </div>
-                            <div
-                                class="text-sm sm:text-base text-blue-100 leading-tight"
-                            >
-                                Customer Satisfaction
-                            </div>
+
+                        <div class="relative flex-1">
+                            <ReportForm
+                                :zones="zones"
+                                @submitted="handleReportSuccess"
+                                @cancel="showReportSlider = false"
+                            />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div
-            class="track-button fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-20"
-        >
-            <button
-                @click="handleTrackReport"
-                class="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110"
-            >
-                <v-icon name="io-search" scale="1.3 sm:1.5" />
-                <span class="sr-only">Track Report</span>
-                <div
-                    class="absolute -right-1 -top-1 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 rounded-full border-2 border-white animate-pulse"
-                ></div>
-            </button>
-        </div>
-
-        <AddReportModal
-            :show="showReportModal"
-            @close="showReportModal = false"
-            @submitted="handleReportSubmitted"
-        />
-        <ReportSuccessModal
-            v-if="trackingInfo"
+        <GlobalReportSuccessModal
+            v-if="showSuccessModal && trackingInfo"
             :show="showSuccessModal"
             :tracking-code="trackingInfo.code"
             :date-submitted="trackingInfo.date"
             @close="showSuccessModal = false"
+            @track-report="handleTrackReport"
         />
+
         <TrackReportModal
             :show="showTrackModal"
+            :initial-tracking-code="trackingInfo?.code || ''"
             @close="showTrackModal = false"
         />
     </main>
 </template>
 
 <style scoped>
-@keyframes glow {
-    0%,
+@keyframes floatUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
     100% {
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+        opacity: 1;
+        transform: translateY(0);
     }
-    50% {
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.9);
-    }
-}
-.button-glow {
-    animation: glow 2s infinite;
 }
 
-/* Mobile optimizations */
-@media (max-width: 640px) {
-    .water-drop-top {
-        top: 10%;
-        left: 10%;
-        width: 16vw;
-        height: 16vw;
-        max-width: 5rem;
-        max-height: 5rem;
+@keyframes imageFloat {
+    0%,
+    100% {
+        transform: translateY(0px);
     }
-    .water-drop-bottom {
-        bottom: 20%;
-        right: 10%;
-        width: 20vw;
-        height: 20vw;
-        max-width: 6rem;
-        max-height: 6rem;
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.floating-text {
+    animation: floatUp 1s ease-out forwards;
+    opacity: 0;
+}
+
+.floating-image {
+    animation: imageFloat 6s ease-in-out infinite;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(100%);
+}
+
+@media (max-width: 1024px) {
+    .hero-content {
+        text-align: center;
+        max-width: 100%;
+    }
+
+    .hero-image {
+        width: 100%;
     }
 
     h1 {
+        font-size: 3rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    h1 {
         font-size: 2.5rem !important;
         line-height: 1.1;
-        margin-bottom: 1.5rem;
     }
 
     .subheadline {
-        font-size: 1rem;
-        line-height: 1.4;
-        margin-bottom: 2rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        font-size: 1rem !important;
+        margin-bottom: 1.5rem;
+        max-width: 100%;
     }
 
-    .cta-button {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
-        margin-bottom: 2rem;
+    .cta-button a {
+        width: auto;
+        min-width: 200px;
     }
 
-    .stats-section {
-        padding: 0 0.5rem 1.5rem;
-    }
-
-    .stats-section .grid {
-        gap: 0.75rem;
-    }
-
-    .stat-item {
-        padding: 0.75rem 0.5rem;
-    }
-
-    .stat-item div:first-child {
-        font-size: 1.25rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-item div:last-child {
-        font-size: 0.875rem;
-        line-height: 1.2;
-    }
-
-    .track-button button {
-        width: 3.5rem;
-        height: 3.5rem;
+    .hero-image {
+        max-width: 350px;
     }
 }
 
-/* Tablet optimizations */
-@media (min-width: 641px) and (max-width: 1024px) {
-    .water-drop-top {
-        top: 15%;
-        left: 15%;
-        width: 12vw;
-        height: 12vw;
-        max-width: 8rem;
-        max-height: 8rem;
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem !important;
     }
-    .water-drop-bottom {
-        bottom: 20%;
-        right: 15%;
-        width: 16vw;
-        height: 16vw;
-        max-width: 10rem;
-        max-height: 10rem;
+
+    .subheadline {
+        font-size: 0.9rem !important;
+    }
+
+    .hero-image {
+        max-width: 300px;
     }
 }
 
-/* Desktop optimizations */
-@media (min-width: 1025px) {
-    .water-drop-top {
-        width: 24rem;
-        height: 24rem;
+html {
+    scroll-behavior: smooth;
+}
+
+@supports (backdrop-filter: blur(10px)) {
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
     }
-    .water-drop-bottom {
-        width: 32rem;
-        height: 32rem;
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+    .backdrop-blur-sm {
+        background-color: rgba(15, 23, 42, 0.8);
     }
 }
 </style>

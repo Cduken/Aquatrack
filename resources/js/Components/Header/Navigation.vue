@@ -71,7 +71,7 @@ const scrollToSection = (sectionId) => {
 <template>
     <!-- Navbar -->
     <header class="sticky top-0 z-50 inset-0 lg:py-6 md:py-4">
-        <div class="mx-auto px-4 py-3 sm:px-6 lg:px-8">
+        <div class="mx-auto px-4 py-3 sm:px-6 lg:px-[100px]">
             <div class="flex items-center justify-between">
                 <div class="flex-shrink-0">
                     <Link href="/">
@@ -95,7 +95,7 @@ const scrollToSection = (sectionId) => {
                     <Link
                         v-else
                         :href="route('select-roles')"
-                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/20 text-white rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/50 transition duration-300"
+                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/30 text-gray-900  rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/90 transition duration-300"
                     >
                         <!-- Right arrow icon (visible only on small screens) -->
                         <v-icon
@@ -103,8 +103,6 @@ const scrollToSection = (sectionId) => {
                             class="h-6 w-6 md:hidden"
                         />
                         <span class="hidden md:inline ">Get Started</span>
-
-
 
                     </Link>
                 </div>

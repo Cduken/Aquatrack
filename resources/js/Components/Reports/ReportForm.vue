@@ -1,105 +1,128 @@
 <template>
     <div
-        class="w-full p-4 rounded-lg border border-gray-500 bg-[#204878]/90 backdrop-blur-sm"
+        class="w-full p-6 rounded-xl bg-white/95 backdrop-blur-lg border border-white/20 shadow-xl"
     >
         <!-- Form Errors Indicator -->
         <div
             v-if="hasErrors"
-            class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm"
+            class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
         >
-            Please fix the following errors before submitting:
-            <ul class="list-disc list-inside mt-1">
+            <div class="flex items-center mb-2">
+                <v-icon name="hi-exclamation-triangle" class="w-5 h-5 mr-2" />
+                <span class="font-medium"
+                    >Please fix the following errors:</span
+                >
+            </div>
+            <ul class="list-disc list-inside mt-2 space-y-1">
                 <li v-for="(error, key) in form.errors" :key="key">
                     {{ error }}
                 </li>
             </ul>
         </div>
 
-        <form @submit.prevent="submitReport">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="municipality" class="text-white text-sm"
-                        >Municipality <span class="text-red-500">*</span></label
+        <form @submit.prevent="submitReport" class="space-y-6">
+            <!-- Location Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label
+                        for="municipality"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Municipality <span class="text-red-500">*</span>
+                    </label>
                     <input
                         type="text"
                         id="municipality"
                         v-model="form.municipality"
                         readonly
                         value="Clarin"
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed text-sm"
+                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                     />
                 </div>
 
-                <div>
-                    <label for="province" class="text-white text-sm"
-                        >Province</label
+                <div class="space-y-2">
+                    <label
+                        for="province"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Province
+                    </label>
                     <input
                         type="text"
                         id="province"
                         v-model="form.province"
                         readonly
                         value="Bohol"
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed text-sm"
+                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                     />
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                <div>
-                    <label for="reporter_name" class="text-white text-sm"
-                        >Full Name <span class="text-red-500">*</span></label
+            <!-- Reporter Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label
+                        for="reporter_name"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Full Name <span class="text-red-500">*</span>
+                    </label>
                     <input
                         type="text"
                         id="reporter_name"
                         v-model="form.reporter_name"
                         required
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                         placeholder="Enter your full name"
                     />
                     <p
                         v-if="form.errors.reporter_name"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.reporter_name }}
                     </p>
                 </div>
 
-                <div>
-                    <label for="reporter_phone" class="text-white text-sm"
-                        >Phone Number</label
+                <div class="space-y-2">
+                    <label
+                        for="reporter_phone"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Phone Number
+                    </label>
                     <input
                         type="tel"
                         id="reporter_phone"
                         v-model="form.reporter_phone"
                         @input="restrictPhoneInput"
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                         pattern="[0-9]{1,11}"
                         maxlength="11"
                         placeholder="Your contact number"
                     />
                     <p
                         v-if="form.errors.reporter_phone"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.reporter_phone }}
                     </p>
                 </div>
             </div>
 
-            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="barangay" class="text-white text-sm"
-                        >Barangay <span class="text-red-500">*</span></label
+            <!-- Area Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label
+                        for="barangay"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Barangay <span class="text-red-500">*</span>
+                    </label>
                     <select
                         id="barangay"
                         v-model="form.barangay"
                         required
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                     >
                         <option value="" disabled selected>
                             Select Barangay
@@ -114,133 +137,194 @@
                     </select>
                     <p
                         v-if="form.errors.barangay"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.barangay }}
                     </p>
                 </div>
 
-                <div>
-                    <label for="zone" class="text-white text-sm"
-                        >Zone <span class="text-red-500">*</span></label
+                <div class="space-y-2">
+                    <label
+                        for="zone"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Zone <span class="text-red-500">*</span>
+                    </label>
                     <input
                         type="text"
                         id="zone"
                         v-model="form.zone"
                         readonly
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white bg-opacity-50 cursor-not-allowed text-sm"
+                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                         placeholder="Zone will be auto-filled"
                     />
                     <p
                         v-if="form.errors.zone"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.zone }}
                     </p>
                 </div>
             </div>
 
-            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="purok" class="text-white text-sm"
-                        >Purok/Street <span class="text-red-500">*</span></label
+            <!-- Purok and Priority -->
+            <div class="flex flex-col">
+                <div class="space-y-2 mb-2">
+                    <label
+                        for="purok"
+                        class="block text-sm font-medium text-gray-700"
                     >
+                        Purok/Street <span class="text-red-500">*</span>
+                    </label>
                     <input
                         type="text"
                         id="purok"
                         v-model="form.purok"
                         required
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                         placeholder="Enter purok number or street name"
                     />
                     <p
                         v-if="form.errors.purok"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.purok }}
                     </p>
                 </div>
 
-                <div>
-                    <label for="priority" class="text-white text-sm"
-                        >Priority <span class="text-red-500">*</span></label
-                    >
-                    <select
-                        id="priority"
-                        v-model="form.priority"
-                        required
-                        class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
-                    >
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
+                <!-- Priority Selection (New Design) -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Priority <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button
+                            type="button"
+                            @click="form.priority = 'low'"
+                            :class="[
+                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
+                                form.priority === 'low'
+                                    ? 'bg-green-500/30 border-green-500/30 text-white shadow-lg transform scale-105'
+                                    : 'bg-white border-gray-200 text-gray-700 hover:border-green-300 hover:bg-green-50',
+                            ]"
+                        >
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="w-3 h-3 rounded-full bg-green-400 mb-1"
+                                ></div>
+                                Low
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            @click="form.priority = 'medium'"
+                            :class="[
+                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
+                                form.priority === 'medium'
+                                    ? 'bg-yellow-500/30 border-yellow-500/30 text-white shadow-lg transform scale-105'
+                                    : 'bg-white border-gray-200 text-gray-700 hover:border-yellow-300 hover:bg-yellow-50',
+                            ]"
+                        >
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="w-3 h-3 rounded-full bg-yellow-400 mb-1"
+                                ></div>
+                                Medium
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            @click="form.priority = 'high'"
+                            :class="[
+                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
+                                form.priority === 'high'
+                                    ? 'bg-red-500/30 border-red-500/30 text-white shadow-lg transform scale-105'
+                                    : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-red-50',
+                            ]"
+                        >
+                            <div class="flex flex-col items-center">
+                                <div
+                                    class="w-3 h-3 rounded-full bg-red-400 mb-1"
+                                ></div>
+                                High
+                            </div>
+                        </button>
+                    </div>
                     <p
                         v-if="form.errors.priority"
-                        class="mt-1 text-xs text-red-400"
+                        class="text-xs text-red-500 mt-1"
                     >
                         {{ form.errors.priority }}
                     </p>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <label for="description" class="text-white text-sm"
-                    >Description <span class="text-red-500">*</span></label
+            <!-- Description -->
+            <div class="space-y-2">
+                <label
+                    for="description"
+                    class="block text-sm font-medium text-gray-700"
                 >
+                    Description <span class="text-red-500">*</span>
+                </label>
                 <textarea
                     id="description"
                     v-model="form.description"
-                    rows="3"
+                    rows="4"
                     required
-                    class="w-full p-1.5 mt-1 rounded-md text-white bg-[#4E6F96] border-gray-400 placeholder:text-gray-400 focus:border-white focus:ring-1 focus:ring-white text-sm"
-                    placeholder="Describe the water quality issue"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm resize-none"
+                    placeholder="Describe the water quality issue in detail..."
                 ></textarea>
                 <p
                     v-if="form.errors.description"
-                    class="mt-1 text-xs text-red-400"
+                    class="text-xs text-red-500 mt-1"
                 >
                     {{ form.errors.description }}
                 </p>
             </div>
 
             <!-- Enhanced Camera Section with Video -->
-            <div class="mt-4">
-                <label class="text-white text-sm block mb-2">
-                    Capture Evidence
-                    <span class="text-red-500">*</span>
-                    <span class="text-xs text-gray-300 ml-2">
-                        ({{ form.photos.length }}/{{ MAX_TOTAL }}) - Photos:
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Capture Evidence
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="text-xs text-gray-500">
+                        {{ form.photos.length }}/{{ MAX_TOTAL }} files
+                        <span class="text-gray-400">•</span>
+                        Photos:
                         {{
                             form.photos.filter((file) =>
                                 file.type.startsWith("image")
                             ).length
-                        }}/{{ MAX_PHOTOS }}, Videos:
+                        }}/{{ MAX_PHOTOS }}
+                        <span class="text-gray-400">•</span>
+                        Videos:
                         {{
                             form.photos.filter((file) =>
                                 file.type.startsWith("video")
                             ).length
                         }}/{{ MAX_VIDEOS }}
-                    </span>
-                </label>
+                    </div>
+                </div>
 
                 <!-- Camera Status Banner -->
                 <div
                     v-if="cameraError"
-                    class="mb-3 p-3 bg-red-900/50 border border-red-600 rounded-lg"
+                    class="p-4 bg-red-50 border border-red-200 rounded-lg"
                 >
-                    <div class="flex items-center text-red-300 text-sm">
+                    <div class="flex items-center text-red-700 text-sm">
                         <v-icon
                             name="bi-exclamation-triangle-fill"
-                            class="w-4 h-4 mr-2"
+                            class="w-5 h-5 mr-2"
                         />
                         {{ cameraError }}
                     </div>
                     <button
                         type="button"
                         @click="retryCamera"
-                        class="mt-2 text-xs text-blue-300 hover:text-blue-200 underline"
+                        class="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
                     >
                         Try Again
                     </button>
@@ -248,25 +332,30 @@
 
                 <!-- Camera Interface -->
                 <div
-                    class="bg-gray-800 rounded-lg overflow-hidden border border-gray-600"
+                    class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-inner"
                 >
                     <!-- Camera Not Active State -->
-                    <div v-if="!isCameraActive" class="p-6 text-center">
-                        <div class="mb-4">
+                    <div v-if="!isCameraActive" class="p-8 text-center">
+                        <div class="mb-6">
                             <div
-                                class="w-16 h-16 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-3"
+                                class="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 shadow-lg"
                             >
                                 <v-icon
                                     name="hi-camera"
-                                    class="w-8 h-8 text-white"
+                                    class="w-10 h-10 text-white"
                                 />
                             </div>
-                            <h3 class="text-white text-lg font-medium mb-2">
+                            <h3
+                                class="text-gray-900 text-xl font-semibold mb-3"
+                            >
                                 Camera Required
                             </h3>
-                            <p class="text-gray-300 text-sm mb-4">
+                            <p
+                                class="text-gray-600 text-sm mb-6 max-w-md mx-auto"
+                            >
                                 Take photos and videos to document the water
-                                quality issue
+                                quality issue. Visual evidence helps us resolve
+                                issues faster.
                             </p>
                         </div>
 
@@ -274,17 +363,17 @@
                             type="button"
                             @click="initializeCamera"
                             :disabled="isCameraLoading"
-                            class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:transform-none"
                         >
                             <v-icon
                                 v-if="isCameraLoading"
                                 name="bi-arrow-repeat"
-                                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                class="animate-spin -ml-1 mr-3 h-5 w-5"
                             />
                             <v-icon
                                 v-else
                                 name="hi-camera"
-                                class="w-5 h-5 mr-2"
+                                class="w-5 h-5 mr-3"
                             />
                             {{
                                 isCameraLoading
@@ -293,7 +382,7 @@
                             }}
                         </button>
 
-                        <div class="mt-4 text-xs text-gray-400">
+                        <div class="mt-6 text-xs text-gray-400 space-y-1">
                             <p>Your browser will ask for camera permission</p>
                             <p>
                                 Make sure to allow access to capture photos and
@@ -306,7 +395,7 @@
                     <div v-else class="relative">
                         <!-- Video Element Container -->
                         <div
-                            class="relative bg-black"
+                            class="relative bg-black rounded-lg overflow-hidden"
                             style="aspect-ratio: 4/3"
                         >
                             <video
@@ -346,7 +435,7 @@
                                 class="absolute top-4 left-4"
                             >
                                 <div
-                                    class="flex items-center bg-green-500 text-white px-2 py-1 rounded-full text-xs"
+                                    class="flex items-center bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg"
                                 >
                                     <div
                                         class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"
@@ -361,26 +450,12 @@
                                 class="absolute top-4 left-1/2 transform -translate-x-1/2"
                             >
                                 <div
-                                    class="flex items-center bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium"
+                                    class="flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg"
                                 >
                                     <div
                                         class="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"
                                     ></div>
                                     REC {{ formatTime(recordingTime) }}
-                                </div>
-                            </div>
-
-                            <!-- Camera Info -->
-                            <div
-                                v-if="
-                                    isCameraReady && availableCameras.length > 1
-                                "
-                                class="absolute top-4 right-4"
-                            >
-                                <div
-                                    class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs"
-                                >
-                                    {{ currentCameraName }}
                                 </div>
                             </div>
 
@@ -390,28 +465,43 @@
                                 class="absolute bottom-4 left-4"
                             >
                                 <div
-                                    class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs"
+                                    class="bg-black bg-opacity-60 text-white px-3 py-2 rounded-lg text-xs backdrop-blur-sm"
                                 >
-                                    Photos:
-                                    {{
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith("image")
-                                        ).length
-                                    }}/{{ MAX_PHOTOS }}
-                                    <br />
-                                    Videos:
-                                    {{
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith("video")
-                                        ).length
-                                    }}/{{ MAX_VIDEOS }}
+                                    <div class="space-y-1">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-2 h-2 bg-blue-400 rounded-full mr-2"
+                                            ></div>
+                                            Photos:
+                                            {{
+                                                form.photos.filter((file) =>
+                                                    file.type.startsWith(
+                                                        "image"
+                                                    )
+                                                ).length
+                                            }}/{{ MAX_PHOTOS }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-2 h-2 bg-red-400 rounded-full mr-2"
+                                            ></div>
+                                            Videos:
+                                            {{
+                                                form.photos.filter((file) =>
+                                                    file.type.startsWith(
+                                                        "video"
+                                                    )
+                                                ).length
+                                            }}/{{ MAX_VIDEOS }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Enhanced Camera Controls -->
-                        <div class="bg-gray-900 p-4">
-                            <div class="flex items-center justify-center gap-4">
+                        <div class="bg-white p-6 border-t border-gray-200">
+                            <div class="flex items-center justify-center gap-6">
                                 <!-- Switch Camera Button -->
                                 <button
                                     type="button"
@@ -421,7 +511,7 @@
                                         isCameraReady &&
                                         !isRecording
                                     "
-                                    class="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors duration-200 text-white disabled:opacity-50"
+                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 text-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg"
                                     :disabled="
                                         !isCameraReady || isSwitchingCamera
                                     "
@@ -439,7 +529,7 @@
                                     />
                                 </button>
 
-                                <!-- Photo Capture Button (Blue) -->
+                                <!-- Photo Capture Button -->
                                 <button
                                     type="button"
                                     @click="capturePhoto"
@@ -451,11 +541,11 @@
                                         isCapturing ||
                                         isRecording
                                     "
-                                    class="relative p-4 bg-blue-500 hover:bg-blue-600 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 shadow-lg"
+                                    class="relative p-5 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 active:scale-95 shadow-xl"
                                 >
                                     <v-icon
                                         name="hi-camera"
-                                        class="w-6 h-6 text-white"
+                                        class="w-7 h-7 text-white"
                                     />
                                     <!-- Capture animation ring -->
                                     <div
@@ -464,7 +554,7 @@
                                     ></div>
                                 </button>
 
-                                <!-- Video Recording Button (Red) -->
+                                <!-- Video Recording Button -->
                                 <button
                                     type="button"
                                     @click="
@@ -479,21 +569,21 @@
                                         ).length >= MAX_VIDEOS &&
                                             !isRecording)
                                     "
-                                    class="relative p-4 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 shadow-lg"
+                                    class="relative p-5 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 active:scale-95 shadow-xl"
                                     :class="
                                         isRecording
-                                            ? 'bg-red-500 hover:bg-red-600'
-                                            : 'bg-red-500 hover:bg-red-600'
+                                            ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
+                                            : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
                                     "
                                 >
                                     <div
                                         v-if="isRecording"
-                                        class="w-6 h-6 bg-white rounded-sm"
+                                        class="w-7 h-7 bg-white rounded-sm"
                                     ></div>
                                     <v-icon
                                         v-else
                                         name="hi-video-camera"
-                                        class="w-6 h-6 text-white"
+                                        class="w-7 h-7 text-white"
                                     />
                                 </button>
 
@@ -502,7 +592,7 @@
                                     type="button"
                                     @click="stopCamera"
                                     :disabled="isRecording"
-                                    class="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors duration-200 text-white disabled:opacity-50"
+                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 text-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg"
                                     title="Close Camera"
                                 >
                                     <v-icon name="hi-solid-x" class="w-6 h-6" />
@@ -512,7 +602,7 @@
                             <!-- Camera Instructions -->
                             <div
                                 v-if="isCameraReady"
-                                class="mt-3 text-center text-xs text-gray-400"
+                                class="mt-4 text-center text-xs text-gray-500"
                             >
                                 <p v-if="form.photos.length === 0">
                                     Tap the blue button for photos or red button
@@ -543,7 +633,7 @@
                                     }}
                                     videos remaining
                                 </p>
-                                <p v-else class="text-yellow-400">
+                                <p v-else class="text-amber-600">
                                     Maximum media reached
                                 </p>
                             </div>
@@ -552,15 +642,15 @@
                 </div>
 
                 <!-- Media Gallery -->
-                <div v-if="form.photo_previews.length > 0" class="mt-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-white text-sm font-medium">
+                <div v-if="form.photo_previews.length > 0" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-medium text-gray-700">
                             Captured Media ({{ form.photo_previews.length }})
                         </h4>
                         <button
                             type="button"
                             @click="clearAllMedia"
-                            class="text-xs text-red-400 hover:text-red-300 underline"
+                            class="text-sm text-red-600 hover:text-red-800 font-medium underline"
                         >
                             Clear All
                         </button>
@@ -582,7 +672,7 @@
                             >
                                 <img
                                     :src="preview"
-                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-600 group-hover:border-blue-400 transition-colors"
+                                    class="w-full h-full object-cover rounded-lg border border-gray-200 group-hover:border-blue-400 transition-all duration-200 shadow-md hover:shadow-lg"
                                     :alt="'Photo ' + (index + 1)"
                                 />
                                 <div
@@ -591,7 +681,7 @@
                                     <button
                                         @click="removeMedia(index)"
                                         type="button"
-                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200"
+                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 shadow-lg"
                                     >
                                         <v-icon
                                             name="hi-trash"
@@ -600,7 +690,7 @@
                                     </button>
                                 </div>
                                 <div
-                                    class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center"
+                                    class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md"
                                 >
                                     <v-icon
                                         name="hi-photograph"
@@ -619,7 +709,7 @@
                             <div v-else>
                                 <video
                                     :src="preview"
-                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-600 group-hover:border-green-400 transition-colors"
+                                    class="w-full h-full object-cover rounded-lg border border-gray-200 group-hover:border-green-400 transition-all duration-200 shadow-md hover:shadow-lg"
                                     muted
                                     preload="metadata"
                                 ></video>
@@ -627,7 +717,7 @@
                                     class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-lg"
                                 >
                                     <div
-                                        class="bg-white bg-opacity-80 rounded-full p-2"
+                                        class="bg-white bg-opacity-90 rounded-full p-3 shadow-lg"
                                     >
                                         <v-icon
                                             name="hi-play"
@@ -641,7 +731,7 @@
                                     <button
                                         @click="removeMedia(index)"
                                         type="button"
-                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 ml-auto mt-2 mr-2 absolute top-0 right-0"
+                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 ml-auto mt-2 mr-2 absolute top-0 right-0 shadow-lg"
                                     >
                                         <v-icon
                                             name="hi-trash"
@@ -650,7 +740,7 @@
                                     </button>
                                 </div>
                                 <div
-                                    class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center"
+                                    class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md"
                                 >
                                     <v-icon
                                         name="hi-video-camera"
@@ -665,7 +755,7 @@
                                     }}
                                 </div>
                                 <div
-                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded"
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded shadow-md"
                                 >
                                     {{ getVideoDuration(form.photos[index]) }}s
                                 </div>
@@ -677,46 +767,53 @@
                 <!-- Media requirement message -->
                 <div
                     v-if="form.photos.length === 0"
-                    class="mt-3 p-3 bg-blue-900/30 border border-blue-600 rounded-lg"
+                    class="p-4 bg-blue-50 border border-blue-200 rounded-lg"
                 >
-                    <div class="flex items-center text-blue-300 text-sm">
+                    <div class="flex items-center text-blue-700 text-sm">
                         <v-icon
                             name="hi-information-circle"
-                            class="w-4 h-4 mr-2"
+                            class="w-5 h-5 mr-2"
                         />
                         At least one photo or video is required to submit your
                         report
                     </div>
                 </div>
 
-                <p v-if="form.errors.photos" class="mt-2 text-xs text-red-400">
+                <p v-if="form.errors.photos" class="text-xs text-red-500 mt-2">
                     {{ form.errors.photos }}
                 </p>
             </div>
 
-            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <!-- Submit Button -->
+            <div class="pt-6">
                 <button
                     type="submit"
                     :disabled="form.processing || isSubmitting || isRecording"
-                    class="w-full p-2 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-75 disabled:cursor-not-allowed text-sm"
+                    class="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                 >
-                    <span v-if="isSubmitting" class="flex items-center">
+                    <span
+                        v-if="isSubmitting"
+                        class="flex items-center justify-center"
+                    >
                         <v-icon
                             name="bi-arrow-repeat"
-                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            class="animate-spin -ml-1 mr-3 h-5 w-5"
                         />
-                        Submitting...
+                        Submitting Report...
                     </span>
                     <span
                         v-else-if="isRecording"
-                        class="flex items-center text-yellow-300"
+                        class="flex items-center justify-center text-yellow-200"
                     >
                         <div
-                            class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"
+                            class="w-2 h-2 bg-yellow-300 rounded-full mr-3 animate-pulse"
                         ></div>
                         Stop recording to submit
                     </span>
-                    <span v-else>Submit Report</span>
+                    <span v-else class="flex items-center justify-center">
+                        <v-icon name="hi-paper-airplane" class="w-5 h-5 mr-2" />
+                        Submit Report
+                    </span>
                 </button>
             </div>
         </form>
@@ -758,11 +855,6 @@ const cameraError = ref("");
 const cameraStatus = ref("Initializing...");
 const loadingProgress = ref(0);
 
-// Time tracking
-const currentDate = ref("");
-const currentTime = ref("");
-const currentLocation = ref("Clarin, Bohol");
-
 let stream = null;
 let progressInterval = null;
 let mediaRecorder = null;
@@ -786,8 +878,8 @@ const form = useForm({
     description: "",
     photos: [],
     photo_previews: [],
-    videos: [], // Kept for compatibility but will be empty
-    video_previews: [], // Kept for compatibility but will be empty
+    videos: [],
+    video_previews: [],
     reporter_name: "",
     reporter_phone: "",
     priority: "medium",
@@ -800,9 +892,12 @@ const MAX_VIDEOS = 2;
 const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS;
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
-const MAX_VIDEO_DURATION = 30; // 30 seconds
+const MAX_VIDEO_DURATION = 30;
 
-// Update time display
+const currentDate = ref("");
+const currentTime = ref("");
+const currentLocation = ref("Clarin, Bohol");
+
 const updateTimeDisplay = () => {
     const now = new Date();
     currentDate.value = now.toLocaleDateString("en-US", {
@@ -819,12 +914,10 @@ const updateTimeDisplay = () => {
     });
 };
 
-// Compute all barangays from zones object
 const allBarangays = computed(() => {
     return Object.values(props.zones).flat();
 });
 
-// Map barangay to zone
 const barangayToZone = computed(() => {
     const mapping = {};
     Object.entries(props.zones).forEach(([zone, barangays]) => {
@@ -856,7 +949,7 @@ const formatTime = (seconds) => {
 const getVideoDuration = (videoFile) => {
     return (
         videoFile.duration || Math.floor((videoFile.size / (1024 * 1024)) * 3)
-    ); // Use stored duration or fallback
+    );
 };
 
 const startLoadingProgress = () => {
@@ -914,7 +1007,13 @@ const getCameras = async () => {
     }
 };
 
-const initializeCamera = async () => {
+const initializeCamera = async (retryCount = 0, maxRetries = 3) => {
+    if (retryCount >= maxRetries) {
+        cameraError.value =
+            "Failed to access camera after multiple attempts. Please close other applications using the camera or restart your browser.";
+        return;
+    }
+
     cameraError.value = "";
     isCameraLoading.value = true;
     startLoadingProgress();
@@ -932,14 +1031,20 @@ const initializeCamera = async () => {
             throw new Error("No camera devices found");
         }
 
+        // Stop any existing stream before starting a new one
+        if (stream) {
+            stream.getTracks().forEach((track) => track.stop());
+            stream = null;
+            await nextTick(); // Ensure stream is fully released
+        }
+
         await startCameraStream();
 
-        // Start time updates
         updateTimeDisplay();
         timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
     } catch (error) {
         console.error("Camera initialization failed:", error);
-        handleCameraError(error);
+        handleCameraError(error, retryCount, maxRetries);
     } finally {
         isCameraLoading.value = false;
         stopLoadingProgress();
@@ -968,7 +1073,7 @@ const startCameraStream = async () => {
                 height: { ideal: 720, max: 1080 },
                 frameRate: { ideal: 30, max: 60 },
             },
-            audio: true, // Enable audio for video recording
+            audio: true,
         };
 
         if (availableCameras.value.length > 0) {
@@ -993,7 +1098,6 @@ const startCameraStream = async () => {
                 () => reject(new Error("Video load timeout")),
                 10000
             );
-
             const onLoadedMetadata = () => {
                 clearTimeout(timeout);
                 videoElement.value.removeEventListener(
@@ -1003,7 +1107,6 @@ const startCameraStream = async () => {
                 videoElement.value.removeEventListener("error", onError);
                 resolve();
             };
-
             const onError = (e) => {
                 clearTimeout(timeout);
                 videoElement.value.removeEventListener(
@@ -1013,17 +1116,13 @@ const startCameraStream = async () => {
                 videoElement.value.removeEventListener("error", onError);
                 reject(new Error("Video failed to load"));
             };
-
             videoElement.value.addEventListener(
                 "loadedmetadata",
                 onLoadedMetadata
             );
             videoElement.value.addEventListener("error", onError);
-
             const playPromise = videoElement.value.play();
-            if (playPromise) {
-                playPromise.catch(console.warn);
-            }
+            if (playPromise) playPromise.catch(console.warn);
         });
 
         isCameraReady.value = true;
@@ -1035,7 +1134,7 @@ const startCameraStream = async () => {
     }
 };
 
-const handleCameraError = (error) => {
+const handleCameraError = (error, retryCount, maxRetries) => {
     isCameraActive.value = false;
     isCameraReady.value = false;
 
@@ -1058,7 +1157,15 @@ const handleCameraError = (error) => {
     ) {
         errorMessage = "No camera found on your device.";
     } else if (error.name === "NotReadableError") {
-        errorMessage = "Camera is busy or being used by another application.";
+        errorMessage =
+            "Camera is busy or being used by another application. Please close other apps or tabs using the camera and try again.";
+        if (retryCount < maxRetries - 1) {
+            setTimeout(
+                () => initializeCamera(retryCount + 1, maxRetries),
+                2000
+            ); // Retry after 2 seconds
+            return; // Exit early to let retry handle it
+        }
     } else if (error.name === "OverconstrainedError") {
         errorMessage = "Camera settings not supported by your device.";
     } else if (error.message.includes("not supported")) {
@@ -1066,6 +1173,15 @@ const handleCameraError = (error) => {
     }
 
     cameraError.value = errorMessage;
+
+    if (error.name === "NotReadableError" && retryCount >= maxRetries - 1) {
+        Swal.fire({
+            icon: "error",
+            title: "Camera Busy",
+            text: `${errorMessage} If the issue persists, reset camera permissions in your browser settings (e.g., chrome://settings/content/camera) and refresh the page.`,
+            confirmButtonColor: "#3085d6",
+        });
+    }
 };
 
 const retryCamera = () => {
@@ -1088,15 +1204,14 @@ const stopCamera = () => {
         if (videoElement.value) {
             videoElement.value.srcObject = null;
         }
-        console.log("Camera stopped");
+        stream = null;
+        console.log("Camera stopped and stream released");
     }
 
     isCameraActive.value = false;
     isCameraReady.value = false;
     isCameraLoading.value = false;
-    stream = null;
     cameraError.value = "";
-
     stopLoadingProgress();
 };
 
@@ -1120,7 +1235,7 @@ const switchCamera = async () => {
         await startCameraStream();
     } catch (error) {
         console.error("Camera switch failed:", error);
-        handleCameraError(error);
+        handleCameraError(error, 0, 1); // No retries for switch
     } finally {
         isSwitchingCamera.value = false;
     }
@@ -1140,12 +1255,10 @@ const startVideoRecording = async () => {
         recordedChunks = [];
         recordingTime.value = 0;
 
-        // Create MediaRecorder
         const options = {
             mimeType: "video/webm;codecs=vp9,opus",
         };
 
-        // Fallback mimeTypes
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
             options.mimeType = "video/webm;codecs=vp8,opus";
             if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -1185,9 +1298,8 @@ const startVideoRecording = async () => {
                 lastModified: Date.now(),
             });
 
-            file.duration = recordingTime.value; // Store duration in seconds
+            file.duration = recordingTime.value;
 
-            // Add to form.photos instead of form.videos
             form.photos.push(file);
             form.photo_previews.push(URL.createObjectURL(blob));
 
@@ -1218,11 +1330,9 @@ const startVideoRecording = async () => {
         mediaRecorder.start();
         isRecording.value = true;
 
-        // Start recording timer
         recordingInterval = setInterval(() => {
             recordingTime.value++;
 
-            // Auto-stop at max duration
             if (recordingTime.value >= MAX_VIDEO_DURATION) {
                 stopVideoRecording();
             }
@@ -1283,10 +1393,8 @@ const capturePhoto = async () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // Draw video frame
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Enhanced timestamp with better visibility
         const now = new Date();
         const timestamp = now.toLocaleString("en-US", {
             weekday: "long",
@@ -1299,12 +1407,10 @@ const capturePhoto = async () => {
             hour12: true,
         });
 
-        // Create timestamp background
         const timestampPadding = 20;
         const fontSize = Math.max(16, Math.floor(canvas.width / 60));
         ctx.font = `bold ${fontSize}px Arial`;
 
-        // Measure text
         const textMetrics = ctx.measureText(timestamp);
         const textWidth = textMetrics.width;
         const textHeight = fontSize;
@@ -1314,20 +1420,16 @@ const capturePhoto = async () => {
         const bgWidth = textWidth + 20;
         const bgHeight = textHeight + 20;
 
-        // Draw semi-transparent background
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
 
-        // Draw white border
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.strokeRect(bgX, bgY, bgWidth, bgHeight);
 
-        // Draw text with heavy outline for better visibility
         const textX = bgX + 10;
         const textY = bgY + textHeight + 5;
 
-        // Multiple stroke layers for better visibility
         ctx.lineWidth = 6;
         ctx.strokeStyle = "black";
         ctx.strokeText(timestamp, textX, textY);
@@ -1340,16 +1442,13 @@ const capturePhoto = async () => {
         ctx.strokeStyle = "black";
         ctx.strokeText(timestamp, textX, textY);
 
-        // Final white text
         ctx.fillStyle = "white";
         ctx.fillText(timestamp, textX, textY);
 
-        // Add location stamp
         const locationText = currentLocation.value;
         ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
         const locationY = textY + fontSize + 5;
 
-        // Location background
         const locTextMetrics = ctx.measureText(locationText);
         const locBgWidth = locTextMetrics.width + 16;
         const locBgHeight = Math.floor(fontSize * 0.8) + 16;
@@ -1371,7 +1470,6 @@ const capturePhoto = async () => {
             locBgHeight
         );
 
-        // Location text
         ctx.fillStyle = "white";
         ctx.fillText(locationText, textX + 8, locationY);
 
@@ -1456,10 +1554,8 @@ const clearAllMedia = () => {
         cancelButtonText: "Cancel",
     }).then((result) => {
         if (result.isConfirmed) {
-            // Cleanup all preview URLs
             form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
 
-            // Clear arrays
             form.photos = [];
             form.photo_previews = [];
             form.videos = [];
@@ -1477,39 +1573,6 @@ const clearAllMedia = () => {
     });
 };
 
-// Cleanup on unmount
-onUnmounted(() => {
-    stopCamera();
-
-    // Cleanup all preview URLs
-    form.photo_previews.forEach((url) => {
-        URL.revokeObjectURL(url);
-    });
-
-    if (progressInterval) {
-        clearInterval(progressInterval);
-    }
-
-    if (recordingInterval) {
-        clearInterval(recordingInterval);
-    }
-
-    if (timeUpdateInterval) {
-        clearInterval(timeUpdateInterval);
-    }
-
-    console.log("Component unmounted, resources cleaned up");
-});
-
-// Watch for barangay changes
-watch(
-    () => form.barangay,
-    (newBarangay) => {
-        form.zone = barangayToZone.value[newBarangay] || "";
-        console.log("Barangay changed, zone set to:", form.zone);
-    }
-);
-
 const restrictPhoneInput = (event) => {
     let value = event.target.value.replace(/[^0-9]/g, "");
     if (value.length > 11) {
@@ -1518,17 +1581,9 @@ const restrictPhoneInput = (event) => {
     form.reporter_phone = value;
 };
 
-const submitReport = () => {
-    console.log(
-        "Submitting report with",
-        form.photos.length,
-        "media files (",
-        form.photos.filter((file) => file.type.startsWith("image")).length,
-        "photos,",
-        form.photos.filter((file) => file.type.startsWith("video")).length,
-        "videos)"
-    );
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const submitReport = async () => {
     if (form.photos.length === 0) {
         Swal.fire({
             icon: "error",
@@ -1539,99 +1594,52 @@ const submitReport = () => {
         return;
     }
 
-    if (locationStatus.value !== "success") {
-        Swal.fire({
-            icon: "error",
-            title: "Location Required",
-            text: "Please enable GPS/location services to submit your report.",
-            confirmButtonColor: "#3085d6",
-        });
-        getLocation();
-        return;
-    }
-
-    if (isRecording.value) {
-        Swal.fire({
-            icon: "warning",
-            title: "Recording in Progress",
-            text: "Please stop the video recording before submitting your report.",
-            confirmButtonColor: "#3085d6",
-        });
-        return;
-    }
-
     isSubmitting.value = true;
 
-    // Add a 2-second loading delay
-    setTimeout(() => {
-        form.post(route("reports.store"), {
-            preserveScroll: true,
-            onSuccess: (response) => {
-                isSubmitting.value = false;
-                console.log("Report submitted successfully");
+    // Introduce a 2-second delay
+    await delay(2000);
 
-                if (
-                    response.props.error &&
-                    response.props.error.includes("daily report limit")
-                ) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Submission Failed",
-                        text: response.props.error,
-                        confirmButtonColor: "#3085d6",
-                    });
-                    return;
-                }
+    form.post(route("reports.store"), {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            isSubmitting.value = false;
+            console.log("Report submitted successfully");
+            console.log("Response props:", page.props);
+            console.log("Emitting submitted event:", {
+                trackingCode: page.props.trackingCode,
+                dateSubmitted: page.props.dateSubmitted,
+            });
 
-                emit("update:successData", {
-                    trackingCode: response.props.trackingCode,
-                    dateSubmitted: response.props.dateSubmitted,
-                });
-                emit("update:showSuccessModal", true);
+            emit("submitted", {
+                trackingCode: page.props.trackingCode,
+                dateSubmitted: page.props.dateSubmitted,
+            });
 
-                Swal.fire({
-                    position: "top-end",
-                    title: "Report Submitted Successfully!",
-                    text: `Tracking Code: ${response.props.trackingCode}`,
-                    icon: "success",
-                    toast: true,
-                    showConfirmButton: false,
-                    timer: 5000,
-                    timerProgressBar: true,
-                });
+            Swal.fire({
+                position: "top-end",
+                title: "Report Submitted Successfully!",
+                text: `Tracking Code: ${page.props.trackingCode}`,
+                icon: "success",
+                toast: true,
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+            });
 
-                // Reset form
-                form.reset();
-                form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
-                form.photos = [];
-                form.photo_previews = [];
-                form.videos = [];
-                form.video_previews = [];
-                locationStatus.value = "idle";
-                getLocation();
-            },
-            onError: (errors) => {
-                isSubmitting.value = false;
-                console.error("Submission failed:", errors);
-
-                let errorMessage =
-                    "There was an error submitting your report. Please try again.";
-                if (
-                    errors.message &&
-                    errors.message.includes("daily report limit")
-                ) {
-                    errorMessage = errors.message;
-                }
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Submission Failed",
-                    text: errorMessage,
-                    confirmButtonColor: "#3085d6",
-                });
-            },
-        });
-    }, 2000);
+            form.reset();
+            form.photos = [];
+        },
+        onError: (errors) => {
+            isSubmitting.value = false;
+            console.log("Submission errors:", errors);
+            Swal.fire({
+                icon: "error",
+                title: "Submission Failed",
+                text: "Please check the form for errors.",
+                confirmButtonColor: "#3085d6",
+            });
+        },
+    });
 };
 
 const getLocation = () => {
@@ -1676,8 +1684,32 @@ const getLocation = () => {
     );
 };
 
+watch(
+    () => form.barangay,
+    (newBarangay) => {
+        form.zone = barangayToZone.value[newBarangay] || "";
+        console.log("Barangay changed, zone set to:", form.zone);
+    }
+);
+
 onMounted(() => {
     getLocation();
     console.log("Enhanced report form component mounted with video support");
+});
+
+onUnmounted(() => {
+    stopCamera();
+
+    form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
+    form.photos = [];
+    form.photo_previews = [];
+    form.videos = [];
+    form.video_previews = [];
+
+    if (progressInterval) clearInterval(progressInterval);
+    if (recordingInterval) clearInterval(recordingInterval);
+    if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+
+    console.log("Component unmounted, resources cleaned up");
 });
 </script>

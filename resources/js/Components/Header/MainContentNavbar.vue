@@ -1,3 +1,4 @@
+<!-- MainContentNavbar.vue -->
 <template>
     <nav
         class="bg-white border-b border-gray-200 px-4 py-2.5 shadow-md dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
@@ -21,17 +22,18 @@
                             stroke-linejoin="round"
                             stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16"
-                        ></path>
+                        />
                         <path
                             v-else
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             stroke-width="2"
                             d="M6 18L18 6M6 6l12 12"
-                        ></path>
+                        />
                     </svg>
                 </button>
 
+                <!-- Logo and Title -->
                 <div class="flex items-center justify-between mr-4">
                     <img
                         src="/images/MainLogo.png"
@@ -40,36 +42,32 @@
                     />
                     <span
                         class="self-center text-[25px] font-semibold whitespace-nowrap dark:text-white md:inline"
-                        >AquaTrack</span
                     >
+                        AquaTrack
+                    </span>
                     <button
                         @click="$emit('toggle-sidebar')"
                         class="p-2 ml-2 text-gray-600 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hidden md:block"
                     >
-                        <span>
-                            <svg
-                                aria-hidden="true"
-                                class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center"
-                                :class="{ 'rotate-180': !isSidebarOpen }"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"
-                                ></path>
-                                <path
-                                    d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"
-                                ></path>
-                            </svg>
-                            <span class="sr-only">Toggle sidebar</span>
-                        </span>
+                        <svg
+                            class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center"
+                            :class="{ 'rotate-180': !isSidebarOpen }"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"
+                            />
+                            <path
+                                d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"
+                            />
+                        </svg>
                     </button>
                 </div>
 
+                <!-- Breadcrumb -->
                 <nav
                     class="hidden md:flex items-center mr-4 text-sm text-gray-700 dark:text-gray-400"
-                    aria-label="Breadcrumb"
                 >
                     <ol class="inline-flex items-center space-x-1 md:space-x-2">
                         <li class="inline-flex items-center">
@@ -89,13 +87,12 @@
                                     class="w-3 h-3 text-gray-400 mx-1"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
                                 >
                                     <path
                                         fill-rule="evenodd"
                                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                         clip-rule="evenodd"
-                                    ></path>
+                                    />
                                 </svg>
                                 <span
                                     class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-400 capitalize"
@@ -109,108 +106,308 @@
             </div>
 
             <div class="flex items-center lg:order-2">
-                <!-- Notifications Button -->
-                <button
-                    type="button"
-                    @click="toggleNotificationDropdown"
-                    class="relative p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    ref="notificationButton"
-                >
-                    <span class="sr-only">View notifications</span>
-                    <v-icon name="bi-bell-fill" class="w-6 h-6" />
-                    <span
-                        v-if="unreadCount > 0"
-                        class="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border border-white"
+                <!-- Notifications Button with Dropdown -->
+                <div class="relative">
+                    <button
+                        type="button"
+                        @click="toggleNotificationDropdown"
+                        class="p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-150"
+                        ref="notificationButton"
                     >
-                        {{ unreadCount > 9 ? "9+" : unreadCount }}
-                    </span>
-                </button>
-
-                <!-- Notification Dropdown -->
-                <div
-                    v-show="isNotificationDropdownOpen"
-                    v-click-outside="closeNotificationDropdown"
-                    class="absolute right-0 top-full mt-2 z-50 my-4 w-96 text-base list-none bg-white rounded-lg shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
-                    ref="notificationDropdown"
-                >
-                    <div
-                        class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300"
-                    >
-                        Notifications
-                    </div>
-                    <div class="max-h-96 overflow-y-auto">
-                        <div v-if="notifications.length === 0" class="text-center py-8 text-gray-500">
-                            No notifications available
-                        </div>
-                        <div v-else v-for="notification in notifications" :key="notification.id"
-                            class="p-3 border-b border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 dark:border-gray-600"
+                        <v-icon name="bi-bell-fill" class="w-6 h-6" />
+                        <span
+                            v-if="unreadCount > 0"
+                            class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"
                         >
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 pt-0.5">
-                                    <v-icon :name="getIconName(notification)" :class="getIconClass(notification)" />
-                                </div>
-                                <div class="ml-3 flex-1">
-                                    <div v-if="hasBadge(notification)" class="flex items-center justify-between">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ getTitle(notification) }}
-                                        </p>
-                                        <span :class="getBadgeClass(notification)"
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                                            {{ getBadgeText(notification) }}
-                                        </span>
+                            {{ unreadCount > 99 ? "99+" : unreadCount }}
+                        </span>
+                    </button>
+
+                    <!-- Notification Dropdown -->
+                    <div
+                        v-show="isNotificationDropdownOpen"
+                        v-click-outside="closeNotificationDropdown"
+                        class="absolute right-0 mt-2 w-80 origin-top-right rounded-lg shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+                        ref="notificationDropdown"
+                        style="max-height: 400px; overflow-y: auto"
+                        :class="{
+                            'scale-y-100 opacity-100':
+                                isNotificationDropdownOpen,
+                            'scale-y-95 opacity-0': !isNotificationDropdownOpen,
+                        }"
+                        @keydown.esc="closeNotificationDropdown"
+                    >
+                        <!-- Header -->
+                        <div
+                            class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center"
+                        >
+                            <h3
+                                class="text-sm font-semibold text-gray-900 dark:text-white"
+                            >
+                                Notifications
+                                <span
+                                    v-if="unreadCount > 0"
+                                    class="ml-2 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full"
+                                >
+                                    {{ unreadCount }}
+                                </span>
+                            </h3>
+                            <button
+                                @click="closeNotificationDropdown"
+                                class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div
+                            v-if="isLoadingNotifications"
+                            class="p-4 text-center"
+                        >
+                            <div
+                                class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"
+                            ></div>
+                            <p
+                                class="text-gray-500 dark:text-gray-400 text-sm mt-1"
+                            >
+                                Loading notifications...
+                            </p>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div
+                            v-else-if="localNotifications.length === 0"
+                            class="p-6 text-center"
+                        >
+                            <div
+                                class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
+                            >
+                                <v-icon
+                                    name="bi-bell"
+                                    class="w-8 h-8 text-gray-400"
+                                />
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">
+                                No notifications available
+                            </p>
+                        </div>
+
+                        <!-- Notifications List -->
+                        <div
+                            v-else
+                            class="divide-y divide-gray-100 dark:divide-gray-700"
+                        >
+                            <div
+                                v-for="notification in localNotifications"
+                                :key="notification.id"
+                                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group relative"
+                                :class="{
+                                    'bg-blue-50 dark:bg-blue-900/20':
+                                        notification.unread,
+                                }"
+                                @click="handleNotificationClick(notification)"
+                            >
+                                <div class="flex items-start space-x-3">
+                                    <!-- Avatar/Icon -->
+                                    <div class="flex-shrink-0 relative">
+                                        <img
+                                            v-if="notification.user_avatar"
+                                            :src="notification.user_avatar"
+                                            :alt="
+                                                notification.user_name || 'User'
+                                            "
+                                            class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
+                                        />
+                                        <div
+                                            v-else
+                                            class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm"
+                                            :class="
+                                                getNotificationAvatarClass(
+                                                    notification
+                                                )
+                                            "
+                                        >
+                                            <v-icon
+                                                :name="
+                                                    getIconName(notification)
+                                                "
+                                                class="w-5 h-5 text-white"
+                                            />
+                                        </div>
+                                        <div
+                                            v-if="notification.unread"
+                                            class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"
+                                        />
                                     </div>
-                                    <p v-else class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ getTitle(notification) }}
-                                    </p>
-                                    <p v-if="notification.type === 'announcement'" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                        {{ notification.message }}
-                                    </p>
-                                    <p v-if="['report_update', 'new_report'].includes(notification.type)" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                        Location: {{ notification.barangay }}, {{ notification.municipality }}
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                        {{ getDateLabel(notification) }}: {{ formatDate(getDateField(notification)) }}
-                                    </p>
+
+                                    <!-- Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <div
+                                            class="flex items-start justify-between"
+                                        >
+                                            <div class="flex-1 min-w-0">
+                                                <p
+                                                    class="text-sm font-medium text-gray-900 dark:text-white"
+                                                >
+                                                    <span
+                                                        v-if="
+                                                            notification.user_name &&
+                                                            notification.type !==
+                                                                'announcement'
+                                                        "
+                                                        class="font-semibold"
+                                                        >{{
+                                                            notification.user_name
+                                                        }}
+                                                    </span>
+                                                    {{
+                                                        getNotificationTitle(
+                                                            notification
+                                                        )
+                                                    }}
+                                                </p>
+                                                <p
+                                                    class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2"
+                                                >
+                                                    {{
+                                                        getNotificationMessage(
+                                                            notification
+                                                        )
+                                                    }}
+                                                </p>
+
+                                                <!-- Additional Details for Reports -->
+                                                <div
+                                                    v-if="
+                                                        [
+                                                            'report_update',
+                                                            'new_report',
+                                                        ].includes(
+                                                            notification.type
+                                                        )
+                                                    "
+                                                    class="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400"
+                                                >
+                                                    <div
+                                                        class="flex items-center"
+                                                    >
+                                                        <v-icon
+                                                            name="bi-geo-alt"
+                                                            class="w-3 h-3 mr-1 flex-shrink-0"
+                                                        />
+                                                        <span class="truncate"
+                                                            >{{
+                                                                notification.barangay
+                                                            }},
+                                                            {{
+                                                                notification.municipality
+                                                            }}</span
+                                                        >
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center"
+                                                    >
+                                                        <v-icon
+                                                            name="bi-hash"
+                                                            class="w-3 h-3 mr-1 flex-shrink-0"
+                                                        />
+                                                        <span>{{
+                                                            notification.tracking_code
+                                                        }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Timestamp -->
+                                            <p
+                                                class="text-xs text-gray-500 dark:text-gray-400 text-right"
+                                            >
+                                                {{
+                                                    getRelativeTime(
+                                                        getDateField(
+                                                            notification
+                                                        )
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Unread indicator line -->
+                                <div
+                                    v-if="notification.unread"
+                                    class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div
+                            class="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30"
+                        >
+                            <div class="flex">
+                                <button
+                                    v-if="unreadCount > 0"
+                                    @click="markAllAsRead"
+                                    :disabled="isMarkingAllRead"
+                                    class="flex-1 py-2 text-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-r border-gray-200 dark:border-gray-600 disabled:opacity-50"
+                                >
+                                    <span v-if="!isMarkingAllRead"
+                                        >Mark All Read</span
+                                    >
+                                    <span
+                                        v-else
+                                        class="flex items-center justify-center"
+                                    >
+                                        <div
+                                            class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-1"
+                                        ></div>
+                                        Marking...
+                                    </span>
+                                </button>
+                                <Link
+                                    :href="notificationRoute"
+                                    @click="closeNotificationDropdown"
+                                    class="flex-1 py-2 text-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    :class="{
+                                        'flex-1': unreadCount > 0,
+                                        'w-full': unreadCount === 0,
+                                    }"
+                                >
+                                    <div class="inline-flex items-center">
+                                        <v-icon
+                                            name="bi-eye"
+                                            class="w-4 h-4 mr-1"
+                                        />
+                                        View All Notifications
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     </div>
-                    <Link
-                        :href="notificationRoute"
-                        class="block py-2 text-md font-medium text-center text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:underline"
-                    >
-                        <div class="inline-flex items-center">
-                            <svg
-                                aria-hidden="true"
-                                class="mr-2 w-4 h-4 text-gray-500 dark:text-gray-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M10 12a2 2 0 100-4 2 2 0 000 4z"
-                                ></path>
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                    clip-rule="evenodd"
-                                ></path>
-                            </svg>
-                            View all
-                        </div>
-                    </Link>
                 </div>
 
                 <!-- User Dropdown -->
                 <button
                     type="button"
-                    @click.stop="toggleDropdown"
+                    @click.stop="toggleUserDropdown"
                     class="flex mx-3 text-sm rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-200 hover:ring-2 hover:ring-gray-200 dark:hover:ring-gray-600"
-                    id="user-menu-button"
-                    :aria-expanded="isDropdownOpen"
-                    ref="dropdownButton"
+                    ref="userButton"
                 >
-                    <span class="sr-only">Open user menu</span>
                     <img
                         v-if="user.avatar_url"
                         class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
@@ -227,36 +424,36 @@
 
                 <!-- User Dropdown Menu -->
                 <div
-                    v-show="isDropdownOpen"
-                    v-click-outside="closeDropdown"
+                    v-show="isUserDropdownOpen"
+                    v-click-outside="closeUserDropdown"
                     class="absolute right-0 top-full mt-2 z-50 my-4 w-auto text-base list-none bg-white rounded-lg shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
-                    id="dropdown"
-                    ref="dropdownMenu"
+                    ref="userDropdownMenu"
                 >
                     <div
                         class="py-4 px-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-600"
                     >
                         <span
                             class="block text-sm font-semibold text-gray-900 dark:text-white truncate"
-                            >{{ userDisplayName }}</span
                         >
+                            {{ userDisplayName }}
+                        </span>
                         <span
                             class="block text-sm text-gray-600 dark:text-gray-300 truncate mt-1"
-                            >{{ user?.email }}</span
                         >
+                            {{ user?.email }}
+                        </span>
                     </div>
                     <ul class="py-2">
                         <li>
                             <Link
                                 href="/profile"
                                 class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                                @click="closeDropdown"
+                                @click="closeUserDropdown"
                             >
-                                <div
-                                    class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
-                                >
-                                    <v-icon name="bi-person" class="w-4 h-4" />
-                                </div>
+                                <v-icon
+                                    name="bi-person"
+                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                />
                                 <span>Profile Settings</span>
                             </Link>
                         </li>
@@ -264,13 +461,12 @@
                             <Link
                                 href="/settings"
                                 class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                                @click="closeDropdown"
+                                @click="closeUserDropdown"
                             >
-                                <div
-                                    class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
-                                >
-                                    <v-icon name="bi-gear" class="w-4 h-4" />
-                                </div>
+                                <v-icon
+                                    name="bi-gear"
+                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                />
                                 <span>Account Settings</span>
                             </Link>
                         </li>
@@ -278,24 +474,16 @@
                     <div
                         class="border-t border-gray-100 dark:border-gray-700 pt-2"
                     >
-                        <ul>
-                            <li>
-                                <button
-                                    @click.prevent="handleLogout"
-                                    class="flex items-center w-full gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                                >
-                                    <div
-                                        class="w-5 h-5 flex items-center justify-center text-gray-500 dark:text-gray-400"
-                                    >
-                                        <v-icon
-                                            name="bi-box-arrow-right"
-                                            class="w-4 h-4"
-                                        />
-                                    </div>
-                                    <span>Sign out</span>
-                                </button>
-                            </li>
-                        </ul>
+                        <button
+                            @click.prevent="handleLogout"
+                            class="flex items-center w-full gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                        >
+                            <v-icon
+                                name="bi-box-arrow-right"
+                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                            />
+                            <span>Sign out</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -304,7 +492,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 
@@ -317,10 +505,6 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    initialNotifications: {
-        type: Array,
-        default: () => [],
-    },
 });
 
 const emit = defineEmits(["toggle-sidebar", "toggle-mobile-menu", "logout"]);
@@ -330,206 +514,387 @@ const { props: pageProps } = usePage();
 // User data
 const user = computed(() => pageProps.auth?.user ?? {});
 const userRole = computed(() => user.value?.role || "customer");
-
-// Dynamic dashboard and notification routes based on role
-const dashboardRoute = computed(() => {
-    return userRole.value === "admin" ? "/admin/dashboard" : "/staff/dashboard";
-});
-
-const notificationRoute = computed(() => {
-    return userRole.value === "admin"
-        ? "/admin/notifications"
-        : "/staff/notifications";
-});
-
-// Compute current route name for breadcrumbs
-const currentRouteName = computed(() => {
-    const path = window.location.pathname;
-    if (path === "/admin/dashboard" || path === "/staff/dashboard")
-        return "Dashboard";
-    if (path.startsWith("/admin/reports") || path.startsWith("/staff/reports"))
-        return "Reports";
-    if (path.startsWith("/admin/users")) return "Users";
-    if (path.startsWith("/admin/staff")) return "Staff";
-    if (path.startsWith("/admin/records") || path.startsWith("/staff/records"))
-        return "Records";
-    if (
-        path.startsWith("/admin/announcements") ||
-        path.startsWith("/staff/announcements")
-    )
-        return "Announcements";
-    if (path.startsWith("/staff/reading")) return "Reading";
-    if (
-        path.startsWith("/admin/analytics") ||
-        path.startsWith("/staff/analytics")
-    )
-        return "Analytics";
-    if (path.startsWith("/admin/profile") || path.startsWith("/staff/profile"))
-        return "Profile";
-    return (
-        path.split("/").pop()?.charAt(0).toUpperCase() +
-            path.split("/").pop()?.slice(1).replace(/-/g, " ") || "Dashboard"
-    );
-});
-
-const userDisplayName = computed(() => {
-    if (user.value?.name) return user.value.name;
-    if (user.value?.email) return user.value.email.split("@")[0];
-    return "Guest";
-});
-
+const userDisplayName = computed(() => user.value?.name || "Unknown User");
 const userInitials = computed(() => {
-    if (user.value?.name) {
-        return user.value.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2);
-    }
-    if (user.value?.email) {
-        return user.value.email[0].toUpperCase();
-    }
-    return "G";
+    if (!user.value?.name) return "??";
+    const names = user.value.name.split(" ");
+    return names
+        .map((n) => n.charAt(0))
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
 });
 
-// Notification handling
-const notifications = ref(props.initialNotifications);
+// Current route
+const currentRouteName = computed(() => {
+    const route = pageProps.component;
+    return route
+        ? route
+              .split("/")
+              .pop()
+              .replace(/([A-Z])/g, " $1")
+              .trim()
+        : "";
+});
+
+// Routes
+const dashboardRoute = computed(() =>
+    userRole.value === "admin"
+        ? "/admin/dashboard"
+        : userRole.value === "staff"
+        ? "/staff/dashboard"
+        : "/customer/dashboard"
+);
+const notificationRoute = computed(() =>
+    userRole.value === "admin"
+        ? "/admin/notifications"
+        : userRole.value === "staff"
+        ? "/staff/notifications"
+        : "/customer/notifications"
+);
+
+// Notification state
+const localNotifications = ref([]);
 const isNotificationDropdownOpen = ref(false);
+const isUserDropdownOpen = ref(false);
+const isLoadingNotifications = ref(false);
+const isMarkingAllRead = ref(false);
 const notificationButton = ref(null);
 const notificationDropdown = ref(null);
+const userButton = ref(null);
+const userDropdownMenu = ref(null);
 
-const unreadCount = computed(() => {
-    return notifications.value.filter(n => n.unread).length; // Assuming notifications have an 'unread' property
-});
+const unreadCount = computed(
+    () => localNotifications.value.filter((n) => n.unread).length
+);
 
-const toggleNotificationDropdown = () => {
-    isNotificationDropdownOpen.value = !isNotificationDropdownOpen.value;
-    if (isNotificationDropdownOpen.value) {
-        setTimeout(() => {
-            notificationDropdown.value?.querySelector("a, button")?.focus();
-        }, 0);
+// Notification service
+const notificationService = {
+    async getNotifications() {
+        try {
+            const response = await fetch("/api/notifications", {
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    )?.content,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${
+                        errorData.message || "Unknown error"
+                    }`
+                );
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: `Failed to load notifications: ${error.message}`,
+                timer: 3000,
+                showConfirmButton: false,
+                toast: true,
+                position: "top-end",
+            });
+            return { success: false, notifications: [], unread_count: 0 };
+        }
+    },
+
+    async markAsRead(notificationId) {
+        try {
+            const response = await fetch("/api/notifications/mark-read", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    )?.content,
+                },
+                body: JSON.stringify({ notification_id: notificationId }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+            return { success: false };
+        }
+    },
+
+    async markAllAsRead() {
+        try {
+            const response = await fetch("/api/notifications/mark-all-read", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    )?.content,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error marking all notifications as read:", error);
+            return { success: false };
+        }
+    },
+};
+
+// Load notifications
+const loadNotifications = async () => {
+    isLoadingNotifications.value = true;
+    try {
+        const response = await notificationService.getNotifications();
+        if (response.success) {
+            localNotifications.value = response.notifications || [];
+        }
+    } catch (error) {
+        console.error("Failed to load notifications:", error);
+    } finally {
+        isLoadingNotifications.value = false;
     }
+};
+
+// Dropdown controls
+const toggleNotificationDropdown = async () => {
+    if (!isNotificationDropdownOpen.value) {
+        await loadNotifications();
+    }
+    isNotificationDropdownOpen.value = !isNotificationDropdownOpen.value;
 };
 
 const closeNotificationDropdown = () => {
     isNotificationDropdownOpen.value = false;
 };
 
-// Notification formatting functions
-const getIconName = (notification) => {
-    const icons = {
-        announcement: 'bi-megaphone-fill',
-        billing_status: 'bi-wallet-fill',
-        overdue_warning: 'bi-exclamation-triangle-fill',
-        new_report: 'bi-flag-fill',
-        report_update: 'bi-flag-fill'
-    };
-    return icons[notification.type] || 'bi-bell-fill';
+const toggleUserDropdown = () => {
+    isUserDropdownOpen.value = !isUserDropdownOpen.value;
 };
 
-const getIconClass = (notification) => {
-    if (['report_update', 'new_report'].includes(notification.type)) {
-        const classes = {
-            pending: 'text-yellow-500',
-            in_progress: 'text-blue-500',
-            resolved: 'text-green-500'
-        };
-        return `h-5 w-5 ${classes[notification.status] || 'text-gray-500'}`;
-    }
-    const classes = {
-        announcement: 'h-5 w-5 text-purple-500',
-        billing_status: 'h-5 w-5 text-blue-500',
-        overdue_warning: 'h-5 w-5 text-red-500',
-        new_report: 'h-5 w-5 text-orange-500'
+const closeUserDropdown = () => {
+    isUserDropdownOpen.value = false;
+};
+
+// Notification methods
+const getIconName = (notification) => {
+    const icons = {
+        announcement: "bi-megaphone-fill",
+        billing_status: "bi-wallet-fill",
+        overdue_warning: "bi-exclamation-triangle-fill",
+        new_report: "bi-flag-fill",
+        report_update: "bi-flag-fill",
     };
-    return classes[notification.type] || 'h-5 w-5 text-gray-500';
+    return icons[notification.type] || "bi-bell-fill";
+};
+
+const getNotificationAvatarClass = (notification) => {
+    const classes = {
+        new_report: "bg-orange-500",
+        report_update: "bg-blue-500",
+        announcement: "bg-purple-500",
+        billing_status: "bg-green-500",
+        overdue_warning: "bg-red-500",
+    };
+    return classes[notification.type] || "bg-gray-500";
 };
 
 const hasBadge = (notification) => {
-    return ['report_update', 'new_report', 'billing_status', 'overdue_warning'].includes(notification.type);
+    return [
+        "report_update",
+        "new_report",
+        "billing_status",
+        "overdue_warning",
+    ].includes(notification.type);
 };
 
 const getBadgeClass = (notification) => {
-    if (notification.type === 'overdue_warning') return 'bg-red-100 text-red-800';
-    if (notification.type === 'billing_status') return 'bg-blue-100 text-blue-800';
+    if (notification.type === "overdue_warning")
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+    if (notification.type === "billing_status")
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
     const classes = {
-        pending: 'bg-yellow-100 text-yellow-800',
-        in_progress: 'bg-blue-100 text-blue-800',
-        resolved: 'bg-green-100 text-green-800'
+        pending:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+        in_progress:
+            "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+        resolved:
+            "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     };
-    return classes[notification.status] || 'bg-gray-100 text-gray-800';
+    return (
+        classes[notification.status] ||
+        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+    );
 };
 
 const getBadgeText = (notification) => {
-    if (notification.type === 'overdue_warning') return 'Overdue';
+    if (notification.type === "overdue_warning") return "Overdue";
+    if (notification.type === "billing_status") return "Billing";
     return formatStatus(notification.status);
 };
 
-const getTitle = (notification) => {
+const getNotificationTitle = (notification) => {
     switch (notification.type) {
-        case 'report_update':
-            return `Report #${notification.tracking_code}`;
-        case 'new_report':
-            return `New Report #${notification.tracking_code}`;
-        case 'announcement':
+        case "new_report":
+            return "submitted a new water quality report";
+        case "report_update":
+            return `updated report #${notification.tracking_code}`;
+        case "announcement":
             return notification.title;
-        case 'billing_status':
-            return `Billing Status Update`;
-        case 'overdue_warning':
-            return `Overdue Payment Warning`;
+        case "billing_status":
+            return "billing status updated";
+        case "overdue_warning":
+            return "payment overdue warning";
         default:
-            return 'Notification';
+            return "sent you a notification";
     }
 };
 
-const getDateLabel = (notification) => {
-    if (notification.type === 'announcement') return 'Announced';
-    if (notification.type === 'overdue_warning') return 'Due';
-    return 'Updated';
+const getNotificationMessage = (notification) => {
+    switch (notification.type) {
+        case "new_report":
+            return `A new water quality report has been submitted for ${notification.barangay}, ${notification.municipality}. Please review and take appropriate action.`;
+        case "report_update":
+            return `Report status has been updated to "${formatStatus(
+                notification.status
+            )}". Location: ${notification.barangay}, ${
+                notification.municipality
+            }`;
+        case "announcement":
+            return notification.message;
+        case "billing_status":
+            return "Your billing information has been updated. Please check your account for details.";
+        case "overdue_warning":
+            return "You have an overdue payment. Please settle your account to avoid service interruption.";
+        default:
+            return notification.message || "You have a new notification";
+    }
 };
 
 const getDateField = (notification) => {
-    if (notification.type === 'overdue_warning') return notification.due_date;
-    if (notification.type === 'announcement') return notification.created_at;
-    return notification.updated_at;
+    if (notification.type === "overdue_warning") return notification.due_date;
+    if (notification.type === "announcement") return notification.created_at;
+    return notification.updated_at || notification.created_at;
 };
 
 const formatStatus = (status) => {
-    if (!status) return '';
-    return status.split('_').map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    if (!status) return "";
+    return status
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
 };
 
-const formatDate = (dateString) => {
-    if (!dateString) return '';
+const getRelativeTime = (dateString) => {
+    if (!dateString) return "";
+
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return "a few seconds ago";
+    if (diffInSeconds < 3600)
+        return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400)
+        return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800)
+        return `${Math.floor(diffInSeconds / 86400)} days ago`;
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
     });
 };
 
-// Dropdown handling (user menu)
-const isDropdownOpen = ref(false);
-const dropdownButton = ref(null);
-const dropdownMenu = ref(null);
-
-const toggleDropdown = () => {
-    isDropdownOpen.value = !isDropdownOpen.value;
-    if (isDropdownOpen.value) {
-        setTimeout(() => {
-            dropdownMenu.value?.querySelector("a, button")?.focus();
-        }, 0);
+const handleNotificationClick = async (notification) => {
+    if (notification.unread) {
+        const response = await notificationService.markAsRead(notification.id);
+        if (response.success) {
+            notification.unread = false;
+        }
     }
+
+    switch (notification.type) {
+        case "new_report":
+        case "report_update":
+            if (notification.report_id) {
+                window.location.href = `${dashboardRoute.value.replace(
+                    "/dashboard",
+                    ""
+                )}/reports/${notification.report_id}`;
+            } else {
+                window.location.href = `${dashboardRoute.value.replace(
+                    "/dashboard",
+                    ""
+                )}/reports`;
+            }
+            break;
+        case "announcement":
+            window.location.href = `${dashboardRoute.value.replace(
+                "/dashboard",
+                ""
+            )}/announcements`;
+            break;
+        default:
+            window.location.href = notificationRoute.value;
+    }
+
+    closeNotificationDropdown();
 };
 
-const closeDropdown = () => {
-    isDropdownOpen.value = false;
+const markAllAsRead = async () => {
+    isMarkingAllRead.value = true;
+    try {
+        const response = await notificationService.markAllAsRead();
+        if (response.success) {
+            localNotifications.value.forEach((notification) => {
+                notification.unread = false;
+            });
+
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "All notifications have been marked as read.",
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: "top-end",
+            });
+        } else {
+            throw new Error("Failed to mark notifications as read");
+        }
+    } catch (error) {
+        console.error("Error marking all notifications as read:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Failed to mark notifications as read. Please try again.",
+            timer: 3000,
+            showConfirmButton: false,
+            toast: true,
+            position: "top-end",
+        });
+    } finally {
+        isMarkingAllRead.value = false;
+    }
 };
 
 const handleLogout = async () => {
@@ -545,53 +910,20 @@ const handleLogout = async () => {
     });
 
     if (result.isConfirmed) {
-        closeDropdown();
+        closeUserDropdown();
         emit("logout");
     }
 };
 
-// Accessibility
 const handleKeydown = (e) => {
     if (e.key === "Escape") {
-        if (isDropdownOpen.value) {
-            closeDropdown();
-            dropdownButton.value?.focus();
+        if (isUserDropdownOpen.value) {
+            closeUserDropdown();
+            userButton.value?.focus();
         }
         if (isNotificationDropdownOpen.value) {
             closeNotificationDropdown();
             notificationButton.value?.focus();
-        }
-    }
-    if (isNotificationDropdownOpen.value && e.key === "Tab") {
-        const focusableElements = notificationDropdown.value?.querySelectorAll(
-            "a[href], button:not([disabled])"
-        );
-        if (focusableElements?.length) {
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-            if (e.shiftKey && document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-            } else if (!e.shiftKey && document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-            }
-        }
-    }
-    if (isDropdownOpen.value && e.key === "Tab") {
-        const focusableElements = dropdownMenu.value?.querySelectorAll(
-            "a[href], button:not([disabled])"
-        );
-        if (focusableElements?.length) {
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-            if (e.shiftKey && document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-            } else if (!e.shiftKey && document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-            }
         }
     }
 };
@@ -612,13 +944,41 @@ const vClickOutside = {
     },
 };
 
+let notificationInterval = null;
+
+const startNotificationPolling = () => {
+    loadNotifications();
+    notificationInterval = setInterval(() => {
+        if (!isNotificationDropdownOpen.value) {
+            loadNotifications();
+        }
+    }, 30000);
+};
+
+const stopNotificationPolling = () => {
+    if (notificationInterval) {
+        clearInterval(notificationInterval);
+        notificationInterval = null;
+    }
+};
+
 onMounted(() => {
     window.addEventListener("keydown", handleKeydown);
+    startNotificationPolling();
 });
 
 onUnmounted(() => {
     window.removeEventListener("keydown", handleKeydown);
+    stopNotificationPolling();
 });
+
+watch(
+    () => pageProps,
+    () => {
+        loadNotifications();
+    },
+    { deep: true }
+);
 </script>
 
 <style scoped>
@@ -627,31 +987,20 @@ onUnmounted(() => {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
-
-    .flex-wrap {
-        flex-wrap: nowrap;
-    }
-
     .text-\[25px\] {
         font-size: 1.25rem;
     }
-
     img.w-12 {
         width: 2.5rem;
         height: 2.5rem;
     }
 }
 
-.dropdown-enter-active,
-.dropdown-leave-active {
-    transition: all 0.15s ease-out;
-    transform-origin: top right;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-    opacity: 0;
-    transform: translateY(-2px);
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 button:active {
@@ -663,13 +1012,67 @@ button:focus {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-#dropdown,
-#notification-dropdown {
-    transition: all 0.2s ease-out;
-    transform-origin: top right;
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hover-lift:hover {
-    transform: translateY(-1px);
+.max-h-96::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-96::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.max-h-96::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.8);
+}
+
+.dark .max-h-96::-webkit-scrollbar-thumb {
+    background-color: rgba(75, 85, 99, 0.5);
+}
+
+.dark .max-h-96::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+.group:hover .animate-pulse {
+    animation: none;
+}
+
+@keyframes badge-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.animate-pulse {
+    animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth dropdown transition */
+.notification-dropdown {
+    transform-origin: top right;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+.scale-y-100 {
+    transform: scaleY(1);
+    opacity: 1;
+}
+
+.scale-y-95 {
+    transform: scaleY(0.95);
+    opacity: 0;
 }
 </style>

@@ -68,6 +68,7 @@ const customerLinks = [
         url: "/customer/announcements",
         icon: "bi-megaphone-fill",
     },
+    {name: "Notifications", url: "/customer/notifications", icon: "fa-bell" },
 ];
 
 const form = useForm({});

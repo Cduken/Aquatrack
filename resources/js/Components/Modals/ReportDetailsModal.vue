@@ -403,25 +403,7 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <div class="flex items-start">
-                                            <v-icon
-                                                name="bi-globe"
-                                                class="mr-2 mt-0.5 text-blue-500"
-                                            />
-                                            <div>
-                                                <p
-                                                    class="text-xs text-gray-500"
-                                                >
-                                                    IP Address
-                                                </p>
-                                                <p class="font-medium">
-                                                    {{
-                                                        report.ip_address ||
-                                                        "N/A"
-                                                    }}
-                                                </p>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
 

@@ -57,19 +57,18 @@ class ReportController extends Controller
                 ],
                 'purok' => 'required|string|max:255',
                 'description' => 'required|string',
-                'photos' => 'required|array|min:1|max:5', // Enforce MAX_TOTAL (3 photos + 2 videos)
+                'photos' => 'required|array|min:1|max:5',
                 'photos.*' => [
                     'file',
-                    'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm', // Added webm
+                    'mimes:jpeg,png,jpg,gif,webp,mp4,mov,avi,webm',
                     function ($attribute, $value, $fail) {
                         $originalName = $value->getClientOriginalName();
                         $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
                         $imageExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp'];
-                        $videoExtensions = ['mp4', 'mov', 'avi', 'webm']; // Added webm
+                        $videoExtensions = ['mp4', 'mov', 'avi', 'webm'];
                         if (!in_array($extension, array_merge($imageExtensions, $videoExtensions))) {
                             $fail('The file must be an image (jpeg,png,jpg,gif,webp) or video (mp4,mov,avi,webm).');
                         }
-                        // Enforce size limits
                         if (in_array($extension, $imageExtensions) && $value->getSize() > 5 * 1024 * 1024) {
                             $fail('The photo must not exceed 5MB.');
                         }
@@ -147,7 +146,11 @@ class ReportController extends Controller
                     ]
                 ]);
             } else {
-                return Inertia::render('Reports/Index', [
+                return Inertia::render('Landing/LandingPage', [
+                    'canLogin' => true,
+                    'canRegister' => true,
+                    'laravelVersion' => app()->version(),
+                    'phpVersion' => PHP_VERSION,
                     'trackingCode' => $trackingCode,
                     'dateSubmitted' => now()->toISOString(),
                     'swal' => [
@@ -200,7 +203,6 @@ class ReportController extends Controller
         $query = Report::with(['photos', 'user'])
             ->latest();
 
-        // Admin-specific filters
         if ($request->userType === 'guest') {
             $query->whereNull('user_id');
         } elseif ($request->userType === 'authenticated') {
@@ -223,34 +225,32 @@ class ReportController extends Controller
         ]);
     }
 
-    public function publicIndex(Request $request)
-    {
-        $reports = Report::with(['photos', 'user'])
-            ->latest()
-            ->paginate(10);
+    // public function publicIndex(Request $request)
+    // {
+    //     $reports = Report::with(['photos', 'user'])
+    //         ->latest()
+    //         ->paginate(10);
 
-        return Inertia::render('Reports/Index', [
-            'reports' => $reports,
-        ]);
-    }
+    //     return Inertia::render('Reports/Index', [
+    //         'reports' => $reports,
+    //     ]);
+    // }
 
-    public function show(Report $report)
-    {
-        $report->load(['photos', 'user']);
+    // public function show(Report $report)
+    // {
+    //     $report->load(['photos', 'user']);
 
-        return Inertia::render('Reports/Show', [
-            'report' => $report
-        ]);
-    }
+    //     return Inertia::render('Reports/Show', [
+    //         'report' => $report
+    //     ]);
+    // }
 
     public function track(Request $request)
     {
-        // If it's a GET request, just show the tracking form
         if ($request->isMethod('get')) {
             return inertia()->render('Reports/Track');
         }
 
-        // Handle POST request for tracking submission
         $request->validate([
             'tracking_code' => 'required|string|exists:reports,tracking_code'
         ]);
@@ -293,7 +293,6 @@ class ReportController extends Controller
         $report->status = $request->status;
         $report->save();
 
-        // Log the status change activity
         Activity::create([
             'event' => 'report_status_changed',
             'description' => "Report status changed from {$oldStatus} to {$report->status}",
@@ -316,4 +315,9 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    // public function testIndex()
+    // {
+    //     return Inertia::render('Test/Test');
+    // }
 }

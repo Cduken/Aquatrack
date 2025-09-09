@@ -4,7 +4,7 @@
         <div v-if="isOpen" class="fixed inset-0 z-[1000] overflow-hidden">
             <!-- Overlay -->
             <div
-                class="absolute inset-0 bg-gradient-to-br from-blue-900/70 to-gray-900/80 backdrop-blur-sm transition-opacity duration-300"
+                class="absolute inset-0 bg-gray-900/80  backdrop-blur-xs transition-opacity duration-300"
                 @click.self="closeModal"
             ></div>
 

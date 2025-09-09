@@ -11,11 +11,11 @@
             @toggle-mobile-menu="toggleMobileMenu"
         />
         <MainContentNavbar
-            :is-sidebar-open="isSidebarOpen"
-            :is-mobile-menu-open="isMobileMenuOpen"
-            @toggle-sidebar="toggleSidebar"
-            @toggle-mobile-menu="toggleMobileMenu"
-            @logout="handleLogout"
+           :is-sidebar-open="sidebarOpen"
+      :is-mobile-menu-open="isMobileMenuOpen"
+      @toggle-sidebar="toggleSidebar"
+      @toggle-mobile-menu="toggleMobileMenu"
+      @logout="handleLogout"
         />
         <main
             :class="[
@@ -35,7 +35,6 @@ import { ref } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 
-
 const isSidebarOpen = ref(true);
 const isMobileMenuOpen = ref(false);
 
@@ -54,6 +53,8 @@ const adminLinks = [
     },
     { name: "Users", url: "/admin/users", icon: "fa-users" },
     { name: "Activity Logs", url: "/admin/activity-logs", icon: "fa-list" },
+    {name: "Notifications", url: "/admin/notifications", icon: "fa-bell" },
+
 ];
 
 const form = useForm({});
@@ -61,6 +62,10 @@ const form = useForm({});
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
+
+
+
+const sidebarOpen = ref(true);
 
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;

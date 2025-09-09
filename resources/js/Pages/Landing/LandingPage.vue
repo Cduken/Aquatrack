@@ -1,3 +1,4 @@
+// LandingPage.vue
 <script setup>
 import { Head } from "@inertiajs/vue3";
 import Hero from "@/Components/Hero.vue";
@@ -26,6 +27,16 @@ defineProps({
     phpVersion: {
         type: String,
         required: true,
+    },
+    trackingCode: {
+        // Add trackingCode prop
+        type: String,
+        default: null,
+    },
+    dateSubmitted: {
+        // Add dateSubmitted prop
+        type: String,
+        default: null,
     },
 });
 
@@ -136,7 +147,13 @@ if (typeof window !== "undefined") {
     <Head title="Landing" />
 
     <div class="overflow-hidden">
-        <Hero id="home" :can-login="canLogin" :can-register="canRegister" />
+        <Hero
+            id="home"
+            :can-login="canLogin"
+            :can-register="canRegister"
+            :tracking-code="trackingCode"
+            :date-submitted="dateSubmitted"
+        />
         <Features id="features" />
         <About id="about" />
         <CallToAction id="cta" />

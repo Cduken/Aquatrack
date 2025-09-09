@@ -12,13 +12,17 @@ class Announcements extends Model
     protected $fillable = [
         'title',
         'content',
+        'message',
         'start_date',
         'end_date',
-        'status'
+        'status',
+        'target_audience',
+        'active',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'active' => 'boolean',
     ];
 }

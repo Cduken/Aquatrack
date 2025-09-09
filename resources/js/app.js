@@ -211,6 +211,9 @@ addIcons(
     BiIcons.BiClockHistory,
     BiIcons.BiExclamationTriangleFill,
     BiIcons.BiMegaphone,
+    BiIcons.BiEnvelopeOpen,
+    BiIcons.BiCalendarEvent,
+    BiIcons.BiPlay,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -267,6 +270,9 @@ addIcons(
     HiIcons.HiSolidX,
     HiIcons.HiPlay,
     HiIcons.HiPhotograph,
+    HiIcons.HiDownload,
+    HiIcons.HiSortDescending,
+    HiIcons.HiPaperAirplane,
 
     // Font Awesome
     FaIcons.FaBuilding,

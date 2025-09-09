@@ -394,7 +394,7 @@
                         class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
                     >
                         <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
+
                             <th scope="col" class="px-6 py-3">Reporter</th>
                             <th scope="col" class="px-6 py-3">User Type</th>
                             <th scope="col" class="px-6 py-3">Zone</th>
@@ -412,12 +412,12 @@
                             class="border-b dark:border-gray-700 border-gray-200"
                             :class="getStatusRowClass(report.status)"
                         >
-                            <th
+                            <!-- <th
                                 scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                             >
                                 #{{ report.id }}
-                            </th>
+                            </th> -->
                             <td
                                 class="px-6 py-4 font-medium text-gray-900 dark:text-white"
                             >
