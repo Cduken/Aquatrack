@@ -143,7 +143,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Report Routes (Public and Authenticated)
-// Route::get('/reports', [ReportController::class, 'publicIndex'])->name('reports.index');
+
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
 // Route::get('/reports/success', [ReportController::class, 'success'])->name('reports.success');
 Route::match(['get', 'post'], '/reports/track', [ReportController::class, 'track'])->name('reports.track');

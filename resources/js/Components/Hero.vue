@@ -178,17 +178,12 @@ const handleReportSuccess = (data) => {
                         Clarin Water
                     </span>
                     <span
-                        class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-600 floating-text"
+                        class="block text-transparent leading-snug bg-clip-text bg-gradient-to-r from-purple-500 to-blue-600 floating-text"
                         style="animation-delay: 0.2s"
                     >
                         Management System
                     </span>
-                    <span
-                        class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 floating-text"
-                        style="animation-delay: 0.4s"
-                    >
-                        For the Community
-                    </span>
+
                 </h1>
 
                 <p
