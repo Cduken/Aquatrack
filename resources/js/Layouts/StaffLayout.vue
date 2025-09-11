@@ -41,7 +41,6 @@ const isMobileMenuOpen = ref(false);
 const staffLinks = [
     { name: "Dashboard", url: "/staff/dashboard", icon: "md-dashboard" },
     { name: "Reading", url: "/staff/reading", icon: "bi-flag-fill" },
-    { name: "Notifications", url: "/staff/notifications", icon: "fa-bell" },
 ];
 
 const form = useForm({});

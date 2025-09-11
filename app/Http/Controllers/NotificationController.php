@@ -288,7 +288,11 @@ class NotificationController extends Controller
             $this->markAnnouncementAsRead($announcementId);
         }
 
-        return response()->json(['success' => true, 'message' => 'Notification marked as read']);
+        // Return redirect instead of JSON
+        return redirect()->back()->with([
+            'success' => true,
+            'message' => 'Notification marked as read'
+        ]);
     }
 
     /**
@@ -321,7 +325,11 @@ class NotificationController extends Controller
         // Mark all announcements as read
         $this->markAllAnnouncementsAsRead();
 
-        return response()->json(['success' => true, 'message' => 'All notifications marked as read']);
+        // Return redirect instead of JSON
+        return redirect()->back()->with([
+            'success' => true,
+            'message' => 'All notifications marked as read'
+        ]);
     }
 
     /**

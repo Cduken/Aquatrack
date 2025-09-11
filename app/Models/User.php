@@ -96,11 +96,17 @@ class User extends Authenticatable
 
     public function setAccountNumberAttribute($value)
     {
-        // Ensure value is properly formatted before saving
+        // Clean the input - remove any non-numeric characters
         $clean = preg_replace('/[^0-9]/', '', $value);
-        $this->attributes['account_number'] = substr($clean, 0, 3) . '-'
-            . substr($clean, 3, 2) . '-'
-            . substr($clean, 5, 3);
+
+        // Format as XXX-XX-XXX if needed, or store as plain numbers
+        if (strlen($clean) >= 8) {
+            $this->attributes['account_number'] = substr($clean, 0, 3) . '-'
+                . substr($clean, 3, 2) . '-'
+                . substr($clean, 5);
+        } else {
+            $this->attributes['account_number'] = $clean;
+        }
     }
 
     public function getFormattedAccountNumberAttribute()

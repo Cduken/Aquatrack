@@ -457,7 +457,7 @@
                                 <span>Profile Settings</span>
                             </Link>
                         </li>
-                        <li>
+                        <!-- <li>
                             <Link
                                 href="/settings"
                                 class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
@@ -469,7 +469,7 @@
                                 />
                                 <span>Account Settings</span>
                             </Link>
-                        </li>
+                        </li> -->
                     </ul>
                     <div
                         class="border-t border-gray-100 dark:border-gray-700 pt-2"

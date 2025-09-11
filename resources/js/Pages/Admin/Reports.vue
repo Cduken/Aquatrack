@@ -1,3 +1,4 @@
+```vue
 <template>
     <AdminLayout title="Reports">
         <div class="mx-auto w-full">
@@ -394,7 +395,6 @@
                         class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
                     >
                         <tr>
-
                             <th scope="col" class="px-6 py-3">Reporter</th>
                             <th scope="col" class="px-6 py-3">User Type</th>
                             <th scope="col" class="px-6 py-3">Zone</th>
@@ -412,12 +412,6 @@
                             class="border-b dark:border-gray-700 border-gray-200"
                             :class="getStatusRowClass(report.status)"
                         >
-                            <!-- <th
-                                scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                            >
-                                #{{ report.id }}
-                            </th> -->
                             <td
                                 class="px-6 py-4 font-medium text-gray-900 dark:text-white"
                             >
@@ -493,7 +487,7 @@
                                     >
                                         <v-icon name="hi-eye" class="w-5 h-5" />
                                     </button>
-                                    <div class="relative">
+                                    <div class="relative" v-if="props.canEdit">
                                         <button
                                             @click="openStatusModal(report)"
                                             class="text-yellow-500 hover:text-yellow-700 transition-colors flex items-center"
@@ -505,6 +499,18 @@
                                             />
                                         </button>
                                     </div>
+                                    <button
+                                        v-if="props.canDelete"
+                                        @click="confirmDelete(report)"
+                                        class="text-red-600 hover:text-red-800 transition-colors"
+                                        title="Delete Report"
+                                        :disabled="deletingReport"
+                                    >
+                                        <v-icon
+                                            name="hi-trash"
+                                            class="w-5 h-5"
+                                        />
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -548,8 +554,6 @@
                 :report="selectedReport"
                 @close="closeModal"
             />
-
-
         </div>
     </AdminLayout>
 </template>
@@ -567,11 +571,12 @@ const props = defineProps({
     reports: Object,
     filters: Object,
     canEdit: Boolean,
+    canDelete: Boolean,
 });
 
 const filters = ref({
     userType: props.filters?.userType || "all",
-    status: props.filters?.status || "all",
+    status: props.filters?.status || "",
     search: props.filters?.search || "",
 });
 
@@ -580,8 +585,9 @@ const selectedReport = ref(null);
 const showModal = ref(false);
 const showFilterDropdown = ref(false);
 const updatingStatus = ref(false);
+const deletingReport = ref(false);
 
-// Computed properties for statistics (unchanged)
+// Computed properties for statistics
 const pendingReportsCount = computed(() => {
     return props.reports.data.filter((report) => report.status === "pending")
         .length;
@@ -615,14 +621,15 @@ const resolvedPercentage = computed(() => {
     return Math.round((resolvedReportsCount.value / props.reports.total) * 100);
 });
 
-// Filtered reports (unchanged)
+// Filtered reports
 const filteredReports = computed(() => {
     return props.reports.data.filter((report) => {
         if (filters.value.userType === "guest" && report.user_id) return false;
         if (filters.value.userType === "authenticated" && !report.user_id)
             return false;
         if (
-            filters.value.status !== "all" &&
+            filters.value.status &&
+            !report.status.startsWith("Deleted") &&
             report.status !== filters.value.status
         )
             return false;
@@ -658,7 +665,7 @@ onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
 });
 
-// Watch filters with debounce (unchanged)
+// Watch filters with debounce
 watch(
     filters,
     debounce(() => {
@@ -670,7 +677,7 @@ watch(
     { deep: true }
 );
 
-// Filter functions (unchanged)
+// Filter functions
 const updateStatusFilter = (status) => {
     filters.value.status = status;
     showFilterDropdown.value = false;
@@ -684,13 +691,13 @@ const updateUserTypeFilter = (userType) => {
 const resetFilters = () => {
     filters.value = {
         userType: "all",
-        status: "all",
+        status: "",
         search: "",
     };
     showFilterDropdown.value = false;
 };
 
-// Modal functions (unchanged)
+// Modal functions
 const openModal = (report) => {
     selectedReport.value = report;
     showModal.value = true;
@@ -700,8 +707,17 @@ const closeModal = () => {
     showModal.value = false;
 };
 
-// NEW: SweetAlert Status Modal
+// SweetAlert Status Modal
 const openStatusModal = async (report) => {
+    if (report.status.startsWith("Deleted")) {
+        Swal.fire({
+            icon: "warning",
+            title: "Cannot Change Status",
+            text: "This report has been deleted and cannot have its status changed.",
+        });
+        return;
+    }
+
     const { value: status } = await Swal.fire({
         title: "Change Report Status",
         text: `Current status: ${formatStatus(report.status)}`,
@@ -745,6 +761,7 @@ const updateStatus = async (report, newStatus) => {
             {
                 preserveScroll: true,
                 onSuccess: () => {
+                    // This will now work because the backend returns a proper redirect
                     Swal.fire({
                         toast: true,
                         position: "top-end",
@@ -759,7 +776,9 @@ const updateStatus = async (report, newStatus) => {
                     Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: "Failed to update status. Please try again.",
+                        text:
+                            error.message ||
+                            "Failed to update status. Please try again.",
                     });
                 },
             }
@@ -776,7 +795,80 @@ const updateStatus = async (report, newStatus) => {
     }
 };
 
-// Helper functions (unchanged)
+// Delete report function
+const confirmDelete = async (report) => {
+    const result = await Swal.fire({
+        title: "Are you sure?",
+        html: `You are about to delete the report from <strong>${
+            report.reporter_name || report.user?.name || "Unknown"
+        }</strong>.<br>This action cannot be undone.`,
+        icon: "warning",
+        input: "text",
+        inputLabel: "Reason for deletion",
+        inputPlaceholder: "Enter reason for deletion",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Yes, delete it!",
+        reverseButtons: false,
+        focusCancel: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return "You must provide a reason for deletion!";
+            }
+            if (value.length > 255) {
+                return "Reason must not exceed 255 characters!";
+            }
+        },
+    });
+
+    if (result.isConfirmed) {
+        await deleteReport(report, result.value);
+    }
+};
+
+const deleteReport = async (report, reason) => {
+    deletingReport.value = true;
+    try {
+        await router.delete(route("admin.reports.destroy", report.id), {
+            data: { reason },
+            preserveScroll: true,
+            onSuccess: () => {
+                // This will now work because the backend returns a proper redirect
+                Swal.fire({
+                    toast: true,
+                    position: "top-end",
+                    icon: "success",
+                    title: "Report deleted successfully",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
+            },
+            onError: (error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text:
+                        error.reason ||
+                        "Failed to delete report. Please try again.",
+                });
+            },
+        });
+    } catch (error) {
+        console.error("Delete error:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An unexpected error occurred. Please try again.",
+        });
+    } finally {
+        deletingReport.value = false;
+    }
+};
+
+// Helper functions
 const userTypeClasses = (userId) => ({
     "px-2 py-1 rounded-full text-xs font-medium": true,
     "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200":
@@ -803,6 +895,8 @@ const statusClasses = (status) => ({
         status === "in_progress",
     "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200":
         status === "resolved",
+    "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200":
+        status.startsWith("Deleted"),
 });
 
 const getStatusRowClass = (status) => {
@@ -810,10 +904,15 @@ const getStatusRowClass = (status) => {
         ? "bg-white dark:bg-gray-900"
         : status === "in_progress"
         ? "bg-blue-50 dark:bg-blue-900/20"
-        : "bg-green-50 dark:bg-green-900/20";
+        : status === "resolved"
+        ? "bg-green-50 dark:bg-green-900/20"
+        : status.startsWith("Deleted")
+        ? "bg-red-50 dark:bg-red-900/20"
+        : "";
 };
 
 const getStatusIcon = (status) => {
+    if (status.startsWith("Deleted")) return "hi-trash";
     switch (status) {
         case "pending":
             return "hi-clock";
@@ -840,6 +939,7 @@ const getPriorityIcon = (priority) => {
 };
 
 const formatStatus = (status) => {
+    if (status.startsWith("Deleted")) return status;
     const statusMap = {
         pending: "Pending",
         in_progress: "In Progress",
@@ -864,9 +964,9 @@ tr {
     transition: opacity 0.2s ease;
 }
 
-/* Disabled state for buttons */
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 </style>
+```

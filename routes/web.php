@@ -46,7 +46,7 @@ Route::post('/verify-code', [AuthenticatedSessionController::class, 'verifyCode'
 // Add this route for generic dashboard access
 Route::get('/dashboard', function () {
     // Redirect based on user role
-    $user = auth()->Auth::user(); // Fixed syntax: auth()->Auth::user() is incorrect
+    $user = auth()->user();
 
     if ($user->hasRole('admin')) {
         return redirect()->route('admin.dashboard');
@@ -58,6 +58,13 @@ Route::get('/dashboard', function () {
 
     return redirect()->route('home');
 })->name('dashboard')->middleware(['auth', 'verified']);
+
+
+// routes/web.php (Admin routes)
+Route::delete('/admin/reports/{report}', [ReportController::class, 'destroy'])
+    ->name('admin.reports.destroy');
+Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
+    ->name('admin.reports.updateStatus');
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -72,8 +79,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/admin/users/toggle-status', [AdminUsersController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 
+    // For user updates
+    Route::put('/admin/users/{user}', [AdminUsersController::class, 'update'])->name('admin.users.update');
+    // For password reset
+    Route::post('/admin/users/{user}/reset-password', [AdminUsersController::class, 'resetPassword'])->name('admin.users.reset-password');
+
+
     Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
-        ->name('admin.reports.updateStatus');
+    ->name('admin.reports.updateStatus');
+
 
     Route::get('/admin/records', [AdminRecordController::class, 'index'])->name('admin.records.index');
     Route::get('/admin/records/{record}', [AdminRecordController::class, 'show'])->name('admin.records.show');
@@ -94,7 +108,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             'notifications' => app(NotificationController::class)->index(request())->getData(true)['notifications'] ?? [],
         ]);
     })->name('admin.notifications');
+
+    // Change API routes to regular web routes
+    Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.mark-read');
+
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.mark-all-read');
 });
+
+
 
 // Staff Routes
 Route::middleware(['auth', 'role:staff'])->group(function () {
@@ -114,6 +137,11 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
         ]);
     })->name('staff.notifications');
 });
+
+
+// routes/web.php or routes/api.php
+Route::get('/staff/readings/{userId}/previous', [StaffReadingController::class, 'getPreviousReadings']);
+
 
 // Customer Routes
 Route::middleware(['auth', 'role:customer'])->group(function () {

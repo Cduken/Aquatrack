@@ -286,7 +286,10 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { ref, computed, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { pickBy, debounce } from "lodash";
+import { usePage } from "@inertiajs/vue3";
 import Swal from "sweetalert2";
+
+const page = usePage();
 
 const props = defineProps({
     notifications: Array,
@@ -386,6 +389,25 @@ const debouncedFetchNotifications = debounce((filters, requestId) => {
 
 let latestRequestId = 0;
 
+watch(
+    () => page.props.flash,
+    (newFlash) => {
+        if (newFlash.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: newFlash.message,
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        }
+    },
+    { immediate: true }
+);
+
 // Watch filter changes
 watch(
     () => ({
@@ -472,17 +494,10 @@ const clearFilters = () => {
 
 const markAsRead = async (notificationId) => {
     await router.post(
-        `/api/notifications/mark-read`,
+        route("notifications.mark-read"),
         { notification_id: notificationId },
         {
             preserveScroll: true,
-            onSuccess: () => {
-                const index = filteredNotifications.value.findIndex(
-                    (n) => n.id === notificationId
-                );
-                if (index !== -1)
-                    filteredNotifications.value[index].unread = false;
-            },
         }
     );
 };

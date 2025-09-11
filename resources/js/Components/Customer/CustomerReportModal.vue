@@ -4,7 +4,7 @@
         <div v-if="isOpen" class="fixed inset-0 z-[1000] overflow-hidden">
             <!-- Overlay -->
             <div
-                class="absolute inset-0 bg-gray-900/80  backdrop-blur-xs transition-opacity duration-300"
+                class="absolute inset-0 bg-gray-900/80 backdrop-blur-xs transition-opacity duration-300"
                 @click.self="closeModal"
             ></div>
 
@@ -14,7 +14,9 @@
                 <div
                     class="relative w-full h-full transform transition-transform duration-300 ease-in-out"
                 >
-                    <div class="h-full flex flex-col bg-white shadow-2xl rounded-l-2xl overflow-hidden">
+                    <div
+                        class="h-full flex flex-col bg-white shadow-2xl rounded-l-2xl overflow-hidden"
+                    >
                         <!-- Header -->
                         <div
                             class="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-[#0D4C9D] to-[#1E5CB2] shadow-md"
@@ -28,10 +30,13 @@
                                     />
                                 </div>
                                 <div>
-                                    <span class="text-white font-semibold text-xl tracking-wide"
+                                    <span
+                                        class="text-white font-semibold text-xl tracking-wide"
                                         >Submit a Report</span
                                     >
-                                    <p class="text-blue-100 text-xs mt-1">Water Quality Issue Reporting</p>
+                                    <p class="text-blue-100 text-xs mt-1">
+                                        Water Quality Issue Reporting
+                                    </p>
                                 </div>
                             </div>
                             <button
@@ -43,25 +48,61 @@
                         </div>
 
                         <!-- Progress Steps -->
-                        <div class="bg-blue-50 px-6 py-3 border-b border-blue-100">
-                            <div class="flex items-center justify-between text-xs text-blue-600">
-                                <div :class="{'font-semibold text-blue-700': form.barangay}">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1">1</span>
+                        <div
+                            class="bg-blue-50 px-6 py-3 border-b border-blue-100"
+                        >
+                            <div
+                                class="flex items-center justify-between text-xs text-blue-600"
+                            >
+                                <div
+                                    :class="{
+                                        'font-semibold text-blue-700':
+                                            form.barangay,
+                                    }"
+                                >
+                                    <span
+                                        class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1"
+                                        >1</span
+                                    >
                                     Location
                                 </div>
                                 <div class="h-px w-8 bg-blue-200 mx-2"></div>
-                                <div :class="{'font-semibold text-blue-700': form.reporter_phone}">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1">2</span>
+                                <div
+                                    :class="{
+                                        'font-semibold text-blue-700':
+                                            form.reporter_phone,
+                                    }"
+                                >
+                                    <span
+                                        class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1"
+                                        >2</span
+                                    >
                                     Contact
                                 </div>
                                 <div class="h-px w-8 bg-blue-200 mx-2"></div>
-                                <div :class="{'font-semibold text-blue-700': form.description}">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1">3</span>
+                                <div
+                                    :class="{
+                                        'font-semibold text-blue-700':
+                                            form.description,
+                                    }"
+                                >
+                                    <span
+                                        class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1"
+                                        >3</span
+                                    >
                                     Details
                                 </div>
                                 <div class="h-px w-8 bg-blue-200 mx-2"></div>
-                                <div :class="{'font-semibold text-blue-700': form.photos.length > 0}">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1">4</span>
+                                <div
+                                    :class="{
+                                        'font-semibold text-blue-700':
+                                            form.photos.length > 0,
+                                    }"
+                                >
+                                    <span
+                                        class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 mr-1"
+                                        >4</span
+                                    >
                                     Media
                                 </div>
                             </div>
@@ -75,11 +116,23 @@
                                 class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm shadow-sm"
                             >
                                 <div class="flex items-start">
-                                    <v-icon name="bi-exclamation-triangle" class="mr-2 mt-0.5 flex-shrink-0" />
+                                    <v-icon
+                                        name="bi-exclamation-triangle"
+                                        class="mr-2 mt-0.5 flex-shrink-0"
+                                    />
                                     <div>
-                                        <p class="font-medium">Please fix the following errors:</p>
-                                        <ul class="list-disc list-inside mt-1 pl-1">
-                                            <li v-for="(error, key) in form.errors" :key="key">
+                                        <p class="font-medium">
+                                            Please fix the following errors:
+                                        </p>
+                                        <ul
+                                            class="list-disc list-inside mt-1 pl-1"
+                                        >
+                                            <li
+                                                v-for="(
+                                                    error, key
+                                                ) in form.errors"
+                                                :key="key"
+                                            >
                                                 {{ error }}
                                             </li>
                                         </ul>
@@ -87,7 +140,10 @@
                                 </div>
                             </div>
 
-                            <form @submit.prevent="submitReport" class="space-y-6">
+                            <form
+                                @submit.prevent="submitReport"
+                                class="space-y-6"
+                            >
                                 <!-- Municipality and Province -->
                                 <div
                                     class="bg-gradient-to-br from-gray-50 to-white border border-gray-100 p-5 rounded-xl shadow-sm"
@@ -95,7 +151,9 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-geo-alt"
                                                 class="text-blue-600"
@@ -105,14 +163,20 @@
                                     </h3>
                                     <div class="grid grid-cols-1 gap-4 mt-4">
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-building"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Municipality</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Municipality
+                                                </p>
                                                 <input
                                                     type="text"
                                                     id="municipality"
@@ -124,14 +188,20 @@
                                             </div>
                                         </div>
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-map"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Province</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Province
+                                                </p>
                                                 <input
                                                     type="text"
                                                     id="province"
@@ -152,7 +222,9 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-person"
                                                 class="text-blue-600"
@@ -162,14 +234,20 @@
                                     </h3>
                                     <div class="grid grid-cols-1 gap-4 mt-4">
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-person-badge"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Full Name</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Full Name
+                                                </p>
                                                 <input
                                                     type="text"
                                                     id="reporter_name"
@@ -180,23 +258,38 @@
                                             </div>
                                         </div>
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-telephone"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Phone Number</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Phone Number
+                                                </p>
                                                 <div class="relative">
-                                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-1">
-                                                        <span class="text-gray-500">+63</span>
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-1"
+                                                    >
+                                                        <span
+                                                            class="text-gray-500"
+                                                            >+63</span
+                                                        >
                                                     </div>
                                                     <input
                                                         type="tel"
                                                         id="reporter_phone"
-                                                        v-model="form.reporter_phone"
-                                                        @input="restrictPhoneInput"
+                                                        v-model="
+                                                            form.reporter_phone
+                                                        "
+                                                        @input="
+                                                            restrictPhoneInput
+                                                        "
                                                         class="w-full p-3 pl-12 rounded-lg text-gray-900 bg-white border border-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm transition-all"
                                                         pattern="[0-9]{1,11}"
                                                         maxlength="11"
@@ -204,10 +297,20 @@
                                                     />
                                                 </div>
                                                 <p
-                                                    v-if="form.errors.reporter_phone"
+                                                    v-if="
+                                                        form.errors
+                                                            .reporter_phone
+                                                    "
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
-                                                    <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.reporter_phone }}
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{
+                                                        form.errors
+                                                            .reporter_phone
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -221,7 +324,9 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-geo"
                                                 class="text-blue-600"
@@ -231,14 +336,20 @@
                                     </h3>
                                     <div class="grid grid-cols-1 gap-4 mt-4">
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-geo"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Barangay</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Barangay
+                                                </p>
                                                 <div class="relative">
                                                     <select
                                                         id="barangay"
@@ -246,7 +357,11 @@
                                                         required
                                                         class="w-full p-3 pr-10 rounded-lg text-gray-900 bg-white border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm appearance-none transition-all"
                                                     >
-                                                        <option value="" disabled selected>
+                                                        <option
+                                                            value=""
+                                                            disabled
+                                                            selected
+                                                        >
                                                             Select Barangay
                                                         </option>
                                                         <option
@@ -257,27 +372,41 @@
                                                             {{ barangay }}
                                                         </option>
                                                     </select>
-                                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 mt-1">
-                                                        <v-icon name="bi-chevron-down" />
+                                                    <div
+                                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 mt-1"
+                                                    >
+                                                        <v-icon
+                                                            name="bi-chevron-down"
+                                                        />
                                                     </div>
                                                 </div>
                                                 <p
                                                     v-if="form.errors.barangay"
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
-                                                    <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.barangay }}
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{ form.errors.barangay }}
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-signpost"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Zone</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Zone
+                                                </p>
                                                 <input
                                                     type="text"
                                                     id="zone"
@@ -290,7 +419,11 @@
                                                     v-if="form.errors.zone"
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
-                                                    <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.zone }}
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{ form.errors.zone }}
                                                 </p>
                                             </div>
                                         </div>
@@ -304,7 +437,9 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-info-circle"
                                                 class="text-blue-600"
@@ -314,14 +449,20 @@
                                     </h3>
                                     <div class="grid grid-cols-1 gap-4 mt-4">
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-signpost"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Purok/Street</p>
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Purok/Street
+                                                </p>
                                                 <input
                                                     type="text"
                                                     id="purok"
@@ -334,46 +475,76 @@
                                                     v-if="form.errors.purok"
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
-                                                    <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.purok }}
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{ form.errors.purok }}
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="flex items-start">
-                                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
                                                 <v-icon
                                                     name="bi-exclamation-circle"
                                                     class="text-blue-500"
                                                 />
                                             </div>
                                             <div class="flex-1">
-                                                <p class="text-xs text-gray-500 font-medium mb-1">Priority</p>
-                                                <div class="grid grid-cols-3 gap-2 mt-1">
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Priority
+                                                </p>
+                                                <div
+                                                    class="grid grid-cols-3 gap-2 mt-1"
+                                                >
                                                     <button
                                                         type="button"
-                                                        @click="form.priority = 'low'"
-                                                        :class="form.priority === 'low' ?
-                                                            'bg-green-100 text-green-700 border-green-300' :
-                                                            'bg-gray-100 text-gray-700 border-gray-200'"
+                                                        @click="
+                                                            form.priority =
+                                                                'low'
+                                                        "
+                                                        :class="
+                                                            form.priority ===
+                                                            'low'
+                                                                ? 'bg-green-100 text-green-700 border-green-300'
+                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
+                                                        "
                                                         class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
                                                     >
                                                         Low
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        @click="form.priority = 'medium'"
-                                                        :class="form.priority === 'medium' ?
-                                                            'bg-amber-100 text-amber-700 border-amber-300' :
-                                                            'bg-gray-100 text-gray-700 border-gray-200'"
+                                                        @click="
+                                                            form.priority =
+                                                                'medium'
+                                                        "
+                                                        :class="
+                                                            form.priority ===
+                                                            'medium'
+                                                                ? 'bg-amber-100 text-amber-700 border-amber-300'
+                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
+                                                        "
                                                         class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
                                                     >
                                                         Medium
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        @click="form.priority = 'high'"
-                                                        :class="form.priority === 'high' ?
-                                                            'bg-red-100 text-red-700 border-red-300' :
-                                                            'bg-gray-100 text-gray-700 border-gray-200'"
+                                                        @click="
+                                                            form.priority =
+                                                                'high'
+                                                        "
+                                                        :class="
+                                                            form.priority ===
+                                                            'high'
+                                                                ? 'bg-red-100 text-red-700 border-red-300'
+                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
+                                                        "
                                                         class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
                                                     >
                                                         High
@@ -383,7 +554,11 @@
                                                     v-if="form.errors.priority"
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
-                                                    <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.priority }}
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{ form.errors.priority }}
                                                 </p>
                                             </div>
                                         </div>
@@ -397,7 +572,9 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-card-text"
                                                 class="text-blue-600"
@@ -416,13 +593,28 @@
                                             class="w-full p-3 rounded-lg text-gray-900 bg-white border-none placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 text-sm resize-none"
                                             placeholder="Describe the water quality issue in detail..."
                                         ></textarea>
-                                        <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
-                                            <div v-if="form.description" class="flex items-center">
-                                                <v-icon name="bi-check-circle" class="text-green-500 mr-1" />
-                                                <span>{{ form.description.length }}/500 characters</span>
+                                        <div
+                                            class="flex justify-between items-center mt-2 text-xs text-gray-500"
+                                        >
+                                            <div
+                                                v-if="form.description"
+                                                class="flex items-center"
+                                            >
+                                                <v-icon
+                                                    name="bi-check-circle"
+                                                    class="text-green-500 mr-1"
+                                                />
+                                                <span
+                                                    >{{
+                                                        form.description.length
+                                                    }}/500 characters</span
+                                                >
                                             </div>
                                             <div v-else>
-                                                <span>Please provide a detailed description</span>
+                                                <span
+                                                    >Please provide a detailed
+                                                    description</span
+                                                >
                                             </div>
                                             <button
                                                 type="button"
@@ -437,7 +629,11 @@
                                             v-if="form.errors.description"
                                             class="mt-1 text-xs text-red-600 flex items-center"
                                         >
-                                            <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.description }}
+                                            <v-icon
+                                                name="bi-exclamation-circle"
+                                                class="mr-1"
+                                            />
+                                            {{ form.errors.description }}
                                         </p>
                                     </div>
                                 </div>
@@ -449,25 +645,51 @@
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
                                     >
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
                                             <v-icon
                                                 name="bi-camera"
                                                 class="text-blue-600"
                                             />
                                         </div>
                                         Capture Evidence
-                                        <span class="text-xs font-normal text-gray-500 ml-2">
-                                            ({{ form.photos.length }}/{{ MAX_TOTAL }})
+                                        <span
+                                            class="text-xs font-normal text-gray-500 ml-2"
+                                        >
+                                            ({{ form.photos.length }}/{{
+                                                MAX_TOTAL
+                                            }})
                                         </span>
                                     </h3>
 
                                     <!-- Media Counters -->
-                                    <div class="flex items-center justify-between mb-4 text-xs">
-                                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
-                                            Photos: {{ form.photos.filter((file) => file.type.startsWith("image")).length }}/{{ MAX_PHOTOS }}
+                                    <div
+                                        class="flex items-center justify-between mb-4 text-xs"
+                                    >
+                                        <span
+                                            class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full"
+                                        >
+                                            Photos:
+                                            {{
+                                                form.photos.filter((file) =>
+                                                    file.type.startsWith(
+                                                        "image"
+                                                    )
+                                                ).length
+                                            }}/{{ MAX_PHOTOS }}
                                         </span>
-                                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
-                                            Videos: {{ form.photos.filter((file) => file.type.startsWith("video")).length }}/{{ MAX_VIDEOS }}
+                                        <span
+                                            class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full"
+                                        >
+                                            Videos:
+                                            {{
+                                                form.photos.filter((file) =>
+                                                    file.type.startsWith(
+                                                        "video"
+                                                    )
+                                                ).length
+                                            }}/{{ MAX_VIDEOS }}
                                         </span>
                                     </div>
 
@@ -476,7 +698,9 @@
                                         v-if="cameraError"
                                         class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg"
                                     >
-                                        <div class="flex items-center text-red-600 text-sm">
+                                        <div
+                                            class="flex items-center text-red-600 text-sm"
+                                        >
                                             <v-icon
                                                 name="bi-exclamation-triangle-fill"
                                                 class="w-4 h-4 mr-2"
@@ -488,14 +712,23 @@
                                             @click="retryCamera"
                                             class="mt-2 text-xs text-blue-600 hover:text-blue-700 underline flex items-center"
                                         >
-                                            <v-icon name="bi-arrow-repeat" class="mr-1" /> Try Again
+                                            <v-icon
+                                                name="bi-arrow-repeat"
+                                                class="mr-1"
+                                            />
+                                            Try Again
                                         </button>
                                     </div>
 
                                     <!-- Camera Interface -->
-                                    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                                    <div
+                                        class="bg-gray-800 rounded-xl overflow-hidden shadow-lg"
+                                    >
                                         <!-- Camera Not Active State -->
-                                        <div v-if="!isCameraActive" class="p-6 text-center">
+                                        <div
+                                            v-if="!isCameraActive"
+                                            class="p-6 text-center"
+                                        >
                                             <div class="mb-5">
                                                 <div
                                                     class="w-16 h-16 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-4 shadow-md"
@@ -505,8 +738,11 @@
                                                         class="w-8 h-8 text-white"
                                                     />
                                                 </div>
-                                                <p class="text-gray-300 text-sm">
-                                                    Capture photos or videos to document the issue
+                                                <p
+                                                    class="text-gray-300 text-sm"
+                                                >
+                                                    Capture photos or videos to
+                                                    document the issue
                                                 </p>
                                             </div>
                                             <button
@@ -535,7 +771,10 @@
 
                                         <!-- Active Camera View -->
                                         <div v-else class="relative">
-                                            <div class="bg-black" style="aspect-ratio: 4/3">
+                                            <div
+                                                class="bg-black"
+                                                style="aspect-ratio: 4/3"
+                                            >
                                                 <video
                                                     ref="videoElement"
                                                     class="w-full h-full object-cover"
@@ -547,11 +786,15 @@
                                                     v-if="!isCameraReady"
                                                     class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
                                                 >
-                                                    <div class="text-center text-white">
+                                                    <div
+                                                        class="text-center text-white"
+                                                    >
                                                         <div
                                                             class="inline-block animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mb-3"
                                                         ></div>
-                                                        <p class="text-sm">{{ cameraStatus }}</p>
+                                                        <p class="text-sm">
+                                                            {{ cameraStatus }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div
@@ -564,25 +807,41 @@
                                                     v-if="isRecording"
                                                     class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs shadow-md flex items-center"
                                                 >
-                                                    <div class="w-2 h-2 bg-white rounded-full mr-1 animate-pulse"></div>
-                                                    REC {{ formatTime(recordingTime) }}
+                                                    <div
+                                                        class="w-2 h-2 bg-white rounded-full mr-1 animate-pulse"
+                                                    ></div>
+                                                    REC
+                                                    {{
+                                                        formatTime(
+                                                            recordingTime
+                                                        )
+                                                    }}
                                                 </div>
                                             </div>
-                                            <div class="bg-gray-900 p-4 flex justify-center gap-4">
+                                            <div
+                                                class="bg-gray-900 p-4 flex justify-center gap-4"
+                                            >
                                                 <button
                                                     type="button"
                                                     @click="capturePhoto"
                                                     :disabled="
                                                         !isCameraReady ||
-                                                        form.photos.filter((file) =>
-                                                            file.type.startsWith('image')
-                                                        ).length >= MAX_PHOTOS ||
+                                                        form.photos.filter(
+                                                            (file) =>
+                                                                file.type.startsWith(
+                                                                    'image'
+                                                                )
+                                                        ).length >=
+                                                            MAX_PHOTOS ||
                                                         isCapturing ||
                                                         isRecording
                                                     "
                                                     class="p-3 bg-blue-500 hover:bg-blue-600 rounded-full text-white shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <v-icon name="hi-camera" class="w-6 h-6" />
+                                                    <v-icon
+                                                        name="hi-camera"
+                                                        class="w-6 h-6"
+                                                    />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -593,9 +852,13 @@
                                                     "
                                                     :disabled="
                                                         !isCameraReady ||
-                                                        (form.photos.filter((file) =>
-                                                            file.type.startsWith('video')
-                                                        ).length >= MAX_VIDEOS &&
+                                                        (form.photos.filter(
+                                                            (file) =>
+                                                                file.type.startsWith(
+                                                                    'video'
+                                                                )
+                                                        ).length >=
+                                                            MAX_VIDEOS &&
                                                             !isRecording)
                                                     "
                                                     class="p-3 rounded-full text-white shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -621,45 +884,79 @@
                                                     :disabled="isRecording"
                                                     class="p-3 bg-red-600 hover:bg-red-700 rounded-full text-white shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <v-icon name="hi-solid-x" class="w-6 h-6" />
+                                                    <v-icon
+                                                        name="hi-solid-x"
+                                                        class="w-6 h-6"
+                                                    />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Media Gallery -->
-                                    <div v-if="form.photo_previews.length > 0" class="mt-5">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h4 class="text-sm font-semibold text-gray-900">
-                                                Captured Media ({{ form.photo_previews.length }})
+                                    <div
+                                        v-if="form.photo_previews.length > 0"
+                                        class="mt-5"
+                                    >
+                                        <div
+                                            class="flex items-center justify-between mb-3"
+                                        >
+                                            <h4
+                                                class="text-sm font-semibold text-gray-900"
+                                            >
+                                                Captured Media ({{
+                                                    form.photo_previews.length
+                                                }})
                                             </h4>
                                             <button
                                                 type="button"
                                                 @click="clearAllMedia"
                                                 class="text-xs text-red-600 hover:text-red-700 flex items-center"
                                             >
-                                                <v-icon name="hi-trash" class="mr-1" /> Clear All
+                                                <v-icon
+                                                    name="hi-trash"
+                                                    class="mr-1"
+                                                />
+                                                Clear All
                                             </button>
                                         </div>
                                         <div class="grid grid-cols-3 gap-3">
                                             <div
-                                                v-for="(preview, index) in form.photo_previews"
+                                                v-for="(
+                                                    preview, index
+                                                ) in form.photo_previews"
                                                 :key="'media-' + index"
                                                 class="relative group aspect-square"
                                             >
-                                                <div class="absolute -top-2 -right-2 z-10">
-                                                    <span v-if="form.photos[index].type.startsWith('image')"
-                                                        class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                                                <div
+                                                    class="absolute -top-2 -right-2 z-10"
+                                                >
+                                                    <span
+                                                        v-if="
+                                                            form.photos[
+                                                                index
+                                                            ].type.startsWith(
+                                                                'image'
+                                                            )
+                                                        "
+                                                        class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
+                                                    >
                                                         Photo
                                                     </span>
-                                                    <span v-else
-                                                        class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                                                    <span
+                                                        v-else
+                                                        class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full"
+                                                    >
                                                         Video
                                                     </span>
                                                 </div>
                                                 <img
                                                     v-if="
-                                                        form.photos[index].type.startsWith('image')
+                                                        form.photos[
+                                                            index
+                                                        ].type.startsWith(
+                                                            'image'
+                                                        )
                                                     "
                                                     :src="preview"
                                                     class="w-full h-full object-cover rounded-lg border border-gray-200 shadow-sm"
@@ -675,7 +972,10 @@
                                                     @click="removeMedia(index)"
                                                     class="absolute top-1 right-1 bg-red-500 p-1 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                                                 >
-                                                    <v-icon name="hi-trash" class="w-3 h-3" />
+                                                    <v-icon
+                                                        name="hi-trash"
+                                                        class="w-3 h-3"
+                                                    />
                                                 </button>
                                             </div>
                                         </div>
@@ -685,7 +985,11 @@
                                         v-if="form.errors.photos"
                                         class="mt-2 text-xs text-red-600 flex items-center"
                                     >
-                                        <v-icon name="bi-exclamation-circle" class="mr-1" /> {{ form.errors.photos }}
+                                        <v-icon
+                                            name="bi-exclamation-circle"
+                                            class="mr-1"
+                                        />
+                                        {{ form.errors.photos }}
                                     </p>
                                 </div>
 
@@ -695,7 +999,11 @@
                                 >
                                     <button
                                         type="submit"
-                                        :disabled="form.processing || isSubmitting || isRecording"
+                                        :disabled="
+                                            form.processing ||
+                                            isSubmitting ||
+                                            isRecording
+                                        "
                                         class="w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-sm px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
                                         <v-icon
@@ -713,12 +1021,20 @@
                                             name="bi-send"
                                             class="mr-2 h-5 w-5"
                                         />
-                                        <span v-if="isSubmitting">Submitting...</span>
-                                        <span v-else-if="isRecording">Stop recording to submit</span>
+                                        <span v-if="isSubmitting"
+                                            >Submitting...</span
+                                        >
+                                        <span v-else-if="isRecording"
+                                            >Stop recording to submit</span
+                                        >
                                         <span v-else>Submit Report</span>
                                     </button>
-                                    <p class="text-xs text-center text-gray-500 mt-3">
-                                        By submitting, you acknowledge that this information will be reviewed by authorities.
+                                    <p
+                                        class="text-xs text-center text-gray-500 mt-3"
+                                    >
+                                        By submitting, you acknowledge that this
+                                        information will be reviewed by
+                                        authorities.
                                     </p>
                                 </div>
                             </form>
@@ -748,7 +1064,11 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["update:isOpen", "update:successData", "update:showSuccessModal"]);
+const emit = defineEmits([
+    "update:isOpen",
+    "update:successData",
+    "update:showSuccessModal",
+]);
 
 // Get authenticated user
 const { props: pageProps } = usePage();
@@ -843,7 +1163,10 @@ const stopCamera = () => {
     if (isRecording.value) stopVideoRecording();
     if (stream) {
         stream.getTracks().forEach((track) => track.stop());
-        videoElement.value.srcObject = null;
+        stream = null; // Explicitly clear the stream
+    }
+    if (videoElement.value) {
+        videoElement.value.srcObject = null; // Only set if videoElement exists
     }
     isCameraActive.value = false;
     isCameraReady.value = false;
@@ -852,31 +1175,78 @@ const stopCamera = () => {
 const capturePhoto = async () => {
     if (
         !isCameraReady.value ||
-        form.photos.filter((file) => file.type.startsWith("image")).length >= MAX_PHOTOS ||
+        form.photos.filter((file) => file.type.startsWith("image")).length >=
+            MAX_PHOTOS ||
         isCapturing.value ||
         isRecording.value
-    ) return;
+    )
+        return;
 
     isCapturing.value = true;
     try {
         const canvas = document.createElement("canvas");
         canvas.width = videoElement.value.videoWidth;
         canvas.height = videoElement.value.videoHeight;
-        canvas.getContext("2d").drawImage(videoElement.value, 0, 0);
-        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
+        const ctx = canvas.getContext("2d");
+
+        // Draw the video frame onto the canvas
+        ctx.drawImage(videoElement.value, 0, 0);
+
+        // Add timestamp to the bottom-left corner
+        const timestamp = new Date().toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+        });
+        ctx.font = "16px Arial"; // Adjust font size and style as needed
+        ctx.fillStyle = "white"; // Text color
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(timestamp, 10, canvas.height - 10); // Position at bottom-left with padding
+
+        // Optional: Add a semi-transparent background for better readability
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent black background
+        ctx.fillRect(
+            0,
+            canvas.height - 30,
+            ctx.measureText(timestamp).width + 20,
+            20
+        );
+
+        // Redraw timestamp to ensure it's on top of the background
+        ctx.fillStyle = "white";
+        ctx.fillText(timestamp, 10, canvas.height - 10);
+
+        const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/jpeg", 0.95)
+        );
         if (blob.size > MAX_PHOTO_SIZE) throw new Error("Photo size too large");
-        const file = new File([blob], `water-report-${Date.now()}.jpg`, { type: "image/jpeg" });
+        const file = new File([blob], `water-report-${Date.now()}.jpg`, {
+            type: "image/jpeg",
+        });
         form.photos.push(file);
         form.photo_previews.push(URL.createObjectURL(blob));
         Swal.fire({
             toast: true,
             position: "top-end",
             icon: "success",
-            title: `Photo ${form.photos.filter((file) => file.type.startsWith("image")).length} captured!`,
+            title: `Photo ${
+                form.photos.filter((file) => file.type.startsWith("image"))
+                    .length
+            } captured!`,
             timer: 2000,
         });
     } catch (error) {
-        Swal.fire({ icon: "error", title: "Capture Failed", text: error.message, timer: 3000 });
+        Swal.fire({
+            icon: "error",
+            title: "Capture Failed",
+            text: error.message,
+            timer: 3000,
+        });
     } finally {
         isCapturing.value = false;
     }
@@ -885,9 +1255,11 @@ const capturePhoto = async () => {
 const startVideoRecording = async () => {
     if (
         !isCameraReady.value ||
-        form.photos.filter((file) => file.type.startsWith("video")).length >= MAX_VIDEOS ||
+        form.photos.filter((file) => file.type.startsWith("video")).length >=
+            MAX_VIDEOS ||
         !stream
-    ) return;
+    )
+        return;
 
     recordedChunks = [];
     recordingTime.value = 0;
@@ -909,17 +1281,27 @@ const startVideoRecording = async () => {
 
         const blob = new Blob(recordedChunks, { type: "video/webm" });
         if (blob.size > MAX_VIDEO_SIZE) {
-            Swal.fire({ icon: "error", title: "Video Too Large", text: "Video exceeds 25MB limit", timer: 3000 });
+            Swal.fire({
+                icon: "error",
+                title: "Video Too Large",
+                text: "Video exceeds 25MB limit",
+                timer: 3000,
+            });
             return;
         }
-        const file = new File([blob], `water-report-video-${Date.now()}.webm`, { type: "video/webm" });
+        const file = new File([blob], `water-report-video-${Date.now()}.webm`, {
+            type: "video/webm",
+        });
         form.photos.push(file);
         form.photo_previews.push(URL.createObjectURL(blob));
         Swal.fire({
             toast: true,
             position: "top-end",
             icon: "success",
-            title: `Video ${form.photos.filter((file) => file.type.startsWith("video")).length} recorded!`,
+            title: `Video ${
+                form.photos.filter((file) => file.type.startsWith("video"))
+                    .length
+            } recorded!`,
             timer: 2000,
         });
     };
@@ -979,18 +1361,34 @@ const restrictPhoneInput = (event) => {
     form.reporter_phone = value;
 };
 
+// In the <script setup> section, update the submitReport function:
 const submitReport = () => {
     if (form.photos.length === 0) {
-        Swal.fire({ icon: "error", title: "Media Required", text: "At least one photo or video is required.", timer: 3000 });
+        Swal.fire({
+            icon: "error",
+            title: "Media Required",
+            text: "At least one photo or video is required.",
+            timer: 3000,
+        });
         return;
     }
     if (locationStatus.value !== "success") {
-        Swal.fire({ icon: "error", title: "Location Required", text: "Please enable GPS/location services.", timer: 3000 });
+        Swal.fire({
+            icon: "error",
+            title: "Location Required",
+            text: "Please enable GPS/location services.",
+            timer: 3000,
+        });
         getLocation();
         return;
     }
     if (isRecording.value) {
-        Swal.fire({ icon: "warning", title: "Recording in Progress", text: "Please stop recording.", timer: 3000 });
+        Swal.fire({
+            icon: "warning",
+            title: "Recording in Progress",
+            text: "Please stop recording.",
+            timer: 3000,
+        });
         return;
     }
     isSubmitting.value = true;
@@ -999,19 +1397,40 @@ const submitReport = () => {
         preserveScroll: true,
         onSuccess: (response) => {
             isSubmitting.value = false;
+            const trackingCode =
+                response.props.trackingCode ||
+                response.props.swal?.trackingCode; // Fallback to response data or swal prop
+            // Show immediate toast with tracking code
+            Swal.fire({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                icon: "success",
+                title: "Report Submitted Successfully!",
+                text: `Your tracking code is ${trackingCode}. Save it for reference.`,
+                // footer: `Date: ${response.props.dateSubmitted || new Date().toISOString()}`,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+            });
             emit("update:successData", {
-                trackingCode: response.props.trackingCode,
+                trackingCode: trackingCode,
                 dateSubmitted: response.props.dateSubmitted,
             });
             emit("update:showSuccessModal", true);
             closeModal();
-
-            // The SweetAlert notification will now be handled by the parent component
-            // via the session flash data, so we can remove the direct Swal.fire call here
         },
         onError: (errors) => {
             isSubmitting.value = false;
-            Swal.fire({ icon: "error", title: "Submission Failed", text: errors.message || "Please try again.", timer: 3000 });
+            Swal.fire({
+                icon: "error",
+                title: "Submission Failed",
+                text: errors.message || "Please try again.",
+                timer: 3000,
+            });
         },
     });
 };
@@ -1019,7 +1438,12 @@ const submitReport = () => {
 const getLocation = () => {
     if (!navigator.geolocation) {
         locationStatus.value = "error";
-        Swal.fire({ icon: "error", title: "Geolocation Not Supported", text: "Your browser does not support location services.", timer: 3000 });
+        Swal.fire({
+            icon: "error",
+            title: "Geolocation Not Supported",
+            text: "Your browser does not support location services.",
+            timer: 3000,
+        });
         return;
     }
     locationStatus.value = "loading";
@@ -1031,7 +1455,12 @@ const getLocation = () => {
         },
         () => {
             locationStatus.value = "error";
-            Swal.fire({ icon: "error", title: "Location Access Denied", text: "Please enable GPS/location services.", timer: 3000 });
+            Swal.fire({
+                icon: "error",
+                title: "Location Access Denied",
+                text: "Please enable GPS/location services.",
+                timer: 3000,
+            });
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 }
     );
@@ -1111,8 +1540,13 @@ onUnmounted(() => {
 
 /* Custom animations */
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .animate-pulse {

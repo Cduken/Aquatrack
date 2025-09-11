@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/ReportController.php
 
 namespace App\Http\Controllers;
 
@@ -29,6 +28,43 @@ class ReportController extends Controller
         'Zone 11' => ['Cantuyoc', 'Nahawan'],
         'Zone 12' => ['Lajog', 'Buacao'],
     ];
+
+    public function destroy(Request $request, Report $report)
+    {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        // Update the report's status with the reason
+        $report->status = "Deleted: " . $validated['reason'];
+        $report->save();
+
+        // Soft delete the report
+        $report->delete();
+
+        // Log the deletion activity
+        Activity::create([
+            'event' => 'report_deleted',
+            'description' => "Report deleted with reason: {$validated['reason']}",
+            'subject_type' => get_class($report),
+            'subject_id' => $report->id,
+            'causer_type' => Auth::check() ? get_class(Auth::user()) : null,
+            'causer_id' => Auth::id(),
+            'properties' => [
+                'tracking_code' => $report->tracking_code,
+                'reason' => $validated['reason'],
+            ],
+        ]);
+
+        // Return an Inertia redirect response instead of JSON
+        return redirect()->route('admin.reports')->with([
+            'swal' => [
+                'icon' => 'success',
+                'title' => 'Report Deleted',
+                'text' => 'Report deleted successfully.',
+            ],
+        ]);
+    }
 
     public function create()
     {
@@ -136,39 +172,43 @@ class ReportController extends Controller
                 ]);
             }
 
+            // Check if user is authenticated
             if (Auth::check()) {
-                return redirect()->route('customer.reports')->with([
-                    'swal' => [
+                // Redirect to a success page or show a view
+                return redirect()->route('customer.reports') // Redirect to customer reports page
+                    ->with('swal', [
                         'icon' => 'success',
-                        'title' => 'Report Submitted!',
-                        'text' => 'Your report has been submitted successfully.',
-                        'trackingCode' => $trackingCode
-                    ]
-                ]);
-            } else {
-                return Inertia::render('Landing/LandingPage', [
-                    'canLogin' => true,
-                    'canRegister' => true,
-                    'laravelVersion' => app()->version(),
-                    'phpVersion' => PHP_VERSION,
-                    'trackingCode' => $trackingCode,
-                    'dateSubmitted' => now()->toISOString(),
-                    'swal' => [
-                        'icon' => 'success',
-                        'title' => 'Report Submitted!',
-                        'text' => 'Your report has been submitted successfully.',
-                        'trackingCode' => $trackingCode
-                    ]
-                ]);
+                        'title' => 'Report Submitted',
+                        'text' => 'Your report has been submitted successfully!',
+                        'trackingCode' => $trackingCode, // Include tracking code for the toast
+                    ]);
             }
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with([
-                'swal' => [
-                    'icon' => 'error',
-                    'title' => 'Submission Failed',
-                    'text' => 'Failed to submit report: ' . $e->getMessage(),
-                ]
+
+            // Return JSON response for unauthenticated or AJAX requests
+            return response()->json([
+                'success' => true,
+                'message' => 'Report submitted successfully',
+                'trackingCode' => $trackingCode,
+                'dateSubmitted' => now()->toISOString(),
+                'reportId' => $report->id
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if (Auth::check()) {
+                return redirect()->back()->withErrors($e->errors())->withInput();
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            if (Auth::check()) {
+                return redirect()->back()->with('error', 'Failed to submit report: ' . $e->getMessage());
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit report: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -188,6 +228,7 @@ class ReportController extends Controller
     {
         $reports = Report::with(['photos'])
             ->where('user_id', Auth::id())
+            ->whereNull('deleted_at')
             ->latest()
             ->paginate(10);
 
@@ -201,6 +242,7 @@ class ReportController extends Controller
     public function adminIndex(Request $request)
     {
         $query = Report::with(['photos', 'user'])
+            ->whereNull('deleted_at')
             ->latest();
 
         if ($request->userType === 'guest') {
@@ -213,37 +255,17 @@ class ReportController extends Controller
             $query->where('status', $request->status);
         }
 
-        $reports = $query->paginate(10)
+        $reports = $query->paginate(5)
             ->appends($request->query());
 
         return Inertia::render('Admin/Reports', [
-            'reports' => $query->paginate(10)
-                ->appends($request->query()),
+            'reports' => $reports,
             'filters' => $request->only(['userType', 'status', 'search']),
             'canEdit' => true,
+            'canDelete' => true,
             'swal' => $request->session()->get('swal')
         ]);
     }
-
-    // public function publicIndex(Request $request)
-    // {
-    //     $reports = Report::with(['photos', 'user'])
-    //         ->latest()
-    //         ->paginate(10);
-
-    //     return Inertia::render('Reports/Index', [
-    //         'reports' => $reports,
-    //     ]);
-    // }
-
-    // public function show(Report $report)
-    // {
-    //     $report->load(['photos', 'user']);
-
-    //     return Inertia::render('Reports/Show', [
-    //         'report' => $report
-    //     ]);
-    // }
 
     public function track(Request $request)
     {
@@ -252,11 +274,12 @@ class ReportController extends Controller
         }
 
         $request->validate([
-            'tracking_code' => 'required|string|exists:reports,tracking_code'
+            'tracking_code' => 'required|string|exists:reports,tracking_code,deleted_at,NULL'
         ]);
 
         $report = Report::with(['photos'])
             ->where('tracking_code', $request->tracking_code)
+            ->whereNull('deleted_at')
             ->firstOrFail();
 
         return inertia()->render('Reports/Track', [
@@ -272,6 +295,7 @@ class ReportController extends Controller
 
         $report = Report::with(['photos'])
             ->where('tracking_code', $request->tracking_code)
+            ->whereNull('deleted_at')
             ->first();
 
         if (!$report) {
@@ -307,7 +331,7 @@ class ReportController extends Controller
             ]
         ]);
 
-        return redirect()->route('admin.reports')->with([
+        return Inertia::render('Admin/Reports', [
             'swal' => [
                 'icon' => 'success',
                 'title' => 'Status Updated',
@@ -315,9 +339,4 @@ class ReportController extends Controller
             ]
         ]);
     }
-
-    // public function testIndex()
-    // {
-    //     return Inertia::render('Test/Test');
-    // }
 }

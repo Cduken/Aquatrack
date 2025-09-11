@@ -154,7 +154,7 @@ const handleReportSuccess = (data) => {
 <template>
     <main id="home" class="relative w-full min-h-screen overflow-hidden">
         <div
-            class="purple-float absolute left-[300px] top-0 w-72 h-72 rounded-full bg-purple-300/50 blur-3xl"
+            class="purple-float absolute left-[300px] top-0 w-72 h-72 rounded-full bg-[#00D4FF]/10 blur-3xl"
         ></div>
         <div
             class="purple-float absolute left-40 bottom-40 w-48 h-48 rounded-full bg-purple-400/20 blur-3xl"
@@ -173,12 +173,12 @@ const handleReportSuccess = (data) => {
                     class="text-4xl sm:text-5xl lg:text-6xl mb-4 leading-snug font-light"
                 >
                     <span
-                        class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800 floating-text"
+                        class="block text-transparent bg-clip-text bg-gradient-to-r from-[#062F64] to-[#1E4272] floating-text"
                     >
                         Clarin Water
                     </span>
                     <span
-                        class="block text-transparent leading-snug bg-clip-text bg-gradient-to-r from-purple-500 to-blue-600 floating-text"
+                        class="block text-transparent leading-snug bg-clip-text bg-gradient-to-r from-[#090979] to-[#00D4FF]    floating-text"
                         style="animation-delay: 0.2s"
                     >
                         Management System
@@ -269,7 +269,7 @@ const handleReportSuccess = (data) => {
                     <div
                         class="h-full flex flex-col bg-white shadow-xl overflow-y-auto"
                     >
-                        <div class="bg-[#062F64] px-4 py-5 sm:px-6">
+                        <div class="bg-[#062F64] px-4 py-5 sm:px-6 sticky top-0 z-50">
                             <div class="flex items-center justify-between">
                                 <h2
                                     class="text-xl font-semibold text-white leading-7"

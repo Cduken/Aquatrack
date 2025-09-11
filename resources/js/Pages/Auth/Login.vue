@@ -1,26 +1,15 @@
 <script setup>
 import { useForm, Link, usePage } from "@inertiajs/vue3";
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { OhVueIcon } from "oh-vue-icons";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 const props = defineProps({
-    selectedRole: {
-        type: String,
-        default: "",
-    },
-    canResetPassword: {
-        type: Boolean,
-        default: true,
-    },
-    status: {
-        type: String,
-    },
-    auth: {
-        type: Object,
-        default: () => ({ user: null }),
-    },
+    selectedRole: { type: String, default: "" },
+    canResetPassword: { type: Boolean, default: true },
+    status: { type: String },
+    auth: { type: Object, default: () => ({ user: null }) },
 });
 
 const emit = defineEmits(["close", "login-success"]);
@@ -32,17 +21,22 @@ const verificationError = ref("");
 const isVerifying = ref(false);
 
 const securedRoles = ["admin", "staff"];
-const requiresVerification = computed(() => {
-    return securedRoles.includes(props.selectedRole.toLowerCase());
-});
+const requiresVerification = computed(() =>
+    securedRoles.includes(props.selectedRole.toLowerCase())
+);
 
 const form = useForm({
     email: "",
-    serial_number: "",
+    account_number: "",
     password: "",
     remember: false,
     role: props.selectedRole ? props.selectedRole.toLowerCase() : "customer",
 });
+
+// --- Lockout state ---
+const formDisabled = ref(false);
+const lockoutSeconds = ref(0);
+let lockoutTimer = null;
 
 // Reset code verification when selected role changes
 watch(
@@ -68,11 +62,8 @@ watch(
                 timer: 2000,
                 toast: true,
                 background: "#f8f9fa",
-
                 width: "400px",
-                customClass: {
-                    title: "text-lg font-medium",
-                },
+                customClass: { title: "text-lg font-medium" },
             });
         }
     },
@@ -81,14 +72,11 @@ watch(
 
 const updateCsrfToken = (newToken) => {
     const metaTag = document.querySelector('meta[name="csrf-token"]');
-    if (metaTag && newToken) {
-        metaTag.setAttribute("content", newToken);
-    }
+    if (metaTag && newToken) metaTag.setAttribute("content", newToken);
 };
 
-const getCsrfToken = () => {
-    return document.querySelector('meta[name="csrf-token"]')?.content || "";
-};
+const getCsrfToken = () =>
+    document.querySelector('meta[name="csrf-token"]')?.content || "";
 
 const verifyCode = async () => {
     verificationError.value = "";
@@ -110,7 +98,6 @@ const verifyCode = async () => {
             }
         );
 
-        // Update CSRF token if provided
         if (response.data.csrf_token) {
             updateCsrfToken(response.data.csrf_token);
         }
@@ -126,17 +113,12 @@ const verifyCode = async () => {
                 timer: 2000,
                 toast: true,
                 background: "#f8f9fa",
-
                 width: "400px",
-                customClass: {
-                    title: "text-lg font-medium",
-                },
+                customClass: { title: "text-lg font-medium" },
             });
         }
     } catch (error) {
-        console.error("Verification error:", error);
         if (error.response?.status === 419) {
-            // Handle CSRF token mismatch
             updateCsrfToken(error.response.data.csrf_token);
             verificationError.value =
                 "Session expired. Please refresh the page and try again.";
@@ -149,15 +131,10 @@ const verifyCode = async () => {
                 confirmButtonText: "Refresh",
                 toast: true,
                 background: "#f8f9fa",
-
                 width: "400px",
-                customClass: {
-                    title: "text-lg font-medium",
-                },
+                customClass: { title: "text-lg font-medium" },
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.reload();
-                }
+                if (result.isConfirmed) window.location.reload();
             });
         } else {
             verificationError.value =
@@ -173,23 +150,31 @@ const verifyCode = async () => {
                 timer: 2000,
                 toast: true,
                 background: "#f8f9fa",
-
                 width: "400px",
-                customClass: {
-                    title: "text-lg font-medium",
-                },
+                customClass: { title: "text-lg font-medium" },
             });
         }
     } finally {
         const elapsed = Date.now() - startTime;
-        const minimumDelay = 2000; // 2 seconds minimum spinner
+        const minimumDelay = 2000;
         if (elapsed < minimumDelay) {
-            await new Promise((resolve) =>
-                setTimeout(resolve, minimumDelay - elapsed)
-            );
+            await new Promise((r) => setTimeout(r, minimumDelay - elapsed));
         }
         isVerifying.value = false;
     }
+};
+
+const formatAccountNumber = (event) => {
+  let input = event.target.value.replace(/\D/g, ''); // Remove non-digits
+
+  // Format as XXX-XX-XXX
+  if (input.length > 5) {
+    form.account_number = input.slice(0, 3) + '-' + input.slice(3, 5) + '-' + input.slice(5, 8);
+  } else if (input.length > 3) {
+    form.account_number = input.slice(0, 3) + '-' + input.slice(3, 5);
+  } else {
+    form.account_number = input;
+  }
 };
 
 const submit = () => {
@@ -211,66 +196,46 @@ const submit = () => {
                 timerProgressBar: true,
                 toast: true,
                 background: "#f8f9fa",
-
-                width: "400px",
+                width: "300px", // Reduced from 400px
                 customClass: {
-                    title: "text-lg font-medium",
+                    title: "text-sm font-medium", // Smaller font
+                    content: "text-xs", // Smaller text
+                    popup: "p-2", // Reduce padding
                 },
-            }).then(() => {
-                emit("login-success");
-            });
+            }).then(() => emit("login-success"));
         },
         onError: (errors) => {
-            console.log("Complete error object:", errors);
+            if (errors.throttle) {
+                lockoutSeconds.value = errors.remaining_time || 30;
+                formDisabled.value = true;
 
-            let errorTitle = "Login Failed";
-            let errorMessage = "Invalid credentials. Please try again";
-
-            if (errors.email) {
-                errorMessage = errors.email;
-            } else if (errors.role_mismatch) {
-                if (typeof errors.role_mismatch === "object") {
-                    errorTitle = errors.role_mismatch.title || errorTitle;
-                    errorMessage = errors.role_mismatch.message || errorMessage;
-                } else {
-                    errorMessage = errors.role_mismatch;
-                }
-            } else if (errors.message) {
-                errorMessage = errors.message;
+                if (lockoutTimer) clearInterval(lockoutTimer);
+                lockoutTimer = setInterval(() => {
+                    lockoutSeconds.value--;
+                    if (lockoutSeconds.value <= 0) {
+                        clearInterval(lockoutTimer);
+                        formDisabled.value = false;
+                    }
+                }, 1000);
+                return;
             }
 
+            let errorMessage =
+                errors.email ||
+                errors.account_number || // Added account_number error handling
+                "Invalid credentials. Please try again";
             Swal.fire({
                 position: "top-end",
                 icon: "error",
-                title: errorTitle,
-                html: `
-                    <div class="text-left">
-                        <p class="font-medium">${errorMessage}</p>
-                        ${
-                            errors.role_mismatch
-                                ? `
-                            <div class="mt-3 text-sm">
-                                <p>Try one of these options:</p>
-                                <ul class="list-disc pl-5 mt-1">
-                                    <li>Login through the correct portal for your account type</li>
-                                    <li>Contact your administrator if you believe this is an error</li>
-                                    <li>Select a different role if you have multiple roles</li>
-                                </ul>
-                            </div>
-                        `
-                                : ""
-                        }
-                    </div>
-                `,
+                title: "Login Failed",
+                text: errorMessage,
                 showConfirmButton: false,
-                timer: 4000,
+                timer: 3000,
                 toast: true,
-                background: "#f8f9fa",
-
-                width: "450px",
+                width: "300px",
                 customClass: {
-                    title: "text-lg font-medium",
-                    htmlContainer: "text-left",
+                    title: "text-sm",
+                    htmlContainer: "text-xs",
                 },
             });
         },
@@ -280,7 +245,7 @@ const submit = () => {
 
 <template>
     <div class="flex flex-col md:flex-row h-full bg-white">
-        <!-- Left Side - Logo Section -->
+        <!-- Left Side -->
         <div
             class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 items-center justify-center p-12"
         >
@@ -301,7 +266,7 @@ const submit = () => {
             </div>
         </div>
 
-        <!-- Right Side - Form Section -->
+        <!-- Right Side -->
         <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
             <div class="text-center mb-8">
                 <h2 class="text-2xl text-gray-800 mb-2">
@@ -310,7 +275,7 @@ const submit = () => {
                 <p class="text-gray-600">Enter your credentials to continue</p>
             </div>
 
-            <!-- Code Verification Form -->
+            <!-- Verification -->
             <div v-if="requiresVerification && !codeVerified" class="space-y-6">
                 <div class="relative">
                     <input
@@ -323,16 +288,14 @@ const submit = () => {
                     />
                     <label
                         for="verificationCode"
-                        class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1"
+                        class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 bg-white px-1"
                     >
                         {{ selectedRole }} Verification Code
                     </label>
                 </div>
-
                 <div v-if="verificationError" class="text-red-500 text-sm mt-1">
                     {{ verificationError }}
                 </div>
-
                 <button
                     @click="verifyCode"
                     type="button"
@@ -340,42 +303,20 @@ const submit = () => {
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
                     :class="{ 'opacity-75 cursor-not-allowed': isVerifying }"
                 >
-                    <template v-if="isVerifying">
-                        <svg
-                            class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 24 24"
-                        >
-                            <circle
-                                class="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                        Verifying...
-                    </template>
+                    <template v-if="isVerifying"> Verifying... </template>
                     <template v-else> Verify Code </template>
                 </button>
             </div>
 
-            <!-- Main Login Form -->
+            <!-- Login -->
             <form
                 v-if="!requiresVerification || codeVerified"
                 @submit.prevent="submit"
                 class="space-y-6"
             >
                 <div class="relative">
-                    <!-- Email Input for Admin & Staff -->
                     <template v-if="form.role !== 'customer'">
+                        <!-- Email -->
                         <input
                             id="email"
                             v-model="form.email"
@@ -383,42 +324,39 @@ const submit = () => {
                             required
                             class="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer"
                             placeholder=" "
+                            :disabled="formDisabled"
                         />
                         <label
                             for="email"
-                            class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1"
+                            class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 bg-white px-1"
                         >
                             Email Address
                         </label>
                     </template>
 
-                    <!-- Serial Number Input for Customers -->
+                    <!-- Serial Number for Customers -->
                     <template v-else>
                         <input
-                            id="serial_number"
-                            v-model="form.serial_number"
+                            id="account_number"
+                            v-model="form.account_number"
                             type="text"
-                            inputmode="numeric"
-                            pattern="[0-9]*"
-                            maxlength="9"
-                            @input="
-                                form.serial_number = form.serial_number
-                                    .replace(/[^0-9]/g, '')
-                                    .slice(0, 9)
-                            "
+                            :disabled="formDisabled"
+                            @input="formatAccountNumber"
                             required
                             class="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer"
                             placeholder=" "
+                            maxlength="10"
                         />
                         <label
-                            for="serial_number"
-                            class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1"
+                            for="account_number"
+                            class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 bg-white px-1"
                         >
-                            Serial Number
+                            Account Number (XXX-XX-XXX)
                         </label>
                     </template>
                 </div>
 
+                <!-- Password -->
                 <div class="relative">
                     <input
                         id="password"
@@ -427,10 +365,11 @@ const submit = () => {
                         required
                         class="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer"
                         placeholder=" "
+                        :disabled="formDisabled"
                     />
                     <label
                         for="password"
-                        class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 pointer-events-none bg-white px-1"
+                        class="absolute left-3 top-3 text-gray-500 transition-all duration-200 transform peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 bg-white px-1"
                     >
                         Password
                     </label>
@@ -444,39 +383,50 @@ const submit = () => {
                             class="text-gray-500 hover:text-gray-700"
                         />
                     </button>
+
+                    <div
+                        v-if="lockoutSeconds > 0"
+                        class="border-l-4 border-red-500 bg-red-50 p-4 mb-4 rounded-r-md shadow-sm mt-3"
+                    >
+                        <div class="flex items-start">
+                            <svg
+                                class="w-5 h-5 text-red-400 mt-0.5 mr-3"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                            <div>
+                                <h3 class="text-red-800 font-medium text-sm">
+                                    Security Lockout
+                                </h3>
+                                <p class="text-red-700 text-sm mt-1">
+                                    Please wait
+                                    <span class="font-semibold"
+                                        >{{ lockoutSeconds }} seconds</span
+                                    >
+                                    before attempting again.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Submit -->
                 <button
                     type="submit"
-                    :disabled="form.processing"
+                    :disabled="form.processing || formDisabled"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
                     :class="{
-                        'opacity-75 cursor-not-allowed': form.processing,
+                        'opacity-75 cursor-not-allowed':
+                            form.processing || formDisabled,
                     }"
                 >
-                    <template v-if="form.processing">
-                        <svg
-                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                class="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-                            <path
-                                class="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                        Signing in...
-                    </template>
+                    <template v-if="form.processing"> Signing in... </template>
                     <template v-else>
                         <OhVueIcon name="md-login-outlined" class="text-lg" />
                         Sign In
@@ -496,26 +446,11 @@ const submit = () => {
 </template>
 
 <style scoped>
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 input:focus ~ label,
 input:not(:placeholder-shown) ~ label {
     transform: translateY(-1.5rem) scale(0.75);
     color: #2563eb;
 }
-
 input::placeholder {
     color: transparent;
 }

@@ -14,6 +14,7 @@ class MeterReading extends Model
         'staff_id',
         'billing_month',
         'reading_date',
+        'previous_reading',
         'reading',
         'consumption',
         'amount',

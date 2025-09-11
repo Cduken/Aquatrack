@@ -29,7 +29,7 @@ class LoginRequest extends FormRequest
         return [
             'role' => ['required', 'string', 'in:customer,admin,staff'],
             'email' => ['required_if:role,admin,staff', 'nullable', 'string', 'email'],
-            'serial_number' => ['required_if:role,customer', 'nullable', 'string'],
+            'account_number' => ['required_if:role,customer', 'nullable', 'string'], // Changed from serial_number
             'password' => ['required', 'string'],
         ];
     }
@@ -46,8 +46,18 @@ class LoginRequest extends FormRequest
         $credentials = [];
 
         if ($this->role === 'customer') {
+            // Handle both formatted (123-45-678) and unformatted (12345678) account numbers
+            $accountNumber = $this->account_number;
+
+            // If input contains dashes, use as-is, otherwise format it
+            if (strpos($accountNumber, '-') === false && strlen($accountNumber) >= 8) {
+                $accountNumber = substr($accountNumber, 0, 3) . '-' .
+                    substr($accountNumber, 3, 2) . '-' .
+                    substr($accountNumber, 5);
+            }
+
             $credentials = [
-                'serial_number' => $this->serial_number,
+                'account_number' => $accountNumber,
                 'password' => $this->password,
             ];
         } else {
@@ -61,7 +71,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                $this->role === 'customer' ? 'serial_number' : 'email' => trans('auth.failed'),
+                $this->role === 'customer' ? 'account_number' : 'email' => trans('auth.failed'),
             ]);
         }
 
@@ -98,7 +108,7 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         $identifier = $this->role === 'customer'
-            ? $this->string('serial_number')
+            ? $this->string('account_number') // Changed from serial_number
             : $this->string('email');
 
         return Str::transliterate(Str::lower($identifier) . '|' . $this->ip());

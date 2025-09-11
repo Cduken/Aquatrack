@@ -36,6 +36,8 @@ import * as IoIcons from "oh-vue-icons/icons/io";
 import * as OiIcons from "oh-vue-icons/icons/oi";
 
 import { LaUserEditSolid } from "oh-vue-icons/icons";
+import { LaSpinnerSolid } from "oh-vue-icons/icons";
+
 
 
 
@@ -214,6 +216,10 @@ addIcons(
     BiIcons.BiEnvelopeOpen,
     BiIcons.BiCalendarEvent,
     BiIcons.BiPlay,
+    BiIcons.BiStars,
+    BiIcons.BiCheck,
+    BiIcons.BiSend,
+    BiIcons.BiRecordCircle,
 
     // Heroicons
     HiIcons.HiSolidUser,
@@ -273,6 +279,7 @@ addIcons(
     HiIcons.HiDownload,
     HiIcons.HiSortDescending,
     HiIcons.HiPaperAirplane,
+    HiIcons.HiBell,
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -327,6 +334,8 @@ addIcons(
 
     // Line Awesome
     LaUserEditSolid,
+    LaSpinnerSolid,
+
 
     // Eos Icons
 

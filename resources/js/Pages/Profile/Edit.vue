@@ -11,19 +11,23 @@ const user = computed(() => props.auth.user);
 
 // Determine user type
 const userType = computed(() => {
-  if (user.value.roles?.includes("admin")) return "admin";
-  if (user.value.roles?.includes("staff")) return "staff";
-  return user.value.type || "customer";
+    if (user.value.roles?.includes("admin")) return "admin";
+    if (user.value.roles?.includes("staff")) return "staff";
+    return user.value.type || "customer";
 });
 
 // Dashboard route computed property - FIXED
 const getDashboardRoute = computed(() => {
-  switch (userType.value) {
-    case 'admin': return 'admin.dashboard';
-    case 'staff': return 'staff.dashboard';
-    case 'customer': return 'customer.dashboard'; // Fixed this line
-    default: return 'dashboard';
-  }
+    switch (userType.value) {
+        case "admin":
+            return "admin.dashboard";
+        case "staff":
+            return "staff.dashboard";
+        case "customer":
+            return "customer.dashboard"; // Fixed this line
+        default:
+            return "dashboard";
+    }
 });
 
 // Profile Information Form
@@ -233,7 +237,7 @@ const layout = computed(() => {
                                         id="email"
                                         type="email"
                                         autocomplete="email"
-                                        required
+                                        placeholder="Optional"
                                         class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
                                     />
                                     <p

@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
 import Chart from "chart.js/auto";
 
@@ -11,6 +11,12 @@ const totalUsers = page.props.total_users ?? 0;
 const totalStaffs = page.props.total_staffs ?? 0;
 const totalReports = page.props.total_reports ?? 0;
 const totalCustomers = page.props.total_customers ?? 0;
+const monthlyConsumption = page.props.monthly_consumption ?? Array(12).fill(0);
+const currentMonthConsumption = page.props.current_month_consumption ?? 0;
+const averageConsumption = page.props.average_consumption ?? 0;
+const peakUsage = page.props.peak_usage ?? 0;
+const growthPercentage = page.props.growth_percentage ?? 0;
+const resolutionRate = page.props.resolution_rate ?? 0;
 const recentActivities = page.props.recent_activities ?? [];
 const canViewActivityLog =
     page.props.auth?.user?.can?.("view-activity-log") ?? false;
@@ -133,6 +139,26 @@ const formatTimeAgo = (dateString) => {
     });
 };
 
+// Get current month name
+const currentMonthName = computed(() => {
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return months[new Date().getMonth()];
+});
+
+// Get peak usage month
+const peakUsageMonth = computed(() => {
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const maxConsumption = Math.max(...monthlyConsumption);
+    const peakIndex = monthlyConsumption.indexOf(maxConsumption);
+    return months[peakIndex];
+});
+
 // Water chart initialization
 onMounted(() => {
     if (waterChart.value) {
@@ -140,23 +166,13 @@ onMounted(() => {
             type: "line",
             data: {
                 labels: [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec",
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                 ],
                 datasets: [
                     {
                         label: "Water Consumption (m³)",
-                        data: [42, 38, 45, 48, 52, 68, 62, 58, 53, 49, 46, 44],
+                        data: monthlyConsumption,
                         borderColor: "rgb(59, 130, 246)",
                         backgroundColor: "rgba(59, 130, 246, 0.05)",
                         tension: 0.4,
@@ -437,6 +453,22 @@ onMounted(() => {
                 <div class="mt-4 flex items-center justify-between">
                     <div class="flex items-center gap-1">
                         <svg
+                            v-if="growthPercentage >= 0"
+                            class="w-4 h-4 text-green-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 10l7-7m0 0l7 7m-7-7v18"
+                            ></path>
+                        </svg>
+                        <svg
+                            v-else
                             class="w-4 h-4 text-red-500"
                             fill="none"
                             stroke="currentColor"
@@ -450,20 +482,22 @@ onMounted(() => {
                                 d="M19 14l-7 7m0 0l-7-7m7 7V3"
                             ></path>
                         </svg>
-                        <span class="text-sm font-medium text-red-600"
-                            >1.2%</span
+                        <span
+                            :class="`text-sm font-medium ${growthPercentage >= 0 ? 'text-green-600' : 'text-red-600'}`"
                         >
+                            {{ Math.abs(growthPercentage) }}%
+                        </span>
                     </div>
                     <div
                         class="w-24 h-2 bg-amber-200 rounded-full overflow-hidden"
                     >
                         <div
                             class="h-full bg-amber-500 rounded-full"
-                            style="width: 42%"
+                            :style="`width: ${resolutionRate}%`"
                         ></div>
                     </div>
                 </div>
-                <p class="text-xs text-amber-500 mt-2">42% resolved</p>
+                <p class="text-xs text-amber-500 mt-2">{{ resolutionRate }}% resolved</p>
             </div>
         </div>
 
@@ -558,12 +592,12 @@ onMounted(() => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-blue-600">
-                                    Current Month
+                                    Current Month ({{ currentMonthName }})
                                 </p>
                                 <p
                                     class="text-2xl font-bold text-gray-800 mt-1"
                                 >
-                                    52
+                                    {{ currentMonthConsumption }}
                                     <span
                                         class="text-sm font-normal text-gray-500"
                                         >m³</span
@@ -572,6 +606,7 @@ onMounted(() => {
                             </div>
                             <div class="bg-white rounded-full p-2 shadow-sm">
                                 <svg
+                                    v-if="growthPercentage >= 0"
                                     class="w-5 h-5 text-green-500"
                                     fill="none"
                                     stroke="currentColor"
@@ -585,10 +620,27 @@ onMounted(() => {
                                         d="M5 10l7-7m0 0l7 7m-7-7v18"
                                     ></path>
                                 </svg>
+                                <svg
+                                    v-else
+                                    class="w-5 h-5 text-red-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                                    ></path>
+                                </svg>
                             </div>
                         </div>
-                        <p class="text-xs text-blue-500 mt-2">
-                            +12% vs last month
+                        <p
+                            :class="`text-xs ${growthPercentage >= 0 ? 'text-green-500' : 'text-red-500'} mt-2`"
+                        >
+                            {{ growthPercentage >= 0 ? '+' : '' }}{{ growthPercentage }}% vs last month
                         </p>
                     </div>
                     <div
@@ -602,7 +654,7 @@ onMounted(() => {
                                 <p
                                     class="text-2xl font-bold text-gray-800 mt-1"
                                 >
-                                    45
+                                    {{ averageConsumption }}
                                     <span
                                         class="text-sm font-normal text-gray-500"
                                         >m³</span
@@ -641,7 +693,7 @@ onMounted(() => {
                                 <p
                                     class="text-2xl font-bold text-gray-800 mt-1"
                                 >
-                                    68
+                                    {{ peakUsage }}
                                     <span
                                         class="text-sm font-normal text-gray-500"
                                         >m³</span
@@ -666,7 +718,7 @@ onMounted(() => {
                             </div>
                         </div>
                         <p class="text-xs text-amber-500 mt-2">
-                            Recorded in June 2023
+                            Recorded in {{ peakUsageMonth }} {{ new Date().getFullYear() }}
                         </p>
                     </div>
                 </div>
@@ -674,7 +726,6 @@ onMounted(() => {
         </div>
 
         <!-- Recent Activity Section -->
-
         <div
             class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden h-full"
         >
@@ -733,7 +784,7 @@ onMounted(() => {
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                                 stroke-width="2"
-                                d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 01118 0z"
                             ></path>
                         </svg>
                         <svg

@@ -106,6 +106,7 @@ class StaffReadingController extends Controller
         ]);
     }
 
+    // In StaffReadingController.php
     public function getPreviousReadings($userId)
     {
         try {
@@ -115,16 +116,19 @@ class StaffReadingController extends Controller
                 ->firstOrFail();
 
             $readings = MeterReading::where('user_id', $userId)
-                ->orderBy('reading_date', 'desc') // Orders by date descending (newest first)
+                ->orderBy('reading_date', 'desc')
                 ->limit(12)
                 ->get()
                 ->map(function ($reading) {
                     return [
+                        'id' => $reading->id,
                         'billing_month' => $reading->billing_month,
                         'reading_date' => $reading->reading_date ? $reading->reading_date->format('Y-m-d') : 'N/A',
                         'reading' => $reading->reading,
+                        'previous_reading' => $reading->previous_reading,
                         'consumption' => $reading->consumption,
                         'amount' => $reading->amount,
+                        'status' => $reading->status,
                         'year' => $reading->reading_date ? $reading->reading_date->format('Y') : date('Y')
                     ];
                 });
@@ -138,7 +142,7 @@ class StaffReadingController extends Controller
         }
     }
 
-    // In StaffReadingController.php
+
     // StaffReadingController.php
     public function storeReading(Request $request)
     {
@@ -147,11 +151,14 @@ class StaffReadingController extends Controller
             'billing_month' => 'required|string',
             'reading_date' => 'required|date',
             'reading' => 'required|numeric|min:0',
-            'previous_reading' => 'nullable|numeric|min:0', // Add this field
+            'previous_reading' => 'nullable|numeric|min:0',
         ]);
 
+        // Parse the reading date to get year
+        $readingDate = new \DateTime($validated['reading_date']);
+        $readingYear = $readingDate->format('Y');
+
         // Check if reading already exists for this month and year
-        $readingYear = (new \DateTime($validated['reading_date']))->format('Y');
         $existingReading = MeterReading::where('user_id', $validated['user_id'])
             ->where('billing_month', $validated['billing_month'])
             ->whereYear('reading_date', $readingYear)
@@ -163,18 +170,21 @@ class StaffReadingController extends Controller
             ], 422);
         }
 
-        // Use the provided previous reading or get from database
-        $previousReadingValue = $validated['previous_reading'] ?? null;
+        // Determine the correct previous reading
+        $previousReadingValue = $this->determinePreviousReading(
+            $validated['user_id'],
+            $validated['previous_reading'] ?? null,
+            $readingDate
+        );
 
-        if ($previousReadingValue === null) {
-            $previousReading = MeterReading::where('user_id', $validated['user_id'])
-                ->latest('reading_date')
-                ->first();
-
-            $previousReadingValue = $previousReading ? $previousReading->reading : 0;
+        // Validate that current reading is greater than previous reading
+        if ($validated['reading'] <= $previousReadingValue) {
+            return response()->json([
+                'error' => 'Current reading must be greater than previous reading'
+            ], 422);
         }
 
-        $consumption = max(0, $validated['reading'] - $previousReadingValue);
+        $consumption = $validated['reading'] - $previousReadingValue;
         $amount = $this->calculateBillAmount($consumption);
 
         $newReading = MeterReading::create([
@@ -182,6 +192,7 @@ class StaffReadingController extends Controller
             'staff_id' => Auth::id(),
             'billing_month' => $validated['billing_month'],
             'reading_date' => $validated['reading_date'],
+            'previous_reading' => $previousReadingValue, // Store the previous reading
             'reading' => $validated['reading'],
             'consumption' => $consumption,
             'amount' => $amount,
@@ -192,6 +203,30 @@ class StaffReadingController extends Controller
             'message' => 'Reading saved successfully',
             'reading' => $newReading
         ]);
+    }
+
+    /**
+     * Determine the correct previous reading value
+     */
+    private function determinePreviousReading($userId, $providedPreviousReading, $currentReadingDate)
+    {
+        // If previous reading is provided, use it
+        if ($providedPreviousReading !== null) {
+            return (float) $providedPreviousReading;
+        }
+
+        // Get the most recent reading before the current reading date
+        $previousReading = MeterReading::where('user_id', $userId)
+            ->where('reading_date', '<', $currentReadingDate->format('Y-m-d'))
+            ->orderBy('reading_date', 'desc')
+            ->first();
+
+        if ($previousReading) {
+            return $previousReading->reading;
+        }
+
+        // If no previous reading found, this might be the first reading
+        return 0;
     }
 
     /**

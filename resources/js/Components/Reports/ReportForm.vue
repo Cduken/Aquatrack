@@ -823,6 +823,7 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 const props = defineProps({
@@ -837,6 +838,7 @@ const emit = defineEmits([
     "update:successData",
     "update:showTrackModal",
     "track-report",
+    "submitted",
 ]);
 
 const isSubmitting = ref(false);
@@ -1393,13 +1395,14 @@ const capturePhoto = async () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
+        // Draw the video frame onto the canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+        // Add timestamp to the bottom-left corner
         const now = new Date();
         const timestamp = now.toLocaleString("en-US", {
-            weekday: "long",
             year: "numeric",
-            month: "long",
+            month: "short",
             day: "numeric",
             hour: "2-digit",
             minute: "2-digit",
@@ -1407,14 +1410,16 @@ const capturePhoto = async () => {
             hour12: true,
         });
 
-        const timestampPadding = 20;
+        const timestampPadding = 10;
         const fontSize = Math.max(16, Math.floor(canvas.width / 60));
         ctx.font = `bold ${fontSize}px Arial`;
 
+        // Measure timestamp text
         const textMetrics = ctx.measureText(timestamp);
         const textWidth = textMetrics.width;
         const textHeight = fontSize;
 
+        // Draw semi-transparent background for timestamp
         const bgX = timestampPadding;
         const bgY = canvas.height - timestampPadding - textHeight - 10;
         const bgWidth = textWidth + 20;
@@ -1423,10 +1428,12 @@ const capturePhoto = async () => {
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
 
+        // Draw border around timestamp background
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.strokeRect(bgX, bgY, bgWidth, bgHeight);
 
+        // Draw timestamp with layered stroke for clarity
         const textX = bgX + 10;
         const textY = bgY + textHeight + 5;
 
@@ -1445,6 +1452,7 @@ const capturePhoto = async () => {
         ctx.fillStyle = "white";
         ctx.fillText(timestamp, textX, textY);
 
+        // Add location below timestamp
         const locationText = currentLocation.value;
         ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
         const locationY = textY + fontSize + 5;
@@ -1473,6 +1481,7 @@ const capturePhoto = async () => {
         ctx.fillStyle = "white";
         ctx.fillText(locationText, textX + 8, locationY);
 
+        // Convert canvas to blob
         const blob = await new Promise((resolve) => {
             canvas.toBlob(resolve, "image/jpeg", 0.95);
         });
@@ -1596,50 +1605,67 @@ const submitReport = async () => {
 
     isSubmitting.value = true;
 
-    // Introduce a 2-second delay
-    await delay(2000);
+    // Create FormData for file uploads
+    const formData = new FormData();
 
-    form.post(route("reports.store"), {
-        preserveScroll: true,
-        onSuccess: (page) => {
-            isSubmitting.value = false;
-            console.log("Report submitted successfully");
-            console.log("Response props:", page.props);
-            console.log("Emitting submitted event:", {
-                trackingCode: page.props.trackingCode,
-                dateSubmitted: page.props.dateSubmitted,
-            });
-
-            emit("submitted", {
-                trackingCode: page.props.trackingCode,
-                dateSubmitted: page.props.dateSubmitted,
-            });
-
-            Swal.fire({
-                position: "top-end",
-                title: "Report Submitted Successfully!",
-                text: `Tracking Code: ${page.props.trackingCode}`,
-                icon: "success",
-                toast: true,
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true,
-            });
-
-            form.reset();
-            form.photos = [];
-        },
-        onError: (errors) => {
-            isSubmitting.value = false;
-            console.log("Submission errors:", errors);
-            Swal.fire({
-                icon: "error",
-                title: "Submission Failed",
-                text: "Please check the form for errors.",
-                confirmButtonColor: "#3085d6",
-            });
-        },
+    // Add all form fields except files
+    Object.keys(form.data()).forEach((key) => {
+        if (key !== "photos" && key !== "photo_previews") {
+            formData.append(key, form[key]);
+        }
     });
+
+    // Add photos/videos
+    form.photos.forEach((file, index) => {
+        formData.append(`photos[${index}]`, file);
+    });
+
+    // Use axios for the POST request instead of form.post()
+    try {
+        const response = await axios.post(route("reports.store"), formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        isSubmitting.value = false;
+        console.log("Report submitted successfully", response.data);
+
+        emit("submitted", {
+            trackingCode: response.data.trackingCode,
+            dateSubmitted: response.data.dateSubmitted,
+        });
+
+        Swal.fire({
+            position: "top-end",
+            title: "Report Submitted Successfully!",
+            text: `Tracking Code: ${response.data.trackingCode}`,
+            icon: "success",
+            toast: true,
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+        });
+
+        // Reset the form
+        form.reset();
+        form.photos = [];
+        form.photo_previews = [];
+    } catch (error) {
+        isSubmitting.value = false;
+        console.log("Submission errors:", error.response?.data);
+
+        if (error.response?.data?.errors) {
+            form.errors = error.response.data.errors;
+        }
+
+        Swal.fire({
+            icon: "error",
+            title: "Submission Failed",
+            text: "Please check the form for errors.",
+            confirmButtonColor: "#3085d6",
+        });
+    }
 };
 
 const getLocation = () => {

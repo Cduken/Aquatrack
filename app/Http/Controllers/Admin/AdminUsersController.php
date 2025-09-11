@@ -46,6 +46,7 @@ class AdminUsersController extends Controller
                     'lastname' => $user->lastname,
                     'email' => $user->email,
                     'phone' => $user->phone,
+                    'account_number' => $user->account_number,
                     'avatar_url' => $user->avatar_url,
                     'role' => $user->roles->first()?->name ?? 'none',
                     'zone' => $user->zone,
@@ -86,26 +87,27 @@ class AdminUsersController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+              'email' => 'nullable|string|email|max:255',
             'phone' => [
                 'required',
                 'string',
                 'regex:/^(\+63\d{10}|09\d{9})$/',
-                'max:13'
             ],
             'account_number' => [
                 'required',
                 'string',
                 'regex:/^\d{3}-\d{2}-\d{3}$/',
-                'unique:users'
+                'unique:users',
             ],
             'role' => 'required|in:customer,staff,admin',
             'zone' => 'required|string',
             'barangay' => 'required|string',
             'date_installed' => 'required|date',
             'brand' => 'required|string|max:255',
-            'serial_number' => 'required|string|regex:/^\d{9}$/|unique:users',
+            'serial_number' => 'required|string|size:9|regex:/^\d{9}$/|unique:users',
             'size' => 'required|string|max:50',
+            // remove "required" since you're forcing it true anyway
+            'enabled' => 'true',
         ]);
 
         $user = User::create([
@@ -124,14 +126,54 @@ class AdminUsersController extends Controller
             'enabled' => true,
         ]);
 
-        $password = strtoupper(substr($validated['lastname'], 0, 3)) . '_' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+        $password = strtoupper(substr($validated['lastname'], 0, 3)) . '_' . substr(preg_replace('/\D/', '', $validated['account_number']), 0, 3);
         $user->update(['password' => Hash::make($password)]);
         $user->assignRole($validated['role']);
 
         return redirect()->route('admin.users')->with([
             'success' => 'User created successfully',
-            'generated_password' => $password
+            'generated_password' => $password,
         ]);
+    }
+
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'password' => 'required|string|min:6'
+        ]);
+
+        $user->update(['password' => Hash::make($validated['password'])]);
+
+        return redirect()->back()->with([
+            'success' => 'Password reset successfully'
+        ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^(\+63\d{10}|09\d{9})$/',
+            ],
+
+            'zone' => 'required|string',
+            'barangay' => 'required|string',
+            'date_installed' => 'required|date',
+            'brand' => 'required|string|max:255',
+            'serial_number' => 'required|string|size:9|regex:/^\d{9}$/|unique:users,serial_number,' . $user->id,
+            'size' => 'required|string|max:50',
+        ]);
+
+
+        $user->update($validated);
+
+        return redirect()->back()->with('success', 'User updated successfully');
     }
 
     public function toggleStatus(Request $request)

@@ -59,6 +59,7 @@ class RolesAndPermissionsSeeder extends Seeder
             [
                 'name' => 'Concessioner',
                 'serial_number' => '123456789',
+
                 'password' => Hash::make('customer123'),
                 'email_verified_at' => now()
             ]

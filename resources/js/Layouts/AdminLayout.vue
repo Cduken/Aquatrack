@@ -52,8 +52,9 @@ const adminLinks = [
         icon: "bi-megaphone-fill",
     },
     { name: "Users", url: "/admin/users", icon: "fa-users" },
-    { name: "Activity Logs", url: "/admin/activity-logs", icon: "fa-list" },
-    {name: "Notifications", url: "/admin/notifications", icon: "fa-bell" },
+    { name: "Notifications", url: "/admin/notifications", icon: "hi-bell" },
+    { name: "Activity Logs", url: "/admin/activity-logs", icon: "hi-clipboard-list" },
+
 
 ];
 
