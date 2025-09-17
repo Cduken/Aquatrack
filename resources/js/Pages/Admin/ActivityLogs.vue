@@ -523,7 +523,7 @@ const userPercentage = computed(() => {
                                 />
                                 Reset Filters
                             </button>
-                            <button
+                            <!-- <button
                                 @click="exportLogs"
                                 class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg md:w-auto hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
                             >
@@ -532,7 +532,7 @@ const userPercentage = computed(() => {
                                     class="w-4 h-4 mr-1"
                                 />
                                 Export
-                            </button>
+                            </button> -->
                         </div>
                     </div>
                 </div>

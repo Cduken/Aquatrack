@@ -30,6 +30,16 @@ class AdminRecordController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Apply month filter
+        if ($request->has('month') && !empty($request->month)) {
+            $query->whereMonth('reading_date', $request->month);
+        }
+
+        // Apply year filter
+        if ($request->has('year') && !empty($request->year)) {
+            $query->whereYear('reading_date', $request->year);
+        }
+
         // Apply sorting
         $sortField = $request->get('sort', 'id');
         $sortDirection = $request->get('direction', 'desc');
@@ -44,7 +54,7 @@ class AdminRecordController extends Controller
         return Inertia::render('Admin/Records', [
             'serial_number' => $serial_number,
             'records' => $records,
-            'filters' => $request->only(['search', 'status', 'perPage']),
+            'filters' => $request->only(['search', 'status', 'month', 'year', 'perPage']),
             'sortField' => $sortField,
             'sortDirection' => $sortDirection,
         ]);

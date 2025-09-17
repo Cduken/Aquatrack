@@ -70,7 +70,7 @@
                                 <div
                                     :class="{
                                         'font-semibold text-blue-700':
-                                            form.reporter_phone,
+                                            form.reporter_name,
                                     }"
                                 >
                                     <span
@@ -83,7 +83,8 @@
                                 <div
                                     :class="{
                                         'font-semibold text-blue-700':
-                                            form.description,
+                                            form.description ||
+                                            form.water_issue_type,
                                     }"
                                 >
                                     <span
@@ -430,9 +431,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Purok and Priority -->
+                                <!-- Purok -->
                                 <div
-                                    class="bg-gradient-to-br from-gray-50 to-white border border-gray-100 p-5 rounded-xl shadow-xl"
+                                    class="bg-gradient-to-br from-gray-50 to-white border border-gray-100 p-5 rounded-xl shadow-sm"
                                 >
                                     <h3
                                         class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
@@ -483,12 +484,33 @@
                                                 </p>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- Water Issue Type -->
+                                <div
+                                    class="bg-gradient-to-br from-gray-50 to-white border border-gray-100 p-5 rounded-xl shadow-sm"
+                                >
+                                    <h3
+                                        class="text-md font-semibold text-gray-900 mb-4 flex items-center pb-2 border-b border-gray-100"
+                                    >
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3"
+                                        >
+                                            <v-icon
+                                                name="bi-droplet"
+                                                class="text-blue-600"
+                                            />
+                                        </div>
+                                        Water Issue Type
+                                    </h3>
+                                    <div class="grid grid-cols-1 gap-4 mt-4">
                                         <div class="flex items-start">
                                             <div
                                                 class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
                                             >
                                                 <v-icon
-                                                    name="bi-exclamation-circle"
+                                                    name="bi-droplet-half"
                                                     class="text-blue-500"
                                                 />
                                             </div>
@@ -496,69 +518,107 @@
                                                 <p
                                                     class="text-xs text-gray-500 font-medium mb-1"
                                                 >
-                                                    Priority
+                                                    Issue Type
                                                 </p>
-                                                <div
-                                                    class="grid grid-cols-3 gap-2 mt-1"
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        @click="
-                                                            form.priority =
-                                                                'low'
+                                                <div class="relative">
+                                                    <select
+                                                        id="water_issue_type"
+                                                        v-model="
+                                                            form.water_issue_type
                                                         "
-                                                        :class="
-                                                            form.priority ===
-                                                            'low'
-                                                                ? 'bg-green-100 text-green-700 border-green-300'
-                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
-                                                        "
-                                                        class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
+                                                        required
+                                                        class="w-full p-3 pr-10 rounded-lg text-gray-900 bg-white border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm appearance-none transition-all"
                                                     >
-                                                        Low
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        @click="
-                                                            form.priority =
-                                                                'medium'
-                                                        "
-                                                        :class="
-                                                            form.priority ===
-                                                            'medium'
-                                                                ? 'bg-amber-100 text-amber-700 border-amber-300'
-                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
-                                                        "
-                                                        class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
+                                                        <option
+                                                            value=""
+                                                            disabled
+                                                            selected
+                                                        >
+                                                            Select Issue Type
+                                                        </option>
+                                                        <option
+                                                            v-for="issue in waterIssueTypes"
+                                                            :key="issue"
+                                                            :value="issue"
+                                                        >
+                                                            {{ issue }}
+                                                        </option>
+                                                        <option value="others">
+                                                            Others
+                                                        </option>
+                                                    </select>
+                                                    <div
+                                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 mt-1"
                                                     >
-                                                        Medium
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        @click="
-                                                            form.priority =
-                                                                'high'
-                                                        "
-                                                        :class="
-                                                            form.priority ===
-                                                            'high'
-                                                                ? 'bg-red-100 text-red-700 border-red-300'
-                                                                : 'bg-gray-100 text-gray-700 border-gray-200'
-                                                        "
-                                                        class="py-2 px-3 rounded-lg border text-xs font-medium transition-all"
-                                                    >
-                                                        High
-                                                    </button>
+                                                        <v-icon
+                                                            name="bi-chevron-down"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <p
-                                                    v-if="form.errors.priority"
+                                                    v-if="
+                                                        form.errors
+                                                            .water_issue_type
+                                                    "
                                                     class="mt-1 text-xs text-red-600 flex items-center"
                                                 >
                                                     <v-icon
                                                         name="bi-exclamation-circle"
                                                         class="mr-1"
                                                     />
-                                                    {{ form.errors.priority }}
+                                                    {{
+                                                        form.errors
+                                                            .water_issue_type
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            v-if="
+                                                form.water_issue_type ===
+                                                'others'
+                                            "
+                                            class="flex items-start"
+                                        >
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 mt-0.5"
+                                            >
+                                                <v-icon
+                                                    name="bi-pencil"
+                                                    class="text-blue-500"
+                                                />
+                                            </div>
+                                            <div class="flex-1">
+                                                <p
+                                                    class="text-xs text-gray-500 font-medium mb-1"
+                                                >
+                                                    Custom Issue Description
+                                                </p>
+                                                <input
+                                                    type="text"
+                                                    id="custom_water_issue"
+                                                    v-model="
+                                                        form.custom_water_issue
+                                                    "
+                                                    class="w-full p-3 rounded-lg text-gray-900 bg-white border border-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm transition-all"
+                                                    placeholder="Describe the custom water issue"
+                                                    maxlength="100"
+                                                />
+                                                <p
+                                                    v-if="
+                                                        form.errors
+                                                            .custom_water_issue
+                                                    "
+                                                    class="mt-1 text-xs text-red-600 flex items-center"
+                                                >
+                                                    <v-icon
+                                                        name="bi-exclamation-circle"
+                                                        class="mr-1"
+                                                    />
+                                                    {{
+                                                        form.errors
+                                                            .custom_water_issue
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -1046,7 +1106,6 @@
     </transition>
 </template>
 
-<!-- Keep the script section exactly as it was -->
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
@@ -1074,21 +1133,33 @@ const emit = defineEmits([
 const { props: pageProps } = usePage();
 const user = pageProps.auth?.user;
 
-// Form setup with authenticated user's name
+// Water issue types matching ReportForm.vue and backend
+const waterIssueTypes = [
+    "Burst pipe",
+    "Rusty water",
+    "Low water pressure",
+    "No water supply",
+    "Clogged pipes",
+    "Smelly water",
+    "Cloudy or dirty water",
+    "Hot water issues",
+    "Running toilet",
+];
+
+// Form setup with authenticated user's name and fields from ReportForm.vue
 const form = useForm({
     municipality: "Clarin",
     province: "Bohol",
     zone: "",
     barangay: "",
     purok: "",
+    water_issue_type: "",
+    custom_water_issue: "",
     description: "",
     photos: [],
     photo_previews: [],
-    videos: [],
-    video_previews: [],
     reporter_name: user?.name || "Authenticated User",
     reporter_phone: "",
-    priority: "medium",
     latitude: null,
     longitude: null,
 });
@@ -1112,9 +1183,9 @@ let recordedChunks = [];
 const MAX_PHOTOS = 3;
 const MAX_VIDEOS = 2;
 const MAX_TOTAL = MAX_PHOTOS + MAX_VIDEOS;
-const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
-const MAX_VIDEO_DURATION = 30;
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_VIDEO_SIZE = 25 * 1024 * 1024; // 25MB
+const MAX_VIDEO_DURATION = 30; // 30 seconds
 
 const allBarangays = computed(() => Object.values(props.zones).flat());
 const barangayToZone = computed(() => {
@@ -1163,10 +1234,10 @@ const stopCamera = () => {
     if (isRecording.value) stopVideoRecording();
     if (stream) {
         stream.getTracks().forEach((track) => track.stop());
-        stream = null; // Explicitly clear the stream
+        stream = null;
     }
     if (videoElement.value) {
-        videoElement.value.srcObject = null; // Only set if videoElement exists
+        videoElement.value.srcObject = null;
     }
     isCameraActive.value = false;
     isCameraReady.value = false;
@@ -1189,10 +1260,8 @@ const capturePhoto = async () => {
         canvas.height = videoElement.value.videoHeight;
         const ctx = canvas.getContext("2d");
 
-        // Draw the video frame onto the canvas
         ctx.drawImage(videoElement.value, 0, 0);
 
-        // Add timestamp to the bottom-left corner
         const timestamp = new Date().toLocaleString("en-US", {
             year: "numeric",
             month: "short",
@@ -1202,14 +1271,13 @@ const capturePhoto = async () => {
             second: "2-digit",
             hour12: true,
         });
-        ctx.font = "16px Arial"; // Adjust font size and style as needed
-        ctx.fillStyle = "white"; // Text color
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "white";
         ctx.textAlign = "left";
         ctx.textBaseline = "bottom";
-        ctx.fillText(timestamp, 10, canvas.height - 10); // Position at bottom-left with padding
+        ctx.fillText(timestamp, 10, canvas.height - 10);
 
-        // Optional: Add a semi-transparent background for better readability
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent black background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
         ctx.fillRect(
             0,
             canvas.height - 30,
@@ -1217,7 +1285,6 @@ const capturePhoto = async () => {
             20
         );
 
-        // Redraw timestamp to ensure it's on top of the background
         ctx.fillStyle = "white";
         ctx.fillText(timestamp, 10, canvas.height - 10);
 
@@ -1266,7 +1333,6 @@ const startVideoRecording = async () => {
     const options = { mimeType: "video/webm" };
     mediaRecorder = new MediaRecorder(stream, options);
 
-    // Store the interval ID so we can clear it later
     let recordingInterval = null;
 
     mediaRecorder.ondataavailable = (event) => {
@@ -1274,7 +1340,6 @@ const startVideoRecording = async () => {
     };
 
     mediaRecorder.onstop = () => {
-        // Clear the interval when recording stops
         if (recordingInterval) {
             clearInterval(recordingInterval);
         }
@@ -1309,7 +1374,6 @@ const startVideoRecording = async () => {
     mediaRecorder.start();
     isRecording.value = true;
 
-    // Set up the interval for updating recording time
     recordingInterval = setInterval(() => {
         recordingTime.value++;
         if (recordingTime.value >= MAX_VIDEO_DURATION) {
@@ -1361,7 +1425,6 @@ const restrictPhoneInput = (event) => {
     form.reporter_phone = value;
 };
 
-// In the <script setup> section, update the submitReport function:
 const submitReport = () => {
     if (form.photos.length === 0) {
         Swal.fire({
@@ -1391,7 +1454,28 @@ const submitReport = () => {
         });
         return;
     }
+    if (!form.water_issue_type) {
+        Swal.fire({
+            icon: "error",
+            title: "Issue Type Required",
+            text: "Please select a water issue type.",
+            timer: 3000,
+        });
+        return;
+    }
+    if (form.water_issue_type === "others" && !form.custom_water_issue.trim()) {
+        Swal.fire({
+            icon: "error",
+            title: "Custom Issue Required",
+            text: "Please provide a description for the custom water issue.",
+            timer: 3000,
+        });
+        return;
+    }
+
     isSubmitting.value = true;
+
+    console.log("Form data before submission:", form.data());
 
     form.post(route("reports.store"), {
         preserveScroll: true,
@@ -1399,8 +1483,7 @@ const submitReport = () => {
             isSubmitting.value = false;
             const trackingCode =
                 response.props.trackingCode ||
-                response.props.swal?.trackingCode; // Fallback to response data or swal prop
-            // Show immediate toast with tracking code
+                response.props.swal?.trackingCode;
             Swal.fire({
                 toast: true,
                 position: "top-end",
@@ -1410,7 +1493,6 @@ const submitReport = () => {
                 icon: "success",
                 title: "Report Submitted Successfully!",
                 text: `Your tracking code is ${trackingCode}. Save it for reference.`,
-                // footer: `Date: ${response.props.dateSubmitted || new Date().toISOString()}`,
                 didOpen: (toast) => {
                     toast.addEventListener("mouseenter", Swal.stopTimer);
                     toast.addEventListener("mouseleave", Swal.resumeTimer);
@@ -1425,10 +1507,13 @@ const submitReport = () => {
         },
         onError: (errors) => {
             isSubmitting.value = false;
+            console.error("Form submission errors:", errors);
             Swal.fire({
                 icon: "error",
                 title: "Submission Failed",
-                text: errors.message || "Please try again.",
+                text:
+                    errors.message ||
+                    "Please correct the errors and try again.",
                 timer: 3000,
             });
         },
@@ -1468,6 +1553,8 @@ const getLocation = () => {
 
 const closeModal = () => {
     stopCamera();
+    form.reset();
+    form.clearErrors();
     emit("update:isOpen", false);
 };
 
@@ -1475,6 +1562,15 @@ watch(
     () => form.barangay,
     (newBarangay) => {
         form.zone = barangayToZone.value[newBarangay] || "";
+    }
+);
+
+watch(
+    () => form.water_issue_type,
+    (newIssueType) => {
+        if (newIssueType !== "others") {
+            form.custom_water_issue = "";
+        }
     }
 );
 
@@ -1490,7 +1586,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Custom scrollbar for the content */
 .overflow-y-auto {
     scrollbar-width: thin;
     scrollbar-color: #e2e8f0 #f8fafc;
@@ -1514,7 +1609,6 @@ onUnmounted(() => {
     background-color: #94a3b8;
 }
 
-/* Modal transition styles */
 .modal-enter-active,
 .modal-leave-active {
     transition: opacity 0.3s ease;
@@ -1538,7 +1632,6 @@ onUnmounted(() => {
     transform: translateX(100%);
 }
 
-/* Custom animations */
 @keyframes pulse {
     0%,
     100% {

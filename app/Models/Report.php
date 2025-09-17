@@ -16,6 +16,8 @@ class Report extends Model
         'province',
         'barangay',
         'purok',
+        'water_issue_type',
+        'custom_water_issue',
         'description',
         'user_id',
         'reporter_name',
@@ -38,7 +40,7 @@ class Report extends Model
 
     protected $attributes = [
         'status' => 'pending',
-         'priority' => 'medium',
+        'priority' => 'medium',
 
     ];
 
@@ -62,6 +64,11 @@ class Report extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(ReportSubmission::class);
     }
 
     /**

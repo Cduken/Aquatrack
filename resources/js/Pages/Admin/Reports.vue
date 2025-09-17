@@ -1,4 +1,3 @@
-```vue
 <template>
     <AdminLayout title="Reports">
         <div class="mx-auto w-full">
@@ -169,7 +168,7 @@
                                     type="text"
                                     id="simple-search"
                                     class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Search reports, names..."
+                                    placeholder="Search reports, names, issues..."
                                     @keyup.enter="getReports"
                                 />
                             </div>
@@ -399,9 +398,12 @@
                             <th scope="col" class="px-6 py-3">User Type</th>
                             <th scope="col" class="px-6 py-3">Zone</th>
                             <th scope="col" class="px-6 py-3">Barangay</th>
+                            <th scope="col" class="px-6 py-3">Purok</th>
+                            <th scope="col" class="px-6 py-3">Issue Type</th>
                             <th scope="col" class="px-6 py-3">Priority</th>
                             <th scope="col" class="px-6 py-3">Status</th>
                             <th scope="col" class="px-6 py-3">Date</th>
+                            <!-- <th scope="col" class="px-6 py-3">Tracking Code</th> -->
                             <th scope="col" class="px-6 py-3">Actions</th>
                         </tr>
                     </thead>
@@ -415,11 +417,27 @@
                             <td
                                 class="px-6 py-4 font-medium text-gray-900 dark:text-white"
                             >
-                                {{
-                                    report.reporter_name ||
-                                    report.user?.name ||
-                                    "N/A"
-                                }}
+                                <span v-if="isMergedReport(report)">
+                                    <span
+                                        class="cursor-pointer text-blue-600 hover:underline"
+                                        @click="showAllReporters(report)"
+                                    >
+                                        {{ getTruncatedReporters(report) }}
+                                        <span
+                                            v-if="hasManyReporters(report)"
+                                            class="ml-1"
+                                        >
+                                            ...
+                                        </span>
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    {{
+                                        report.reporter_name ||
+                                        report.user?.name ||
+                                        "N/A"
+                                    }}
+                                </span>
                                 <span
                                     v-if="report.user_id"
                                     class="text-xs text-gray-400 block"
@@ -452,6 +470,25 @@
                                 {{ report.barangay || "N/A" }}
                             </td>
                             <td class="px-6 py-4">
+                                {{ report.purok || "N/A" }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                >
+                                    <v-icon
+                                        name="bi-droplet"
+                                        class="w-3 h-3 mr-1"
+                                    />
+                                    {{
+                                        report.water_issue_type === "others"
+                                            ? report.custom_water_issue ||
+                                              "Custom Issue"
+                                            : report.water_issue_type
+                                    }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
                                 <span
                                     :class="priorityClasses(report.priority)"
                                     class="inline-flex items-center text-xs px-2 py-1 rounded-full"
@@ -478,6 +515,9 @@
                             <td class="px-6 py-4">
                                 {{ formatDate(report.created_at) }}
                             </td>
+                            <!-- <td class="px-6 py-4">
+                                {{ report.tracking_code || "N/A" }}
+                            </td> -->
                             <td class="px-6 py-4">
                                 <div class="flex space-x-3">
                                     <button
@@ -516,7 +556,7 @@
                         </tr>
                         <tr v-if="filteredReports.length === 0">
                             <td
-                                colspan="9"
+                                colspan="10"
                                 class="px-6 py-8 text-center text-sm text-gray-500"
                             >
                                 <div
@@ -547,6 +587,37 @@
                 item-name="reports"
                 class="mt-6"
             />
+
+            <!-- Reporter Details Modal -->
+            <div
+                v-if="showReporterModal"
+                class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50"
+            >
+                <div
+                    class="bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 p-8 rounded-xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl transform transition-all duration-300 ease-in-out hover:shadow-3xl"
+                >
+                    <h3
+                        class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6 border-b-2 border-blue-200 dark:border-blue-800 pb-3"
+                    >
+                        All Reporters
+                    </h3>
+                    <div class="space-y-4 max-h-72 sm:max-h-80 overflow-y-auto">
+                        <div
+                            v-for="(reporter, index) in selectedReportReporters"
+                            :key="index"
+                            class="text-gray-700 dark:text-gray-300 px-5 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 border-b border-gray-200 dark:border-gray-600 last:border-b-0"
+                        >
+                            {{ reporter }}
+                        </div>
+                    </div>
+                    <button
+                        @click="closeReporterModal"
+                        class="mt-6 w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-1"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
 
             <!-- Report Details Modal -->
             <ReportDetailsModal
@@ -586,6 +657,8 @@ const showModal = ref(false);
 const showFilterDropdown = ref(false);
 const updatingStatus = ref(false);
 const deletingReport = ref(false);
+const showReporterModal = ref(false);
+const selectedReportReporters = ref([]);
 
 // Computed properties for statistics
 const pendingReportsCount = computed(() => {
@@ -637,6 +710,9 @@ const filteredReports = computed(() => {
         if (filters.value.search) {
             const searchTerm = filters.value.search.toLowerCase();
             const matchesId = report.id.toString().includes(searchTerm);
+            const matchesTrackingCode = (report.tracking_code || "")
+                .toLowerCase()
+                .includes(searchTerm);
             const matchesName = (
                 report.reporter_name ||
                 report.user?.name ||
@@ -644,7 +720,20 @@ const filteredReports = computed(() => {
             )
                 .toLowerCase()
                 .includes(searchTerm);
-            if (!matchesId && !matchesName) return false;
+            const matchesIssueType = (
+                report.water_issue_type === "others"
+                    ? report.custom_water_issue || "Custom Issue"
+                    : report.water_issue_type || ""
+            )
+                .toLowerCase()
+                .includes(searchTerm);
+            if (
+                !matchesId &&
+                !matchesTrackingCode &&
+                !matchesName &&
+                !matchesIssueType
+            )
+                return false;
         }
         return true;
     });
@@ -707,6 +796,21 @@ const closeModal = () => {
     showModal.value = false;
 };
 
+// Reporter Modal Functions
+const showAllReporters = (report) => {
+    if (isMergedReport(report)) {
+        selectedReportReporters.value = report.reporter_name
+            .split(",")
+            .map((name) => name.trim());
+        showReporterModal.value = true;
+    }
+};
+
+const closeReporterModal = () => {
+    showReporterModal.value = false;
+    selectedReportReporters.value = [];
+};
+
 // SweetAlert Status Modal
 const openStatusModal = async (report) => {
     if (report.status.startsWith("Deleted")) {
@@ -761,7 +865,6 @@ const updateStatus = async (report, newStatus) => {
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // This will now work because the backend returns a proper redirect
                     Swal.fire({
                         toast: true,
                         position: "top-end",
@@ -835,7 +938,6 @@ const deleteReport = async (report, reason) => {
             data: { reason },
             preserveScroll: true,
             onSuccess: () => {
-                // This will now work because the backend returns a proper redirect
                 Swal.fire({
                     toast: true,
                     position: "top-end",
@@ -869,6 +971,22 @@ const deleteReport = async (report, reason) => {
 };
 
 // Helper functions
+const isMergedReport = (report) => {
+    return report.reporter_name && report.reporter_name.includes(",");
+};
+
+const hasManyReporters = (report) => {
+    return report.reporter_name.split(",").length > 2;
+};
+
+const getTruncatedReporters = (report) => {
+    const reporters = report.reporter_name.split(",");
+    return reporters
+        .slice(0, 2)
+        .map((name) => name.trim())
+        .join(", ");
+};
+
 const userTypeClasses = (userId) => ({
     "px-2 py-1 rounded-full text-xs font-medium": true,
     "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200":
@@ -969,4 +1087,3 @@ button:disabled {
     cursor: not-allowed;
 }
 </style>
-```

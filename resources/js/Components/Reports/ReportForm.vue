@@ -167,96 +167,66 @@
                 </div>
             </div>
 
-            <!-- Purok and Priority -->
-            <div class="flex flex-col">
-                <div class="space-y-2 mb-2">
-                    <label
-                        for="purok"
-                        class="block text-sm font-medium text-gray-700"
+            <!-- Purok -->
+            <div class="space-y-2 mb-2">
+                <label
+                    for="purok"
+                    class="block text-sm font-medium text-gray-700"
+                >
+                    Purok/Street <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="purok"
+                    v-model="form.purok"
+                    required
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    placeholder="Enter purok number or street name"
+                />
+                <p v-if="form.errors.purok" class="text-xs text-red-500 mt-1">
+                    {{ form.errors.purok }}
+                </p>
+            </div>
+
+            <!-- Water Issue Type -->
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">
+                    Water Issue Type <span class="text-red-500">*</span>
+                </label>
+                <select
+                    v-model="form.water_issue_type"
+                    @change="selectWaterIssue"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    required
+                >
+                    <option disabled value="">Select water issue type</option>
+                    <option
+                        v-for="issue in waterIssueTypes"
+                        :key="issue"
+                        :value="issue"
                     >
-                        Purok/Street <span class="text-red-500">*</span>
-                    </label>
+                        {{ issue }}
+                    </option>
+                    <option value="others">Others (please specify)</option>
+                </select>
+
+                <div v-if="form.water_issue_type === 'others'" class="mt-3">
                     <input
                         type="text"
-                        id="purok"
-                        v-model="form.purok"
-                        required
+                        v-model="form.custom_water_issue"
                         class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                        placeholder="Enter purok number or street name"
+                        placeholder="Please specify the water issue"
+                        maxlength="100"
+                        required
                     />
-                    <p
-                        v-if="form.errors.purok"
-                        class="text-xs text-red-500 mt-1"
-                    >
-                        {{ form.errors.purok }}
-                    </p>
                 </div>
 
-                <!-- Priority Selection (New Design) -->
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Priority <span class="text-red-500">*</span>
-                    </label>
-                    <div class="grid grid-cols-3 gap-4">
-                        <button
-                            type="button"
-                            @click="form.priority = 'low'"
-                            :class="[
-                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
-                                form.priority === 'low'
-                                    ? 'bg-green-500/30 border-green-500/30 text-white shadow-lg transform scale-105'
-                                    : 'bg-white border-gray-200 text-gray-700 hover:border-green-300 hover:bg-green-50',
-                            ]"
-                        >
-                            <div class="flex flex-col items-center">
-                                <div
-                                    class="w-3 h-3 rounded-full bg-green-400 mb-1"
-                                ></div>
-                                Low
-                            </div>
-                        </button>
-                        <button
-                            type="button"
-                            @click="form.priority = 'medium'"
-                            :class="[
-                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
-                                form.priority === 'medium'
-                                    ? 'bg-yellow-500/30 border-yellow-500/30 text-white shadow-lg transform scale-105'
-                                    : 'bg-white border-gray-200 text-gray-700 hover:border-yellow-300 hover:bg-yellow-50',
-                            ]"
-                        >
-                            <div class="flex flex-col items-center">
-                                <div
-                                    class="w-3 h-3 rounded-full bg-yellow-400 mb-1"
-                                ></div>
-                                Medium
-                            </div>
-                        </button>
-                        <button
-                            type="button"
-                            @click="form.priority = 'high'"
-                            :class="[
-                                'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2',
-                                form.priority === 'high'
-                                    ? 'bg-red-500/30 border-red-500/30 text-white shadow-lg transform scale-105'
-                                    : 'bg-white border-gray-200 text-gray-700 hover:border-red-300 hover:bg-red-50',
-                            ]"
-                        >
-                            <div class="flex flex-col items-center">
-                                <div
-                                    class="w-3 h-3 rounded-full bg-red-400 mb-1"
-                                ></div>
-                                High
-                            </div>
-                        </button>
-                    </div>
-                    <p
-                        v-if="form.errors.priority"
-                        class="text-xs text-red-500 mt-1"
-                    >
-                        {{ form.errors.priority }}
-                    </p>
-                </div>
+                <p
+                    v-if="form.errors.water_issue_type"
+                    class="text-xs text-red-500 mt-1"
+                >
+                    {{ form.errors.water_issue_type }}
+                </p>
             </div>
 
             <!-- Description -->
@@ -264,9 +234,8 @@
                 <label
                     for="description"
                     class="block text-sm font-medium text-gray-700"
+                    >Description <span class="text-red-500">*</span></label
                 >
-                    Description <span class="text-red-500">*</span>
-                </label>
                 <textarea
                     id="description"
                     v-model="form.description"
@@ -788,7 +757,12 @@
             <div class="pt-6">
                 <button
                     type="submit"
-                    :disabled="form.processing || isSubmitting || isRecording"
+                    :disabled="
+                        form.processing ||
+                        isSubmitting ||
+                        isRecording ||
+                        !isFormValid
+                    "
                     class="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                 >
                     <span
@@ -884,9 +858,10 @@ const form = useForm({
     video_previews: [],
     reporter_name: "",
     reporter_phone: "",
-    priority: "medium",
     latitude: null,
     longitude: null,
+    water_issue_type: "",
+    custom_water_issue: "",
 });
 
 const MAX_PHOTOS = 3;
@@ -916,6 +891,26 @@ const updateTimeDisplay = () => {
     });
 };
 
+const waterIssueTypes = ref([
+    "Burst pipe",
+    "Rusty water",
+    "Low water pressure",
+    "No water supply",
+    "Clogged pipes",
+    "Smelly water",
+    "Cloudy or dirty water",
+    "Hot water issues",
+    "Running toilet",
+]);
+
+const selectWaterIssue = (event) => {
+    form.water_issue_type = event.target.value || "";
+    if (form.water_issue_type !== "others") {
+        form.custom_water_issue = "";
+    }
+    console.log("Water issue selected:", form.water_issue_type);
+};
+
 const allBarangays = computed(() => {
     return Object.values(props.zones).flat();
 });
@@ -932,6 +927,18 @@ const barangayToZone = computed(() => {
 
 const hasErrors = computed(() => {
     return Object.keys(form.errors).length > 0;
+});
+
+const isFormValid = computed(() => {
+    return (
+        form.reporter_name &&
+        form.barangay &&
+        form.purok &&
+        form.description &&
+        form.water_issue_type &&
+        (form.water_issue_type !== "others" || form.custom_water_issue) &&
+        form.photos.length > 0
+    );
 });
 
 const getNextCameraName = () => {
@@ -1033,11 +1040,10 @@ const initializeCamera = async (retryCount = 0, maxRetries = 3) => {
             throw new Error("No camera devices found");
         }
 
-        // Stop any existing stream before starting a new one
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
             stream = null;
-            await nextTick(); // Ensure stream is fully released
+            await nextTick();
         }
 
         await startCameraStream();
@@ -1165,8 +1171,8 @@ const handleCameraError = (error, retryCount, maxRetries) => {
             setTimeout(
                 () => initializeCamera(retryCount + 1, maxRetries),
                 2000
-            ); // Retry after 2 seconds
-            return; // Exit early to let retry handle it
+            );
+            return;
         }
     } else if (error.name === "OverconstrainedError") {
         errorMessage = "Camera settings not supported by your device.";
@@ -1237,7 +1243,7 @@ const switchCamera = async () => {
         await startCameraStream();
     } catch (error) {
         console.error("Camera switch failed:", error);
-        handleCameraError(error, 0, 1); // No retries for switch
+        handleCameraError(error, 0, 1);
     } finally {
         isSwitchingCamera.value = false;
     }
@@ -1395,10 +1401,8 @@ const capturePhoto = async () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        // Draw the video frame onto the canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Add timestamp to the bottom-left corner
         const now = new Date();
         const timestamp = now.toLocaleString("en-US", {
             year: "numeric",
@@ -1414,12 +1418,10 @@ const capturePhoto = async () => {
         const fontSize = Math.max(16, Math.floor(canvas.width / 60));
         ctx.font = `bold ${fontSize}px Arial`;
 
-        // Measure timestamp text
         const textMetrics = ctx.measureText(timestamp);
         const textWidth = textMetrics.width;
         const textHeight = fontSize;
 
-        // Draw semi-transparent background for timestamp
         const bgX = timestampPadding;
         const bgY = canvas.height - timestampPadding - textHeight - 10;
         const bgWidth = textWidth + 20;
@@ -1428,12 +1430,10 @@ const capturePhoto = async () => {
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
 
-        // Draw border around timestamp background
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.strokeRect(bgX, bgY, bgWidth, bgHeight);
 
-        // Draw timestamp with layered stroke for clarity
         const textX = bgX + 10;
         const textY = bgY + textHeight + 5;
 
@@ -1452,7 +1452,6 @@ const capturePhoto = async () => {
         ctx.fillStyle = "white";
         ctx.fillText(timestamp, textX, textY);
 
-        // Add location below timestamp
         const locationText = currentLocation.value;
         ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
         const locationY = textY + fontSize + 5;
@@ -1481,7 +1480,6 @@ const capturePhoto = async () => {
         ctx.fillStyle = "white";
         ctx.fillText(locationText, textX + 8, locationY);
 
-        // Convert canvas to blob
         const blob = await new Promise((resolve) => {
             canvas.toBlob(resolve, "image/jpeg", 0.95);
         });
@@ -1590,9 +1588,25 @@ const restrictPhoneInput = (event) => {
     form.reporter_phone = value;
 };
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const submitReport = async () => {
+    if (!form.water_issue_type) {
+        Swal.fire({
+            icon: "error",
+            title: "Water Issue Required",
+            text: "Please select a water issue type.",
+            confirmButtonColor: "#3085d6",
+        });
+        return;
+    }
+    if (form.water_issue_type === "others" && !form.custom_water_issue) {
+        Swal.fire({
+            icon: "error",
+            title: "Custom Issue Required",
+            text: "Please specify the water issue when selecting 'Others'.",
+            confirmButtonColor: "#3085d6",
+        });
+        return;
+    }
     if (form.photos.length === 0) {
         Swal.fire({
             icon: "error",
@@ -1605,22 +1619,19 @@ const submitReport = async () => {
 
     isSubmitting.value = true;
 
-    // Create FormData for file uploads
-    const formData = new FormData();
+    console.log("Form data before submission:", form.data());
 
-    // Add all form fields except files
+    const formData = new FormData();
     Object.keys(form.data()).forEach((key) => {
         if (key !== "photos" && key !== "photo_previews") {
             formData.append(key, form[key]);
         }
     });
 
-    // Add photos/videos
     form.photos.forEach((file, index) => {
         formData.append(`photos[${index}]`, file);
     });
 
-    // Use axios for the POST request instead of form.post()
     try {
         const response = await axios.post(route("reports.store"), formData, {
             headers: {
@@ -1647,7 +1658,6 @@ const submitReport = async () => {
             timerProgressBar: true,
         });
 
-        // Reset the form
         form.reset();
         form.photos = [];
         form.photo_previews = [];
@@ -1657,6 +1667,7 @@ const submitReport = async () => {
 
         if (error.response?.data?.errors) {
             form.errors = error.response.data.errors;
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
         Swal.fire({

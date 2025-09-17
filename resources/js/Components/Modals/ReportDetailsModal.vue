@@ -403,7 +403,28 @@
                                                 </p>
                                             </div>
                                         </div>
-
+                                        <div class="flex items-start">
+                                            <v-icon
+                                                name="bi-droplet"
+                                                class="mr-2 mt-0.5 text-blue-500"
+                                            />
+                                            <div>
+                                                <p
+                                                    class="text-xs text-gray-500"
+                                                >
+                                                    Water Issue Type
+                                                </p>
+                                                <p class="font-medium">
+                                                    {{
+                                                        report.water_issue_type ===
+                                                        "others"
+                                                            ? report.custom_water_issue ||
+                                                              "Custom Issue"
+                                                            : report.water_issue_type
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -765,7 +786,7 @@ const isVideoFile = (file) => {
 const statusClass = computed(() => {
     if (!report.value || !report.value.status) return "";
     switch (report.value.status.toLowerCase()) {
-        case "in progress":
+        case "in_progress":
             return "bg-blue-100 text-blue-800";
         case "resolved":
             return "bg-green-100 text-green-800";
@@ -865,3 +886,4 @@ const getHeading = computed(() => {
     border: none !important;
 }
 </style>
+

@@ -85,8 +85,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/users/{user}/reset-password', [AdminUsersController::class, 'resetPassword'])->name('admin.users.reset-password');
 
 
+    Route::post('/admin/export-water-analytics', [AdminDashboardController::class, 'exportWaterAnalytics'])->name('admin.export-water-analytics');
+
+
     Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
-    ->name('admin.reports.updateStatus');
+        ->name('admin.reports.updateStatus');
 
 
     Route::get('/admin/records', [AdminRecordController::class, 'index'])->name('admin.records.index');

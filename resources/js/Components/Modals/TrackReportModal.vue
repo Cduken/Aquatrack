@@ -121,6 +121,16 @@ const trackReport = async () => {
         ]);
 
         reportDetails.value = response.data;
+        if (reportDetails.value.additional_tracking_codes) {
+            reportDetails.value.allTrackingCodes = [
+                reportDetails.value.tracking_code,
+                ...JSON.parse(reportDetails.value.additional_tracking_codes),
+            ];
+        } else {
+            reportDetails.value.allTrackingCodes = [
+                reportDetails.value.tracking_code,
+            ];
+        }
     } catch (error) {
         if (error.response && error.response.status === 404) {
             errorMessage.value = "Report not found with this tracking code.";
@@ -362,13 +372,11 @@ const isVideoFile = (media) => {
             v-if="modalVisible"
             class="fixed inset-0 z-[500] flex items-center justify-center p-3"
         >
-            <!-- Backdrop -->
             <div
                 class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-all duration-300"
                 @click="closeModal"
             ></div>
 
-            <!-- Modal -->
             <Transition name="modal-content">
                 <div
                     v-if="modalVisible"
@@ -376,7 +384,6 @@ const isVideoFile = (media) => {
                     class="relative w-full max-w-4xl max-h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300"
                     @click.stop
                 >
-                    <!-- Compact Header -->
                     <div
                         class="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4"
                     >
@@ -409,10 +416,8 @@ const isVideoFile = (media) => {
                         </div>
                     </div>
 
-                    <!-- Content -->
                     <div class="max-h-[calc(95vh-140px)] overflow-y-auto">
                         <div class="p-6 space-y-6">
-                            <!-- Search Form -->
                             <form
                                 @submit.prevent="trackReport"
                                 class="space-y-4"
@@ -471,7 +476,6 @@ const isVideoFile = (media) => {
                                 </div>
                             </form>
 
-                            <!-- Loading State -->
                             <Transition name="loading-bounce">
                                 <div
                                     v-if="isLoading || showLoadingDelay"
@@ -498,10 +502,8 @@ const isVideoFile = (media) => {
                                 </div>
                             </Transition>
 
-                            <!-- Report Found -->
                             <Transition name="content-slide">
                                 <div v-if="reportDetails" class="space-y-6">
-                                    <!-- Status Banner -->
                                     <div
                                         class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200"
                                     >
@@ -537,6 +539,31 @@ const isVideoFile = (media) => {
                                                             }}</span
                                                         >
                                                     </p>
+                                                    <!-- <p
+                                                        v-if="
+                                                            reportDetails.allTrackingCodes &&
+                                                            reportDetails
+                                                                .allTrackingCodes
+                                                                .length > 1
+                                                        "
+                                                        class="text-sm text-slate-600"
+                                                    >
+                                                        Additional Codes:
+                                                        <span
+                                                            class="font-mono font-semibold"
+                                                            >{{
+                                                                reportDetails.allTrackingCodes
+                                                                    .filter(
+                                                                        (
+                                                                            code
+                                                                        ) =>
+                                                                            code !==
+                                                                            reportDetails.tracking_code
+                                                                    )
+                                                                    .join(", ")
+                                                            }}</span
+                                                        >
+                                                    </p> -->
                                                 </div>
                                             </div>
                                             <span
@@ -558,13 +585,10 @@ const isVideoFile = (media) => {
                                         </div>
                                     </div>
 
-                                    <!-- Content Grid -->
                                     <div
                                         class="grid grid-cols-1 lg:grid-cols-4 gap-6"
                                     >
-                                        <!-- Main Content -->
                                         <div class="lg:col-span-3 space-y-4">
-                                            <!-- Reporter & Priority -->
                                             <div
                                                 class="grid grid-cols-1 md:grid-cols-2 gap-4"
                                             >
@@ -627,7 +651,6 @@ const isVideoFile = (media) => {
                                                 </div>
                                             </div>
 
-                                            <!-- Description -->
                                             <div
                                                 class="bg-slate-50 rounded-xl p-4"
                                             >
@@ -641,7 +664,8 @@ const isVideoFile = (media) => {
                                                     />
                                                     <span
                                                         class="text-xs font-semibold text-slate-500 uppercase"
-                                                        >Report Description</span
+                                                        >Report
+                                                        Description</span
                                                     >
                                                 </div>
                                                 <p
@@ -653,7 +677,6 @@ const isVideoFile = (media) => {
                                                 </p>
                                             </div>
 
-                                            <!-- Location -->
                                             <div
                                                 class="bg-slate-50 rounded-xl p-4"
                                             >
@@ -686,7 +709,6 @@ const isVideoFile = (media) => {
                                                 </p>
                                             </div>
 
-                                            <!-- Media -->
                                             <div
                                                 v-if="
                                                     reportDetails.photos &&
@@ -794,7 +816,6 @@ const isVideoFile = (media) => {
                                             </div>
                                         </div>
 
-                                        <!-- QR Code Sidebar -->
                                         <div class="space-y-4">
                                             <div
                                                 class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white"
@@ -845,7 +866,6 @@ const isVideoFile = (media) => {
                         </div>
                     </div>
 
-                    <!-- Footer -->
                     <div
                         class="border-t border-slate-200 px-6 py-3 bg-slate-50/80 backdrop-blur-sm"
                     >
@@ -886,7 +906,6 @@ const isVideoFile = (media) => {
         </div>
     </Transition>
 
-    <!-- QR Scanner Modal -->
     <Transition name="modal-backdrop">
         <div
             v-if="showQrScanner"
@@ -981,7 +1000,6 @@ const isVideoFile = (media) => {
         </div>
     </Transition>
 
-    <!-- Media Modal -->
     <Transition name="modal-backdrop">
         <div
             v-if="mediaModal.show"
@@ -1024,7 +1042,6 @@ const isVideoFile = (media) => {
 </template>
 
 <style scoped>
-/* Enhanced animations */
 .modal-backdrop-enter-active,
 .modal-backdrop-leave-active {
     transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -1079,7 +1096,6 @@ const isVideoFile = (media) => {
     transform: translateX(-8px);
 }
 
-/* Scan line animation */
 @keyframes scan-line {
     0% {
         top: 0;
@@ -1098,7 +1114,6 @@ const isVideoFile = (media) => {
     animation: scan-line 2s linear infinite;
 }
 
-/* Custom border widths for scanner corners */
 .border-l-3 {
     border-left-width: 3px;
 }
@@ -1115,7 +1130,6 @@ const isVideoFile = (media) => {
     border-bottom-width: 3px;
 }
 
-/* Hover effects */
 .group:hover .group-hover\:scale-105 {
     transform: scale(1.05);
 }
@@ -1128,7 +1142,6 @@ const isVideoFile = (media) => {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Compact scrollbar */
 .max-h-\[calc\(95vh-140px\)\]::-webkit-scrollbar {
     width: 4px;
 }
@@ -1146,12 +1159,10 @@ const isVideoFile = (media) => {
     background: #94a3b8;
 }
 
-/* Button disabled state improvements */
 button:disabled {
     cursor: not-allowed;
 }
 
-/* Form focus improvements */
 input:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);

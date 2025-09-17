@@ -1,7 +1,6 @@
-[file name]: AdminLayout.vue [file content begin]
 <template>
     <div
-        class="antialiased min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
+        class="antialiased min-h-screen bg-[#FFFFFF] dark:bg-gray-900 flex flex-col"
     >
         <DashboardSidebar
             :links="adminLinks"
@@ -11,15 +10,15 @@
             @toggle-mobile-menu="toggleMobileMenu"
         />
         <MainContentNavbar
-           :is-sidebar-open="sidebarOpen"
-      :is-mobile-menu-open="isMobileMenuOpen"
-      @toggle-sidebar="toggleSidebar"
-      @toggle-mobile-menu="toggleMobileMenu"
-      @logout="handleLogout"
+            :is-sidebar-open="isSidebarOpen"
+            :is-mobile-menu-open="isMobileMenuOpen"
+            @toggle-sidebar="toggleSidebar"
+            @toggle-mobile-menu="toggleMobileMenu"
+            @logout="handleLogout"
         />
         <main
             :class="[
-                'p-4 pt-20 flex-1 transition-all duration-300 ease-in-out',
+                'p-4 pt-[100px] flex-1 transition-all duration-300 ease-in-out',
                 { 'md:ml-64': isSidebarOpen, 'md:ml-16': !isSidebarOpen },
             ]"
         >
@@ -53,9 +52,11 @@ const adminLinks = [
     },
     { name: "Users", url: "/admin/users", icon: "fa-users" },
     { name: "Notifications", url: "/admin/notifications", icon: "hi-bell" },
-    { name: "Activity Logs", url: "/admin/activity-logs", icon: "hi-clipboard-list" },
-
-
+    {
+        name: "Activity Logs",
+        url: "/admin/activity-logs",
+        icon: "hi-clipboard-list",
+    },
 ];
 
 const form = useForm({});
@@ -63,10 +64,6 @@ const form = useForm({});
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
-
-
-
-const sidebarOpen = ref(true);
 
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -93,4 +90,3 @@ const handleLogout = () => {
     });
 };
 </script>
-[file content end]

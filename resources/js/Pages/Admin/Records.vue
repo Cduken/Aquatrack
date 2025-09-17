@@ -123,7 +123,7 @@
                         </div>
                         <div class="ml-4">
                             <p
-                                class="text-sm font-medium text-gray-60 dark:text-gray-400"
+                                class="text-sm font-medium text-gray-600 dark:text-gray-400"
                             >
                                 Overdue Records
                             </p>
@@ -191,24 +191,24 @@
                                     class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                     type="button"
                                     :disabled="loading"
-                                    aria-label="Filter dropdown button"
+                                    aria-label="Status filter dropdown button"
                                 >
                                     <v-icon
                                         name="hi-solid-filter"
                                         class="w-4 h-4 mr-2 text-gray-400"
                                     />
-                                    Filter
+                                    Status
                                     <v-icon
                                         name="hi-chevron-down"
                                         class="-mr-1 ml-1.5 w-5 h-5"
                                     />
                                 </button>
 
-                                <!-- Custom Filter Dropdown -->
+                                <!-- Status Filter Dropdown -->
                                 <div
                                     v-if="showFilterDropdown"
                                     class="absolute z-10 top-full right-0 mt-1 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
-                                    aria-label="Filter dropdown"
+                                    aria-label="Status filter dropdown"
                                 >
                                     <h6
                                         class="mb-3 text-sm font-medium text-gray-900 dark:text-white"
@@ -299,6 +299,92 @@
                                     </ul>
                                 </div>
                             </div>
+
+                            <!-- Month and Year Filter -->
+                            <div class="relative">
+                                <button
+                                    @click="
+                                        showDateFilterDropdown =
+                                            !showDateFilterDropdown
+                                    "
+                                    class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                    type="button"
+                                    :disabled="loading"
+                                    aria-label="Date filter dropdown button"
+                                >
+                                    <v-icon
+                                        name="hi-solid-calendar"
+                                        class="w-4 h-4 mr-2 text-gray-400"
+                                    />
+                                    Date
+                                    <v-icon
+                                        name="hi-chevron-down"
+                                        class="-mr-1 ml-1.5 w-5 h-5"
+                                    />
+                                </button>
+
+                                <!-- Date Filter Dropdown -->
+                                <div
+                                    v-if="showDateFilterDropdown"
+                                    class="absolute z-10 top-full right-0 mt-1 w-64 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
+                                    aria-label="Date filter dropdown"
+                                >
+                                    <h6
+                                        class="mb-3 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                        Filter by Month and Year
+                                    </h6>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label
+                                                for="filter-month"
+                                                class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                                                >Month</label
+                                            >
+                                            <select
+                                                id="filter-month"
+                                                v-model="filters.month"
+                                                class="mt-1 w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            >
+                                                <option value="">
+                                                    All Months
+                                                </option>
+                                                <option
+                                                    v-for="month in months"
+                                                    :key="month.value"
+                                                    :value="month.value"
+                                                >
+                                                    {{ month.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label
+                                                for="filter-year"
+                                                class="text-sm font-medium text-gray-900 dark:text-gray-100"
+                                                >Year</label
+                                            >
+                                            <select
+                                                id="filter-year"
+                                                v-model="filters.year"
+                                                class="mt-1 w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            >
+                                                <option value="">
+                                                    All Years
+                                                </option>
+                                                <option
+                                                    v-for="year in years"
+                                                    :key="year"
+                                                    :value="year"
+                                                >
+                                                    {{ year }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button
                                 @click="resetFilters"
                                 class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
@@ -307,6 +393,7 @@
                                 <v-icon
                                     name="hi-refresh"
                                     class="w-4 h-4 mr-1"
+                                    :class="{ 'animate-spin': isResetting }"
                                 />
                                 Reset Filters
                             </button>
@@ -438,7 +525,7 @@
                                 scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                             >
-                                #{{ record.user.account_number }}
+                                {{ record.user.account_number }}
                             </th>
                             <td
                                 class="px-6 py-4 font-medium text-gray-900 dark:text-white"
@@ -471,8 +558,6 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-3">
-                                    <!-- Replace the Link component for the eye icon with a button -->
-                                    <!-- Replace the Link component for the eye icon with a button -->
                                     <button
                                         @click="showRecordDetails(record)"
                                         class="text-blue-600 hover:text-blue-800 transition-colors"
@@ -492,7 +577,6 @@
                                             class="w-5 h-5"
                                         />
                                     </button>
-
                                 </div>
                             </td>
                         </tr>
@@ -536,7 +620,6 @@
                 </table>
             </div>
 
-            <!-- Add this at the end of the template, before closing AdminLayout -->
             <RecordDetailsModal
                 :show="showRecordModal"
                 :record="selectedRecord"
@@ -583,19 +666,41 @@ const props = defineProps({
 // Reactive data
 const loading = ref(false);
 const showFilterDropdown = ref(false);
+const showDateFilterDropdown = ref(false);
 const isResetting = ref(false);
 const showRecordModal = ref(false);
 const selectedRecord = ref(null);
 const loadingRecord = ref(false);
+const showEditRecordModal = ref(false);
 
-// Local filters
+// Local filters with month and year
 const filters = ref({
     search: props.filters.search || "",
     status: props.filters.status || "",
+    month: props.filters.month || "", // Ensure this is received
+    year: props.filters.year || "", // Ensure this is received
     perPage: props.filters.perPage || 10,
 });
 
-const showEditRecordModal = ref(false);
+// Month options
+const months = [
+    { name: "January", value: "01" },
+    { name: "February", value: "02" },
+    { name: "March", value: "03" },
+    { name: "April", value: "04" },
+    { name: "May", value: "05" },
+    { name: "June", value: "06" },
+    { name: "July", value: "07" },
+    { name: "August", value: "08" },
+    { name: "September", value: "09" },
+    { name: "October", value: "10" },
+    { name: "November", value: "11" },
+    { name: "December", value: "12" },
+];
+
+// Year options (current year and past 5 years)
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
 // Function to show edit modal
 const showEditModal = (record) => {
@@ -611,7 +716,7 @@ const closeEditModal = () => {
 
 // Handle record update
 const handleRecordUpdated = () => {
-    getRecords(); // Refresh the records list
+    getRecords();
     closeEditModal();
 };
 
@@ -657,13 +762,10 @@ const showRecordDetails = async (record) => {
     showRecordModal.value = true;
 
     try {
-        // Use the dedicated API endpoint
         const response = await fetch(route("admin.records.details", record.id));
-
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
             selectedRecord.value = await response.json();
@@ -672,10 +774,7 @@ const showRecordDetails = async (record) => {
         }
     } catch (error) {
         console.error("Error fetching record details:", error);
-        // Fallback to the basic record data
         selectedRecord.value = record;
-
-        // Show error message to user
         Swal.fire({
             icon: "error",
             title: "Error",
@@ -694,20 +793,37 @@ const closeRecordModal = () => {
     selectedRecord.value = null;
 };
 
-// Handle click outside to close dropdown
+// Handle click outside to close dropdowns
 const handleClickOutside = (event) => {
-    const filterButton = document.querySelector(
-        '[aria-label="Filter dropdown button"]'
+    const statusFilterButton = document.querySelector(
+        '[aria-label="Status filter dropdown button"]'
     );
-    const dropdown = document.querySelector('[aria-label="Filter dropdown"]');
+    const statusDropdown = document.querySelector(
+        '[aria-label="Status filter dropdown"]'
+    );
+    const dateFilterButton = document.querySelector(
+        '[aria-label="Date filter dropdown button"]'
+    );
+    const dateDropdown = document.querySelector(
+        '[aria-label="Date filter dropdown"]'
+    );
 
     if (
-        filterButton &&
-        !filterButton.contains(event.target) &&
-        dropdown &&
-        !dropdown.contains(event.target)
+        statusFilterButton &&
+        !statusFilterButton.contains(event.target) &&
+        statusDropdown &&
+        !statusDropdown.contains(event.target)
     ) {
         showFilterDropdown.value = false;
+    }
+
+    if (
+        dateFilterButton &&
+        !dateFilterButton.contains(event.target) &&
+        dateDropdown &&
+        !dateDropdown.contains(event.target)
+    ) {
+        showDateFilterDropdown.value = false;
     }
 };
 
@@ -796,11 +912,14 @@ const resetFilters = () => {
         filters.value = {
             search: "",
             status: "",
+            month: "",
+            year: "",
             perPage: 10,
         };
         sortField.value = "id";
         sortDirection.value = "desc";
         showFilterDropdown.value = false;
+        showDateFilterDropdown.value = false;
         isResetting.value = false;
         getRecords();
     }, 1500);
@@ -814,6 +933,8 @@ const getRecords = () => {
         {
             search: filters.value.search,
             status: filters.value.status,
+            month: filters.value.month,
+            year: filters.value.year,
             perPage: filters.value.perPage,
             sort: sortField.value,
             direction: sortDirection.value,

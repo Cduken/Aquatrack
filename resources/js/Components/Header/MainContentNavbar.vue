@@ -1,123 +1,123 @@
-<!-- MainContentNavbar.vue -->
 <template>
     <nav
-        class="bg-white border-b border-gray-200 px-4 py-2.5 shadow-md dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
+        class="bg-white border-b border-gray-200 px-6 py-[13px] shadow-lg dark:bg-gray-800 dark:border-gray-700 fixed right-0 top-0 z-40 transition-all duration-300 ease-in-out"
+        :class="[
+            isSidebarOpen ? 'left-64' : 'left-16',
+            isMobileMenuOpen ? 'left-0' : '',
+        ]"
+        :style="navStyle"
     >
-        <div class="flex flex-wrap justify-between items-center">
-            <div class="flex justify-start items-center">
+        <div class="flex justify-between items-center">
+            <!-- Left section with mobile menu and search -->
+            <div class="flex items-center flex-1 max-w-3xl">
                 <!-- Mobile menu button -->
                 <button
                     @click="$emit('toggle-mobile-menu')"
-                    class="p-2 mr-2 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    class="p-2 mr-3 text-gray-600 rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200"
                 >
-                    <svg
-                        class="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            v-if="!isMobileMenuOpen"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"
-                        />
-                        <path
-                            v-else
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
+                    <Bars3Icon v-if="!isMobileMenuOpen" class="w-6 h-6" />
+                    <XMarkIcon v-else class="w-6 h-6" />
                 </button>
 
-                <!-- Logo and Title -->
-                <div class="flex items-center justify-between mr-4">
-                    <img
-                        src="/images/MainLogo.png"
-                        class="w-12 h-12 object-cover mr-2"
-                        alt="Logo"
+                <!-- Search Bar -->
+                <div class="relative w-full ml-2">
+                    <div
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                    >
+                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-900" />
+                    </div>
+                    <input
+                        type="text"
+                        v-model="searchQuery"
+                        @focus="isSearchFocused = true"
+                        @blur="isSearchFocused = false"
+                        class="bg-gray-50 border border-gray-300 shadow-lg w-[38%]  text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block pl-10 pr-4 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                        placeholder="Search reports, announcements"
                     />
-                    <span
-                        class="self-center text-[25px] font-semibold whitespace-nowrap dark:text-white md:inline"
+                    <div
+                        v-if="searchQuery"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3"
                     >
-                        AquaTrack
-                    </span>
-                    <button
-                        @click="$emit('toggle-sidebar')"
-                        class="p-2 ml-2 text-gray-600 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hidden md:block"
-                    >
-                        <svg
-                            class="w-6 h-6 transition-transform duration-300 ease-in-out transform origin-center"
-                            :class="{ 'rotate-180': !isSidebarOpen }"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
+                        <button
+                            @click="clearSearch"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                         >
-                            <path
-                                d="M12.71 16.29 8.41 12l4.3-4.29-1.42-1.42L5.59 12l5.7 5.71z"
-                            />
-                            <path
-                                d="M16.29 6.29 10.59 12l5.7 5.71 1.42-1.42-4.3-4.29 4.3-4.29z"
-                            />
-                        </svg>
-                    </button>
-                </div>
+                            <XMarkIcon class="w-4 h-4" />
+                        </button>
+                    </div>
 
-                <!-- Breadcrumb -->
-                <nav
-                    class="hidden md:flex items-center mr-4 text-sm text-gray-700 dark:text-gray-400"
-                >
-                    <ol class="inline-flex items-center space-x-1 md:space-x-2">
-                        <li class="inline-flex items-center">
-                            <Link
-                                :href="dashboardRoute"
-                                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+                    <!-- Search suggestions dropdown -->
+                    <div
+                        v-if="isSearchFocused && searchQuery.length > 0"
+                        class="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-lg dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden"
+                    >
+                        <div class="py-2">
+                            <div
+                                v-if="isLoadingSearch"
+                                class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center"
                             >
-                                {{
-                                    userRole.charAt(0).toUpperCase() +
-                                    userRole.slice(1)
-                                }}
-                            </Link>
-                        </li>
-                        <li v-if="currentRouteName">
-                            <div class="flex items-center">
-                                <svg
-                                    class="w-3 h-3 text-gray-400 mx-1"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                                <span
-                                    class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-400 capitalize"
-                                >
-                                    {{ currentRouteName }}
-                                </span>
+                                <div
+                                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"
+                                ></div>
+                                Searching...
                             </div>
-                        </li>
-                    </ol>
-                </nav>
+                            <div
+                                v-else-if="searchSuggestions.length === 0"
+                                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                            >
+                                No results found for "{{ searchQuery }}"
+                            </div>
+                            <div v-else>
+                                <div
+                                    v-for="suggestion in searchSuggestions"
+                                    :key="suggestion.id"
+                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors"
+                                    @mousedown="selectSuggestion(suggestion)"
+                                >
+                                    <div
+                                        class="flex justify-between items-center"
+                                    >
+                                        <span
+                                            class="text-sm font-medium text-gray-900 dark:text-white"
+                                            >{{ suggestion.title }}</span
+                                        >
+                                        <span
+                                            class="text-xs px-2 py-1 rounded-full"
+                                            :class="
+                                                getSuggestionBadgeClass(
+                                                    suggestion
+                                                )
+                                            "
+                                        >
+                                            {{ suggestion.type }}
+                                        </span>
+                                    </div>
+                                    <p
+                                        class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"
+                                    >
+                                        {{ suggestion.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex items-center lg:order-2">
+            <!-- Right section with notifications and user menu -->
+            <div class="flex items-center space-x-3 ml-4">
                 <!-- Notifications Button with Dropdown -->
                 <div class="relative">
                     <button
                         type="button"
                         @click="toggleNotificationDropdown"
-                        class="p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-150"
+                        class="relative p-2 text-gray-500 rounded-full hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-200"
                         ref="notificationButton"
                     >
-                        <v-icon name="bi-bell-fill" class="w-6 h-6" />
+                        <BellIcon class="w-6 h-6" />
                         <span
                             v-if="unreadCount > 0"
-                            class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"
+                            class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"
                         >
                             {{ unreadCount > 99 ? "99+" : unreadCount }}
                         </span>
@@ -127,231 +127,170 @@
                     <div
                         v-show="isNotificationDropdownOpen"
                         v-click-outside="closeNotificationDropdown"
-                        class="absolute right-0 mt-2 w-80 origin-top-right rounded-lg shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
-                        ref="notificationDropdown"
-                        style="max-height: 400px; overflow-y: auto"
+                        class="absolute right-0 mt-3 w-96 origin-top-right rounded-xl shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden z-50 transform transition-all duration-200"
                         :class="{
-                            'scale-y-100 opacity-100':
-                                isNotificationDropdownOpen,
-                            'scale-y-95 opacity-0': !isNotificationDropdownOpen,
+                            'scale-100 opacity-100': isNotificationDropdownOpen,
+                            'scale-95 opacity-0': !isNotificationDropdownOpen,
                         }"
-                        @keydown.esc="closeNotificationDropdown"
                     >
                         <!-- Header -->
                         <div
-                            class="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center"
+                            class="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 border-b border-gray-100 dark:border-gray-600"
                         >
-                            <h3
-                                class="text-sm font-semibold text-gray-900 dark:text-white"
-                            >
-                                Notifications
-                                <span
-                                    v-if="unreadCount > 0"
-                                    class="ml-2 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full"
+                            <div class="flex justify-between items-center">
+                                <h3
+                                    class="text-lg font-semibold text-gray-900 dark:text-white"
                                 >
-                                    {{ unreadCount }}
-                                </span>
-                            </h3>
-                            <button
-                                @click="closeNotificationDropdown"
-                                class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                            >
-                                <svg
-                                    class="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                                    Notifications
+                                    <span
+                                        v-if="unreadCount > 0"
+                                        class="ml-2 inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full"
+                                    >
+                                        {{ unreadCount }}
+                                    </span>
+                                </h3>
+                                <button
+                                    @click="closeNotificationDropdown"
+                                    class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors duration-200"
                                 >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Loading State -->
-                        <div
-                            v-if="isLoadingNotifications"
-                            class="p-4 text-center"
-                        >
-                            <div
-                                class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"
-                            ></div>
-                            <p
-                                class="text-gray-500 dark:text-gray-400 text-sm mt-1"
-                            >
-                                Loading notifications...
-                            </p>
-                        </div>
-
-                        <!-- Empty State -->
-                        <div
-                            v-else-if="localNotifications.length === 0"
-                            class="p-6 text-center"
-                        >
-                            <div
-                                class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
-                            >
-                                <v-icon
-                                    name="bi-bell"
-                                    class="w-8 h-8 text-gray-400"
-                                />
+                                    <XMarkIcon class="w-5 h-5" />
+                                </button>
                             </div>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">
-                                No notifications available
-                            </p>
                         </div>
 
-                        <!-- Notifications List -->
-                        <div
-                            v-else
-                            class="divide-y divide-gray-100 dark:divide-gray-700"
-                        >
+                        <!-- Content -->
+                        <div class="max-h-96 overflow-y-auto">
+                            <!-- Loading State -->
                             <div
-                                v-for="notification in localNotifications"
-                                :key="notification.id"
-                                class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group relative"
-                                :class="{
-                                    'bg-blue-50 dark:bg-blue-900/20':
-                                        notification.unread,
-                                }"
-                                @click="handleNotificationClick(notification)"
+                                v-if="isLoadingNotifications"
+                                class="p-8 text-center"
                             >
-                                <div class="flex items-start space-x-3">
-                                    <!-- Avatar/Icon -->
-                                    <div class="flex-shrink-0 relative">
-                                        <img
-                                            v-if="notification.user_avatar"
-                                            :src="notification.user_avatar"
-                                            :alt="
-                                                notification.user_name || 'User'
-                                            "
-                                            class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
-                                        />
-                                        <div
-                                            v-else
-                                            class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm"
-                                            :class="
-                                                getNotificationAvatarClass(
-                                                    notification
-                                                )
-                                            "
-                                        >
-                                            <v-icon
-                                                :name="
-                                                    getIconName(notification)
+                                <div
+                                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"
+                                ></div>
+                                <p
+                                    class="text-gray-500 dark:text-gray-400 text-sm mt-3"
+                                >
+                                    Loading notifications...
+                                </p>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div
+                                v-else-if="localNotifications.length === 0"
+                                class="p-8 text-center"
+                            >
+                                <div
+                                    class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
+                                >
+                                    <BellIcon class="w-8 h-8 text-gray-400" />
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400">
+                                    No notifications available
+                                </p>
+                            </div>
+
+                            <!-- Notifications List -->
+                            <div
+                                v-else
+                                class="divide-y divide-gray-100 dark:divide-gray-700"
+                            >
+                                <div
+                                    v-for="notification in localNotifications"
+                                    :key="notification.id"
+                                    class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group relative"
+                                    :class="{
+                                        'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500':
+                                            notification.unread,
+                                    }"
+                                    @click="
+                                        handleNotificationClick(notification)
+                                    "
+                                >
+                                    <div class="flex items-start space-x-3">
+                                        <!-- Avatar/Icon -->
+                                        <div class="flex-shrink-0 relative">
+                                            <img
+                                                v-if="notification.user_avatar"
+                                                :src="notification.user_avatar"
+                                                :alt="
+                                                    notification.user_name ||
+                                                    'User'
                                                 "
-                                                class="w-5 h-5 text-white"
+                                                class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
                                             />
-                                        </div>
-                                        <div
-                                            v-if="notification.unread"
-                                            class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse"
-                                        />
-                                    </div>
-
-                                    <!-- Content -->
-                                    <div class="flex-1 min-w-0">
-                                        <div
-                                            class="flex items-start justify-between"
-                                        >
-                                            <div class="flex-1 min-w-0">
-                                                <p
-                                                    class="text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    <span
-                                                        v-if="
-                                                            notification.user_name &&
-                                                            notification.type !==
-                                                                'announcement'
-                                                        "
-                                                        class="font-semibold"
-                                                        >{{
-                                                            notification.user_name
-                                                        }}
-                                                    </span>
-                                                    {{
-                                                        getNotificationTitle(
+                                            <div
+                                                v-else
+                                                class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm"
+                                                :class="
+                                                    getNotificationAvatarClass(
+                                                        notification
+                                                    )
+                                                "
+                                            >
+                                                <component
+                                                    :is="
+                                                        getNotificationIcon(
                                                             notification
-                                                        )
-                                                    }}
-                                                </p>
-                                                <p
-                                                    class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2"
-                                                >
-                                                    {{
-                                                        getNotificationMessage(
-                                                            notification
-                                                        )
-                                                    }}
-                                                </p>
-
-                                                <!-- Additional Details for Reports -->
-                                                <div
-                                                    v-if="
-                                                        [
-                                                            'report_update',
-                                                            'new_report',
-                                                        ].includes(
-                                                            notification.type
                                                         )
                                                     "
-                                                    class="mt-2 space-y-1 text-xs text-gray-500 dark:text-gray-400"
-                                                >
-                                                    <div
-                                                        class="flex items-center"
-                                                    >
-                                                        <v-icon
-                                                            name="bi-geo-alt"
-                                                            class="w-3 h-3 mr-1 flex-shrink-0"
-                                                        />
-                                                        <span class="truncate"
-                                                            >{{
-                                                                notification.barangay
-                                                            }},
-                                                            {{
-                                                                notification.municipality
-                                                            }}</span
-                                                        >
-                                                    </div>
-                                                    <div
-                                                        class="flex items-center"
-                                                    >
-                                                        <v-icon
-                                                            name="bi-hash"
-                                                            class="w-3 h-3 mr-1 flex-shrink-0"
-                                                        />
-                                                        <span>{{
-                                                            notification.tracking_code
-                                                        }}</span>
-                                                    </div>
-                                                </div>
+                                                    class="w-5 h-5 text-white"
+                                                />
                                             </div>
+                                        </div>
 
-                                            <!-- Timestamp -->
-                                            <p
-                                                class="text-xs text-gray-500 dark:text-gray-400 text-right"
+                                        <!-- Content -->
+                                        <div class="flex-1 min-w-0">
+                                            <div
+                                                class="flex items-start justify-between"
                                             >
-                                                {{
-                                                    getRelativeTime(
-                                                        getDateField(
-                                                            notification
+                                                <div class="flex-1 min-w-0">
+                                                    <p
+                                                        class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        <span
+                                                            v-if="
+                                                                notification.user_name &&
+                                                                notification.type !==
+                                                                    'announcement'
+                                                            "
+                                                            class="font-semibold"
+                                                        >
+                                                            {{
+                                                                notification.user_name
+                                                            }}
+                                                        </span>
+                                                        {{
+                                                            getNotificationTitle(
+                                                                notification
+                                                            )
+                                                        }}
+                                                    </p>
+                                                    <p
+                                                        class="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2"
+                                                    >
+                                                        {{
+                                                            getNotificationMessage(
+                                                                notification
+                                                            )
+                                                        }}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    class="text-xs text-gray-500 dark:text-gray-400 text-right ml-2"
+                                                >
+                                                    {{
+                                                        getRelativeTime(
+                                                            getDateField(
+                                                                notification
+                                                            )
                                                         )
-                                                    )
-                                                }}
-                                            </p>
+                                                    }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Unread indicator line -->
-                                <div
-                                    v-if="notification.unread"
-                                    class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"
-                                ></div>
                             </div>
                         </div>
 
@@ -364,37 +303,16 @@
                                     v-if="unreadCount > 0"
                                     @click="markAllAsRead"
                                     :disabled="isMarkingAllRead"
-                                    class="flex-1 py-2 text-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-r border-gray-200 dark:border-gray-600 disabled:opacity-50"
+                                    class="flex-1 py-3 text-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-r border-gray-200 dark:border-gray-600 disabled:opacity-50"
                                 >
-                                    <span v-if="!isMarkingAllRead"
-                                        >Mark All Read</span
-                                    >
-                                    <span
-                                        v-else
-                                        class="flex items-center justify-center"
-                                    >
-                                        <div
-                                            class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-1"
-                                        ></div>
-                                        Marking...
-                                    </span>
+                                    Mark All Read
                                 </button>
                                 <Link
                                     :href="notificationRoute"
                                     @click="closeNotificationDropdown"
-                                    class="flex-1 py-2 text-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    :class="{
-                                        'flex-1': unreadCount > 0,
-                                        'w-full': unreadCount === 0,
-                                    }"
+                                    class="flex-1 py-3 text-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                 >
-                                    <div class="inline-flex items-center">
-                                        <v-icon
-                                            name="bi-eye"
-                                            class="w-4 h-4 mr-1"
-                                        />
-                                        View All Notifications
-                                    </div>
+                                    View All
                                 </Link>
                             </div>
                         </div>
@@ -402,88 +320,104 @@
                 </div>
 
                 <!-- User Dropdown -->
-                <button
-                    type="button"
-                    @click.stop="toggleUserDropdown"
-                    class="flex mx-3 text-sm rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-200 hover:ring-2 hover:ring-gray-200 dark:hover:ring-gray-600"
-                    ref="userButton"
-                >
-                    <img
-                        v-if="user.avatar_url"
-                        class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
-                        :src="user.avatar_url"
-                        :alt="userDisplayName"
-                    />
-                    <div
-                        v-else
-                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-500 text-white flex items-center justify-center font-medium text-sm border-2 border-white dark:border-gray-700 shadow-sm"
+                <div class="relative">
+                    <button
+                        type="button"
+                        @click.stop="toggleUserDropdown"
+                        class="flex items-center space-x-3 text-sm rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-200"
+                        ref="userButton"
                     >
-                        {{ userInitials }}
-                    </div>
-                </button>
+                        <img
+                            v-if="user.avatar_url"
+                            class="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-600 shadow-sm"
+                            :src="user.avatar_url"
+                            :alt="userDisplayName"
+                        />
+                        <div
+                            v-else
+                            class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white flex items-center justify-center font-medium text-sm border-2 border-gray-200 dark:border-gray-600 shadow-sm"
+                        >
+                            {{ userInitials }}
+                        </div>
+                        <div class="text-left hidden sm:block">
+                            <p
+                                class="text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                {{ userDisplayName }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                {{
+                                    userRole.charAt(0).toUpperCase() +
+                                    userRole.slice(1)
+                                }}
+                            </p>
+                        </div>
+                        <ChevronDownIcon class="w-4 h-4 text-gray-400" />
+                    </button>
 
-                <!-- User Dropdown Menu -->
-                <div
-                    v-show="isUserDropdownOpen"
-                    v-click-outside="closeUserDropdown"
-                    class="absolute right-0 top-full mt-2 z-50 my-4 w-auto text-base list-none bg-white rounded-lg shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden"
-                    ref="userDropdownMenu"
-                >
+                    <!-- User Dropdown Menu -->
                     <div
-                        class="py-4 px-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-600"
+                        v-show="isUserDropdownOpen"
+                        v-click-outside="closeUserDropdown"
+                        class="absolute right-0 top-full mt-2 z-50 w-64 text-base bg-white rounded-xl shadow-xl dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all duration-200"
+                        :class="{
+                            'scale-100 opacity-100': isUserDropdownOpen,
+                            'scale-95 opacity-0': !isUserDropdownOpen,
+                        }"
                     >
-                        <span
-                            class="block text-sm font-semibold text-gray-900 dark:text-white truncate"
+                        <div
+                            class="py-4 px-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 border-b border-gray-100 dark:border-gray-600"
                         >
-                            {{ userDisplayName }}
-                        </span>
-                        <span
-                            class="block text-sm text-gray-600 dark:text-gray-300 truncate mt-1"
-                        >
-                            {{ user?.email }}
-                        </span>
-                    </div>
-                    <ul class="py-2">
-                        <li>
+                            <div class="flex items-center space-x-3">
+                                <img
+                                    v-if="user.avatar_url"
+                                    class="w-12 h-12 rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
+                                    :src="user.avatar_url"
+                                    :alt="userDisplayName"
+                                />
+                                <div
+                                    v-else
+                                    class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white flex items-center justify-center font-medium border-2 border-white dark:border-gray-700 shadow-sm"
+                                >
+                                    {{ userInitials }}
+                                </div>
+                                <div>
+                                    <p
+                                        class="text-sm font-semibold text-gray-900 dark:text-white"
+                                    >
+                                        {{ userDisplayName }}
+                                    </p>
+                                    <p
+                                        class="text-xs text-gray-600 dark:text-gray-300"
+                                    >
+                                        {{ user?.email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-2">
                             <Link
                                 href="/profile"
-                                class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                                class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                                 @click="closeUserDropdown"
                             >
-                                <v-icon
-                                    name="bi-person"
+                                <UserIcon
                                     class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                 />
                                 <span>Profile Settings</span>
                             </Link>
-                        </li>
-                        <!-- <li>
-                            <Link
-                                href="/settings"
-                                class="flex items-center gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                                @click="closeUserDropdown"
-                            >
-                                <v-icon
-                                    name="bi-gear"
-                                    class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                />
-                                <span>Account Settings</span>
-                            </Link>
-                        </li> -->
-                    </ul>
-                    <div
-                        class="border-t border-gray-100 dark:border-gray-700 pt-2"
-                    >
-                        <button
-                            @click.prevent="handleLogout"
-                            class="flex items-center w-full gap-3 py-3 px-4 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                        </div>
+                        <div
+                            class="border-t border-gray-100 dark:border-gray-700 pt-2"
                         >
-                            <v-icon
-                                name="bi-box-arrow-right"
-                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                            />
-                            <span>Sign out</span>
-                        </button>
+                            <button
+                                @click.prevent="handleLogout"
+                                class="flex items-center w-full gap-3 py-3 px-4 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                            >
+                                <ArrowRightOnRectangleIcon class="w-4 h-4" />
+                                <span>Sign out</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -492,9 +426,24 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted, watch, nextTick } from "vue";
+import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import { usePage, Link } from "@inertiajs/vue3";
+import {
+    HomeIcon,
+    ChevronRightIcon,
+    ChevronDownIcon,
+    BellIcon,
+    UserIcon,
+    ArrowRightOnRectangleIcon,
+    Bars3Icon,
+    XMarkIcon,
+    FlagIcon,
+    SpeakerWaveIcon,
+    ExclamationTriangleIcon,
+    MagnifyingGlassIcon,
+} from "@heroicons/vue/24/outline";
 import Swal from "sweetalert2";
+import debounce from "lodash/debounce";
 
 const props = defineProps({
     isSidebarOpen: {
@@ -525,17 +474,106 @@ const userInitials = computed(() => {
         .toUpperCase();
 });
 
-// Current route
-const currentRouteName = computed(() => {
-    const route = pageProps.component;
-    return route
-        ? route
-              .split("/")
-              .pop()
-              .replace(/([A-Z])/g, " $1")
-              .trim()
-        : "";
-});
+// Search state
+const searchQuery = ref("");
+const isSearchFocused = ref(false);
+const searchSuggestions = ref([]);
+const isLoadingSearch = ref(false);
+
+// Search methods
+const searchService = {
+    async search(query) {
+        if (!query || query.length < 2) {
+            return [];
+        }
+
+        try {
+            isLoadingSearch.value = true;
+            // Simulate API call - replace with actual API endpoint
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            // Mock data - replace with actual API response
+            return [
+                {
+                    id: 1,
+                    title: "Water Quality Report - Barangay San Jose",
+                    type: "report",
+                    description:
+                        "Submitted on Oct 15, 2023 - Status: Pending Review",
+                },
+                {
+                    id: 2,
+                    title: "Monthly Maintenance Announcement",
+                    type: "announcement",
+                    description: "Scheduled maintenance on Nov 5, 2023",
+                },
+                {
+                    id: 3,
+                    title: "Billing Statement - October 2023",
+                    type: "billing",
+                    description: "Due date: Nov 15, 2023 - Amount: ₱1,250.00",
+                },
+            ];
+        } catch (error) {
+            console.error("Search error:", error);
+            return [];
+        } finally {
+            isLoadingSearch.value = false;
+        }
+    },
+};
+
+const performSearch = debounce(async () => {
+    if (searchQuery.value.length > 1) {
+        searchSuggestions.value = await searchService.search(searchQuery.value);
+    } else {
+        searchSuggestions.value = [];
+    }
+}, 300);
+
+const clearSearch = () => {
+    searchQuery.value = "";
+    searchSuggestions.value = [];
+};
+
+const getSuggestionBadgeClass = (suggestion) => {
+    const classes = {
+        report: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        announcement:
+            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+        billing:
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+    };
+    return (
+        classes[suggestion.type] ||
+        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+    );
+};
+
+const selectSuggestion = (suggestion) => {
+    // Handle suggestion selection based on type
+    switch (suggestion.type) {
+        case "report":
+            window.location.href = `${dashboardRoute.value.replace(
+                "/dashboard",
+                ""
+            )}/reports`;
+            break;
+        case "announcement":
+            window.location.href = `${dashboardRoute.value.replace(
+                "/dashboard",
+                ""
+            )}/announcements`;
+            break;
+        case "billing":
+            window.location.href = `${dashboardRoute.value.replace(
+                "/dashboard",
+                ""
+            )}/billing`;
+            break;
+    }
+    clearSearch();
+};
 
 // Routes
 const dashboardRoute = computed(() =>
@@ -560,13 +598,124 @@ const isUserDropdownOpen = ref(false);
 const isLoadingNotifications = ref(false);
 const isMarkingAllRead = ref(false);
 const notificationButton = ref(null);
-const notificationDropdown = ref(null);
 const userButton = ref(null);
-const userDropdownMenu = ref(null);
 
 const unreadCount = computed(
     () => localNotifications.value.filter((n) => n.unread).length
 );
+
+// Window width state
+const windowWidth = ref(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+); // Default to a safe value for SSR
+
+// Computed property for nav style
+const navStyle = computed(() => ({
+    left:
+        windowWidth.value < 768 ? "0" : props.isSidebarOpen ? "16rem" : "4rem",
+}));
+
+// Handle window resize
+const handleResize = () => {
+    windowWidth.value = window.innerWidth;
+};
+
+// Notification methods
+const getNotificationIcon = (notification) => {
+    const icons = {
+        announcement: SpeakerWaveIcon,
+        billing_status: BellIcon,
+        overdue_warning: ExclamationTriangleIcon,
+        new_report: FlagIcon,
+        report_update: FlagIcon,
+    };
+    return icons[notification.type] || BellIcon;
+};
+
+const getNotificationAvatarClass = (notification) => {
+    const classes = {
+        new_report: "bg-orange-500",
+        report_update: "bg-blue-500",
+        announcement: "bg-purple-500",
+        billing_status: "bg-green-500",
+        overdue_warning: "bg-red-500",
+    };
+    return classes[notification.type] || "bg-gray-500";
+};
+
+const getNotificationTitle = (notification) => {
+    switch (notification.type) {
+        case "new_report":
+            return "submitted a new water quality report";
+        case "report_update":
+            return `updated report #${notification.tracking_code}`;
+        case "announcement":
+            return notification.title;
+        case "billing_status":
+            return "billing status updated";
+        case "overdue_warning":
+            return "payment overdue warning";
+        default:
+            return "sent you a notification";
+    }
+};
+
+const getNotificationMessage = (notification) => {
+    switch (notification.type) {
+        case "new_report":
+            return `A new water quality report has been submitted for ${notification.barangay}, ${notification.municipality}. Please review and take appropriate action.`;
+        case "report_update":
+            return `Report status has been updated to "${formatStatus(
+                notification.status
+            )}". Location: ${notification.barangay}, ${
+                notification.municipality
+            }`;
+        case "announcement":
+            return notification.message;
+        case "billing_status":
+            return "Your billing information has been updated. Please check your account for details.";
+        case "overdue_warning":
+            return "You have an overdue payment. Please settle your account to avoid service interruption.";
+        default:
+            return notification.message || "You have a new notification";
+    }
+};
+
+const getDateField = (notification) => {
+    if (notification.type === "overdue_warning") return notification.due_date;
+    if (notification.type === "announcement") return notification.created_at;
+    return notification.updated_at || notification.created_at;
+};
+
+const formatStatus = (status) => {
+    if (!status) return "";
+    return status
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+};
+
+const getRelativeTime = (dateString) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return "a few seconds ago";
+    if (diffInSeconds < 3600)
+        return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400)
+        return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800)
+        return `${Math.floor(diffInSeconds / 86400)} days ago`;
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+    });
+};
 
 // Notification service
 const notificationService = {
@@ -594,15 +743,6 @@ const notificationService = {
             return await response.json();
         } catch (error) {
             console.error("Error fetching notifications:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error!",
-                text: `Failed to load notifications: ${error.message}`,
-                timer: 3000,
-                showConfirmButton: false,
-                toast: true,
-                position: "top-end",
-            });
             return { success: false, notifications: [], unread_count: 0 };
         }
     },
@@ -691,137 +831,6 @@ const toggleUserDropdown = () => {
 
 const closeUserDropdown = () => {
     isUserDropdownOpen.value = false;
-};
-
-// Notification methods
-const getIconName = (notification) => {
-    const icons = {
-        announcement: "bi-megaphone-fill",
-        billing_status: "bi-wallet-fill",
-        overdue_warning: "bi-exclamation-triangle-fill",
-        new_report: "bi-flag-fill",
-        report_update: "bi-flag-fill",
-    };
-    return icons[notification.type] || "bi-bell-fill";
-};
-
-const getNotificationAvatarClass = (notification) => {
-    const classes = {
-        new_report: "bg-orange-500",
-        report_update: "bg-blue-500",
-        announcement: "bg-purple-500",
-        billing_status: "bg-green-500",
-        overdue_warning: "bg-red-500",
-    };
-    return classes[notification.type] || "bg-gray-500";
-};
-
-const hasBadge = (notification) => {
-    return [
-        "report_update",
-        "new_report",
-        "billing_status",
-        "overdue_warning",
-    ].includes(notification.type);
-};
-
-const getBadgeClass = (notification) => {
-    if (notification.type === "overdue_warning")
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-    if (notification.type === "billing_status")
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-    const classes = {
-        pending:
-            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-        in_progress:
-            "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-        resolved:
-            "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-    };
-    return (
-        classes[notification.status] ||
-        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-    );
-};
-
-const getBadgeText = (notification) => {
-    if (notification.type === "overdue_warning") return "Overdue";
-    if (notification.type === "billing_status") return "Billing";
-    return formatStatus(notification.status);
-};
-
-const getNotificationTitle = (notification) => {
-    switch (notification.type) {
-        case "new_report":
-            return "submitted a new water quality report";
-        case "report_update":
-            return `updated report #${notification.tracking_code}`;
-        case "announcement":
-            return notification.title;
-        case "billing_status":
-            return "billing status updated";
-        case "overdue_warning":
-            return "payment overdue warning";
-        default:
-            return "sent you a notification";
-    }
-};
-
-const getNotificationMessage = (notification) => {
-    switch (notification.type) {
-        case "new_report":
-            return `A new water quality report has been submitted for ${notification.barangay}, ${notification.municipality}. Please review and take appropriate action.`;
-        case "report_update":
-            return `Report status has been updated to "${formatStatus(
-                notification.status
-            )}". Location: ${notification.barangay}, ${
-                notification.municipality
-            }`;
-        case "announcement":
-            return notification.message;
-        case "billing_status":
-            return "Your billing information has been updated. Please check your account for details.";
-        case "overdue_warning":
-            return "You have an overdue payment. Please settle your account to avoid service interruption.";
-        default:
-            return notification.message || "You have a new notification";
-    }
-};
-
-const getDateField = (notification) => {
-    if (notification.type === "overdue_warning") return notification.due_date;
-    if (notification.type === "announcement") return notification.created_at;
-    return notification.updated_at || notification.created_at;
-};
-
-const formatStatus = (status) => {
-    if (!status) return "";
-    return status
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-};
-
-const getRelativeTime = (dateString) => {
-    if (!dateString) return "";
-
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    if (diffInSeconds < 60) return "a few seconds ago";
-    if (diffInSeconds < 3600)
-        return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400)
-        return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    if (diffInSeconds < 604800)
-        return `${Math.floor(diffInSeconds / 86400)} days ago`;
-
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-    });
 };
 
 const handleNotificationClick = async (notification) => {
@@ -925,6 +934,9 @@ const handleKeydown = (e) => {
             closeNotificationDropdown();
             notificationButton.value?.focus();
         }
+        if (isSearchFocused.value) {
+            isSearchFocused.value = false;
+        }
     }
 };
 
@@ -962,12 +974,20 @@ const stopNotificationPolling = () => {
     }
 };
 
+// Watch for search query changes
+watch(searchQuery, () => {
+    performSearch();
+});
+
+// Mount and unmount event listeners
 onMounted(() => {
+    window.addEventListener("resize", handleResize);
     window.addEventListener("keydown", handleKeydown);
     startNotificationPolling();
 });
 
 onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
     window.removeEventListener("keydown", handleKeydown);
     stopNotificationPolling();
 });
@@ -989,10 +1009,6 @@ watch(
     }
     .text-\[25px\] {
         font-size: 1.25rem;
-    }
-    img.w-12 {
-        width: 2.5rem;
-        height: 2.5rem;
     }
 }
 

@@ -37,7 +37,7 @@
         />
         <main
             :class="[
-                'p-4 pt-20 flex-1 transition-all duration-300 ease-in-out',
+                'p-4 pt-[100px] flex-1 transition-all duration-300 ease-in-out',
                 { 'md:ml-64': isSidebarOpen, 'md:ml-16': !isSidebarOpen },
             ]"
         >

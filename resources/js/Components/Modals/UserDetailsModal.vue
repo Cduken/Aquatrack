@@ -187,7 +187,7 @@
                                                     User ID
                                                 </p>
                                                 <p class="font-medium">
-                                                    #{{ user.id }}
+                                                    {{ user.id }}
                                                 </p>
                                             </div>
                                         </div>
