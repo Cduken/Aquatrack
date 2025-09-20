@@ -7,10 +7,10 @@
 
         <!-- Slide Panel -->
         <Transition name="slide">
-            <div class="fixed inset-y-0 right-0 max-w-[50%] w-full bg-white shadow-2xl flex flex-col">
+            <div class="fixed inset-y-0 right-0 max-w-[60%] w-full bg-white shadow-2xl flex flex-col">
                 <!-- Header -->
                 <div
-                    class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-[#062F64] to-[#2a5298] text-white">
+                    class="flex items-center justify-between p-[27px] border-b border-gray-200 bg-gradient-to-r from-[#062F64] to-[#2a5298] text-white">
                     <div class="flex items-center gap-3">
                         <v-icon name="bi-speedometer2" scale="1.5" class="text-white text-xl" />
                         <h3 class="text-xl font-semibold">Meter Reading Card</h3>
@@ -107,18 +107,30 @@
                                 <h4 class="text-lg font-semibold text-gray-800">New Meter Reading</h4>
                             </div>
 
+                            <!-- Year Transition Warning -->
+                            <div v-if="showYearTransitionWarning"
+                                class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4">
+                                <div class="flex items-center gap-2 text-yellow-800">
+                                    <v-icon name="bi-exclamation-triangle" class="text-yellow-600" />
+                                    <span class="font-medium">Year Transition Detected</span>
+                                </div>
+                                <p class="text-sm text-yellow-700 mt-1">
+                                    You're entering a reading for January after December. Please ensure this is correct
+                                    as it represents a new billing year.
+                                </p>
+                            </div>
+
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
                                         <v-icon name="bi-calendar-month" class="text-blue-500" />
                                         Billing Month
                                     </label>
-                                    <select v-model="newReading.billing_month"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        :disabled="isSubmitting">
-                                        <option value="">Select Month</option>
-                                        <option v-for="month in months" :key="month" :value="month">{{ month }}</option>
-                                    </select>
+                                    <div class="relative">
+                                        <input v-model="newReading.billing_month" type="text"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100"
+                                            disabled>
+                                    </div>
                                 </div>
 
                                 <div class="space-y-2">
@@ -126,22 +138,64 @@
                                         <v-icon name="bi-calendar-date" class="text-blue-500" />
                                         Reading Date
                                     </label>
-                                    <input v-model="newReading.reading_date" type="date"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        :disabled="isSubmitting">
+                                    <input v-model="newReading.reading_date" type="text"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100"
+                                        disabled>
                                 </div>
 
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
                                         <v-icon name="bi-123" class="text-blue-500" />
-                                        Reading (m³)
+                                        Previous Reading (m³)
+                                    </label>
+                                    <div class="relative">
+                                        <input v-model="newReading.previous_reading" type="number" step="0.01"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            disabled>
+                                        <span
+                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                        <v-icon name="bi-123" class="text-blue-500" />
+                                        Current Reading (m³)
                                     </label>
                                     <div class="relative">
                                         <input v-model="newReading.reading" type="number" step="0.01"
                                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12"
-                                            :disabled="isSubmitting">
+                                            :disabled="isSubmitting" @input="calculateConsumptionAndAmount">
                                         <span
                                             class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                        <v-icon name="bi-lightning-charge" class="text-blue-500" />
+                                        Consumption (m³)
+                                    </label>
+                                    <div class="relative">
+                                        <input v-model="newReading.consumption" type="number" step="0.01"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            disabled>
+                                        <span
+                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                        <v-icon name="bi-currency-dollar" class="text-blue-500" />
+                                        Amount (₱)
+                                    </label>
+                                    <div class="relative">
+                                        <input v-model="newReading.amount" type="number" step="0.01"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            disabled>
+                                        <span
+                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">₱</span>
                                     </div>
                                 </div>
                             </div>
@@ -151,6 +205,19 @@
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-2 h-6 bg-gradient-to-b from-gray-400 to-gray-500 rounded-full"></div>
                                     <h4 class="text-md font-semibold text-gray-700">Previous Readings</h4>
+                                </div>
+
+                                <!-- Year Filter -->
+                                <div class="mb-4">
+                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                        <v-icon name="bi-calendar" class="text-blue-500" />
+                                        Filter by Year
+                                    </label>
+                                    <select v-model="selectedYear"
+                                        class="w-full max-w-[200px] px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Years</option>
+                                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                                    </select>
                                 </div>
 
                                 <div v-if="isLoadingPreviousReadings" class="text-center py-8">
@@ -168,19 +235,19 @@
                                 </div>
 
                                 <div v-else class="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                                    <div v-if="previousReadings.length === 0" class="text-center py-8 text-gray-500">
+                                    <div v-if="filteredPreviousReadings.length === 0"
+                                        class="text-center py-8 text-gray-500">
                                         <v-icon name="bi-clock-history" class="text-3xl mb-2 opacity-50" />
                                         <p>No previous readings found</p>
                                     </div>
 
-                                    <div v-else class="space-y-3 max-h-60 overflow-y-auto">
-                                        <div v-for="(reading, index) in previousReadings" :key="index"
+                                    <div v-else class="space-y-3 max-h-[400px] overflow-y-auto">
+                                        <div v-for="(reading, index) in filteredPreviousReadings" :key="index"
                                             class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                                            <div class="grid grid-cols-4 gap-4 text-sm">
+                                            <div class="flex items-center justify-between text-sm">
                                                 <div>
                                                     <div class="text-xs text-gray-500 font-medium">Month</div>
-                                                    <div class="font-medium text-gray-800">{{ reading.billing_month }}
-                                                    </div>
+                                                    <div class="font-medium text-gray-800">{{ reading.billing_month }} {{ reading.year }}</div>
                                                 </div>
                                                 <div>
                                                     <div class="text-xs text-gray-500 font-medium">Date</div>
@@ -193,8 +260,14 @@
                                                     </div>
                                                 </div>
                                                 <div>
+                                                    <div class="text-xs text-gray-500 font-medium">Consumption</div>
+                                                    <div class="font-medium text-blue-600">{{ reading.consumption }} m³
+                                                    </div>
+                                                </div>
+                                                <div>
                                                     <div class="text-xs text-gray-500 font-medium">Amount</div>
-                                                    <div class="font-medium text-green-600">₱{{ reading.amount }}</div>
+                                                    <div class="font-medium text-green-600">₱{{
+                                                        reading.amount.toFixed(2) }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -223,7 +296,8 @@
                             </template>
                             <template v-else>
                                 <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                         stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor"
@@ -241,7 +315,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
@@ -262,11 +336,81 @@ const newReading = ref({
     billing_month: '',
     reading_date: '',
     reading: '',
+    previous_reading: 0,
+    consumption: 0,
+    amount: 0
 });
 
 const previousReadings = ref([]);
+const selectedYear = ref('');
+const availableYears = computed(() => {
+    const years = new Set(previousReadings.value.map(reading => reading.year));
+    return [...years].sort((a, b) => b - a); // Sort years in descending order
+});
+
+const filteredPreviousReadings = computed(() => {
+    return sortedPreviousReadings.value.filter(reading =>
+        !selectedYear.value || reading.year === selectedYear.value
+    );
+});
+
+const sortedPreviousReadings = computed(() => {
+    return [...previousReadings.value].sort((a, b) => {
+        const dateA = new Date(`${a.billing_month} 1, ${a.year}`);
+        const dateB = new Date(`${b.billing_month} 1, ${b.year}`);
+        return dateB - dateA; // Descending order
+    });
+});
+
 const isLoadingPreviousReadings = ref(false);
 const isSubmitting = ref(false);
+const showYearTransitionWarning = ref(false);
+
+// Watch for changes in previous readings to update the previous reading value
+watch(previousReadings, (newVal) => {
+    if (newVal.length > 0) {
+        updatePreviousReading();
+    } else {
+        newReading.value.previous_reading = 0;
+    }
+}, { deep: true });
+
+const updatePreviousReading = () => {
+    if (!newReading.value.billing_month) {
+        newReading.value.previous_reading = 0;
+        return;
+    }
+
+    const selectedDate = new Date(newReading.value.reading_date);
+    const selectedYear = selectedDate.getFullYear();
+    const selectedMonthIndex = months.indexOf(newReading.value.billing_month);
+
+    // Find the most recent reading before the selected date
+    const readingsBeforeCurrent = previousReadings.value.filter(reading => {
+        const readingDate = new Date(`${reading.billing_month} 1, ${reading.year}`);
+        return readingDate < selectedDate;
+    });
+
+    // Check for year transition (December to January)
+    const hasDecemberReading = previousReadings.value.some(r => r.billing_month === 'December' && parseInt(r.year) === selectedYear - 1);
+    showYearTransitionWarning.value = (selectedMonthIndex === 0 && hasDecemberReading);
+
+    if (readingsBeforeCurrent.length > 0) {
+        // Get the latest reading before the selected date
+        const latestReading = readingsBeforeCurrent.reduce((latest, current) => {
+            const latestDate = new Date(`${latest.billing_month} 1, ${latest.year}`);
+            const currentDate = new Date(`${current.billing_month} 1, ${current.year}`);
+            return currentDate > latestDate ? current : latest;
+        });
+
+        newReading.value.previous_reading = latestReading.reading;
+    } else {
+        newReading.value.previous_reading = 0;
+    }
+
+    // Recalculate consumption and amount
+    calculateConsumptionAndAmount();
+};
 
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -282,12 +426,43 @@ const isFormValid = computed(() => {
     return (
         newReading.value.billing_month &&
         newReading.value.reading_date &&
-        newReading.value.reading
+        newReading.value.reading !== '' &&
+        parseFloat(newReading.value.reading) >= parseFloat(newReading.value.previous_reading)
     );
 });
 
 const closeModal = () => {
     emit('close');
+};
+
+const calculateConsumptionAndAmount = () => {
+    const currentReading = parseFloat(newReading.value.reading) || 0;
+    const previousReading = parseFloat(newReading.value.previous_reading) || 0;
+
+    // Calculate consumption
+    newReading.value.consumption = Math.max(0, currentReading - previousReading);
+
+    // Calculate amount only if there's consumption
+    if (newReading.value.consumption > 0) {
+        const consumption = newReading.value.consumption;
+        let amount = 0;
+
+        if (consumption <= 10) {
+            amount = 132.00;
+        } else if (consumption <= 20) {
+            amount = 132.00 + (consumption - 10) * 14;
+        } else if (consumption <= 30) {
+            amount = 132.00 + (10 * 14) + ((consumption - 20) * 14.85);
+        } else if (consumption <= 40) {
+            amount = 132.00 + (10 * 14) + (10 * 14.85) + ((consumption - 30) * 16);
+        } else {
+            amount = 132.00 + (10 * 14) + (10 * 14.85) + (10 * 16) + ((consumption - 40) * 17.25);
+        }
+
+        newReading.value.amount = parseFloat(amount.toFixed(2));
+    } else {
+        newReading.value.amount = 0;
+    }
 };
 
 const fetchPreviousReadings = async () => {
@@ -329,11 +504,50 @@ const fetchPreviousReadings = async () => {
 const submitReading = async () => {
     if (!isFormValid.value) return;
 
+    // Validate that current reading is not less than previous reading
+    if (parseFloat(newReading.value.reading) < parseFloat(newReading.value.previous_reading)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Reading',
+            text: 'Current reading cannot be less than previous reading',
+        });
+        return;
+    }
+
+    // Additional validation for year transition
+    const selectedDate = new Date(newReading.value.reading_date);
+    const selectedYear = selectedDate.getFullYear();
+    const currentMonthIndex = months.indexOf(newReading.value.billing_month);
+    const hasDecemberReading = previousReadings.value.some(r => r.billing_month === 'December' && parseInt(r.year) === selectedYear - 1);
+
+    if (currentMonthIndex === 0 && hasDecemberReading) {
+        // This is January and there's a December reading from the previous year - confirm this is intentional
+        const result = await Swal.fire({
+            title: 'Year Transition Confirmation',
+            html: `You're entering a reading for <strong>January ${selectedYear}</strong> after a <strong>December ${selectedYear - 1}</strong> reading.<br><br>
+                   This indicates a new billing year. Is this correct?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, new year',
+            cancelButtonText: 'No, cancel'
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+    }
+
     isSubmitting.value = true;
     try {
         const result = await Swal.fire({
             title: 'Confirm Submission',
-            text: `Submit meter reading for ${props.user.name} ${props.user.lastname}?`,
+            html: `Submit meter reading for ${props.user.name} ${props.user.lastname}?<br>
+                   <strong>Billing Month:</strong> ${newReading.value.billing_month}<br>
+                   <strong>Reading:</strong> ${newReading.value.reading} m³<br>
+                   ${newReading.value.consumption > 0 ? `<strong>Consumption:</strong> ${newReading.value.consumption} m³<br>` : ''}
+                   ${newReading.value.amount > 0 ? `<strong>Amount:</strong> ₱${newReading.value.amount.toFixed(2)}` : ''}`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -343,17 +557,27 @@ const submitReading = async () => {
         });
 
         if (result.isConfirmed) {
-            await axios.post(route('staff.reading.store'), {
+            const response = await axios.post(route('staff.reading.store'), {
                 user_id: props.user.id,
-                ...newReading.value
+                billing_month: newReading.value.billing_month,
+                reading_date: newReading.value.reading_date,
+                reading: newReading.value.reading
             });
 
-            // Refresh previous readings
+            if (response.data.error) {
+                throw new Error(response.data.error);
+            }
+
+            // Refresh previous readings to get the updated list
             await fetchPreviousReadings();
 
-            // Reset form
+            // Reset only the current reading field, keep others
             newReading.value.reading = '';
+            newReading.value.consumption = 0;
+            newReading.value.amount = 0;
+            showYearTransitionWarning.value = false;
 
+            // Show success message but don't close the modal
             await Swal.fire({
                 icon: 'success',
                 title: 'Success!',
@@ -362,6 +586,7 @@ const submitReading = async () => {
                 showConfirmButton: false
             });
 
+            // Emit event to parent if needed
             emit('reading-submitted');
         }
     } catch (error) {
@@ -369,7 +594,7 @@ const submitReading = async () => {
         Swal.fire({
             icon: 'error',
             title: 'Submission Failed',
-            text: 'There was an error submitting the meter reading',
+            text: error.response?.data?.error || error.message || 'There was an error submitting the meter reading',
         });
     } finally {
         isSubmitting.value = false;
@@ -379,11 +604,18 @@ const submitReading = async () => {
 onMounted(() => {
     // Set default values for new reading
     const today = new Date();
+    const currentMonth = months[today.getMonth()];
     newReading.value = {
-        billing_month: months[today.getMonth()],
+        billing_month: currentMonth,
         reading_date: today.toISOString().split('T')[0],
         reading: '',
+        previous_reading: 0,
+        consumption: 0,
+        amount: 0
     };
+
+    // Set default year filter to current year
+    selectedYear.value = today.getFullYear().toString();
 
     // Fetch previous readings
     fetchPreviousReadings();

@@ -6,6 +6,7 @@ use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Customer\CustomerAnnouncementsController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
+use App\Http\Controllers\Customer\CustomerUsageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Roles\SelectRolesController;
@@ -82,9 +83,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 // Customer Routes
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-    Route::get('/customer/usage', function () {
-        return Inertia::render('Customer/Usage');
-    })->name('customer.usage');
+    Route::get('/customer/usage', [CustomerUsageController::class, 'index'])->name('customer.usage');
     Route::get('/customer/reports', [ReportController::class, 'customerIndex'])->name('customer.reports');
     Route::get('/customer/announcements', [CustomerAnnouncementsController::class, 'index'])->name('customer.announcements');
 });

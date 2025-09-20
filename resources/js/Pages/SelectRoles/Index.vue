@@ -1,6 +1,10 @@
 <template>
-    <Navigation>
+
     <div class="min-h-screen relative overflow-hidden">
+
+         <Navigation  />
+
+
         <!-- Background elements -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/AquatrackIMG.jpg')"></div>
@@ -87,7 +91,7 @@
             </div>
         </div>
     </div>
-</Navigation>
+
 </template>
 
 <script setup>

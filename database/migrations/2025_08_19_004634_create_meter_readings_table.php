@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('consumption', 10, 2);
             $table->decimal('amount', 10, 2);
             $table->timestamps();
-
             $table->index(['user_id', 'reading_date']);
         });
     }

@@ -174,7 +174,7 @@ const closeReadingForm = () => {
 };
 
 const handleReadingSubmitted = () => {
-    closeReadingForm();
+    searchUsers();
 };
 
 onMounted(() => {

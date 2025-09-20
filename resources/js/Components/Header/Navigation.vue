@@ -39,9 +39,9 @@ const showBackToHome = computed(() => isReportsPage.value || isSelectRolesPage.v
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col">
+
         <!-- Navbar -->
-        <header class=" bg-[#1E4272] backdrop-blur-md shadow-sm ">
+        <header class="sticky top-0 z-50 inset-0  ">
             <div class="mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex h-20 items-center justify-between">
                     <div class="flex-shrink-0">
@@ -53,12 +53,12 @@ const showBackToHome = computed(() => isReportsPage.value || isSelectRolesPage.v
                     <!-- Right section -->
                     <div class="flex items-center gap-4">
                         <Link v-if="showBackToHome" href="/"
-                            class="inline-flex items-center px-4 py-2 text-gray-300 rounded-lg transition-duration-200 hover:bg-[#4e637d]">
+                            class="inline-flex items-center px-4 py-2 text-white rounded-lg transition-duration-300 hover:bg-[#d0d9e4] hover:text-black">
                         <v-icon name="bi-arrow-left" class="mr-2" />
                         Back to Home
                         </Link>
                         <Link v-else :href="route('select-roles')"
-                            class="inline-flex items-center px-4 py-2 text-gray-300 rounded-lg transition-duration-200 hover:bg-[#4e637d]">
+                            class="inline-flex items-center px-4 py-2 text-white rounded-lg transition-duration-300 hover:bg-[#d0d9e4] hover:text-black">
                         <v-icon name="bi-box-arrow-in-right" class="mr-2" />
                         Login
                         </Link>
@@ -67,16 +67,8 @@ const showBackToHome = computed(() => isReportsPage.value || isSelectRolesPage.v
             </div>
         </header>
 
-        <!-- Sidebar Component -->
-        <Sidebar :isOpen="isSidebarOpen" :canLogin="canLogin" :canRegister="canRegister" @close="toggleSidebar"
-            @add-report="handleAddReport" />
-
-        <!-- Add Report Modal -->
-        <AddReportModal :show="showReportModal" @close="showReportModal = false" />
-
-        <!-- Main Content -->
         <main class="flex-1">
             <slot></slot>
         </main>
-    </div>
+
 </template>

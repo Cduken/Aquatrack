@@ -10,8 +10,8 @@
                     <h1 class="text-white text-[22px] font-bold">AquaTrack</h1>
                 </div>
 
-                <div class="absolute flex items-center justify-center border rounded-[100%] bg-gray-100 w-8 h-8 top-[323px] right-5">
-                    <span class="text-red-500">{{ pageProps.announcementCount }}</span>
+                <div class="absolute flex items-center justify-center border rounded-[100%] bg-blue-400 w-5 h-5 top-[325px] right-5">
+                    <span class="text-white text-xs">{{ pageProps.announcementCount }}</span>
                 </div>
             </template>
         </DashboardSidebar>

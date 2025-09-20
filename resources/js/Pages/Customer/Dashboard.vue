@@ -18,7 +18,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="border rounded-lg p-6">
                         <h3 class="text-gray-500 mb-2 flex items-center gap-2">
-                            <v-icon name="bi-calendar-fill" /> Monthly Usage
+                            <v-icon name="bi-calendar-fill" /> Monthly Reading
                         </h3>
                         <p class="text-3xl font-bold flex items-center gap-1">
                             <v-icon name="bi-water" class="text-blue-500" /> {{ monthlyUsage }} m³

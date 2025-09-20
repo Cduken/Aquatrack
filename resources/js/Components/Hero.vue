@@ -5,12 +5,24 @@ import { ref } from 'vue';
 import ReportSuccessModal from '@/Components/Modals/ReportSuccessModal.vue';
 import TrackReportModal from '@/Components/Modals/TrackReportModal.vue';
 import Swal from 'sweetalert2';
+import Navigation from './Header/Navigation.vue';
+import AquatrackLogo from './AquatrackLogo.vue';
+
+defineProps({
+    canLogin: {
+        type: Boolean,
+        default: true
+    },
+    canRegister: {
+        type: Boolean,
+        default: true
+    }
+})
 
 const showReportModal = ref(false);
 const showSuccessModal = ref(false);
 const showTrackModal = ref(false);
 const trackingInfo = ref(null);
-
 
 
 const handleTrackReport = () => {
@@ -62,7 +74,12 @@ const handleReportSubmitted = async (response) => {
 </script>
 
 <template>
+
+
     <main class="relative w-full min-h-screen overflow-hidden">
+
+        <Navigation :can-login="canLogin" />
+
         <!-- Background elements - image with gradient overlay -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style="background-image: url('/images/AquatrackIMG.jpg')"></div>
@@ -125,8 +142,8 @@ const handleReportSubmitted = async (response) => {
                             <div class="text-sm text-blue-100">Issues Resolved</div>
                         </div>
                         <div class="p-3 border-x border-white/10">
-                            <div class="text-2xl md:text-3xl font-bold text-teal-300">24/7</div>
-                            <div class="text-sm text-blue-100">Support Available</div>
+                            <div class="text-2xl md:text-3xl font-bold text-teal-300">342</div>
+                            <div class="text-sm text-blue-100">Customers</div>
                         </div>
                         <div class="p-3">
                             <div class="text-2xl md:text-3xl font-bold text-cyan-300">98%</div>

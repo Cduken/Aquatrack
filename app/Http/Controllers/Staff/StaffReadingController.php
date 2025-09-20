@@ -13,8 +13,6 @@ class StaffReadingController extends Controller
 {
     public function index()
     {
-
-
         return Inertia::render('Staff/Reading');
     }
 
@@ -113,7 +111,7 @@ class StaffReadingController extends Controller
                 ->firstOrFail();
 
             $readings = MeterReading::where('user_id', $userId)
-                ->orderBy('reading_date', 'desc')
+                ->orderBy('reading_date', 'desc') // Orders by date descending (newest first)
                 ->limit(12)
                 ->get()
                 ->map(function ($reading) {
@@ -122,7 +120,8 @@ class StaffReadingController extends Controller
                         'reading_date' => $reading->reading_date ? $reading->reading_date->format('Y-m-d') : 'N/A',
                         'reading' => $reading->reading,
                         'consumption' => $reading->consumption,
-                        'amount' => $reading->amount
+                        'amount' => $reading->amount,
+                        'year' => $reading->reading_date ? $reading->reading_date->format('Y') : date('Y')
                     ];
                 });
 
@@ -144,15 +143,33 @@ class StaffReadingController extends Controller
             'reading' => 'required|numeric|min:0',
         ]);
 
+        // Check if reading already exists for this month and year
+        $readingYear = (new \DateTime($validated['reading_date']))->format('Y');
+        $existingReading = MeterReading::where('user_id', $validated['user_id'])
+            ->where('billing_month', $validated['billing_month'])
+            ->whereYear('reading_date', $readingYear)
+            ->first();
+
+        if ($existingReading) {
+            return response()->json([
+                'error' => 'A reading already exists for this billing month and year'
+            ], 422);
+        }
+
         $previousReading = MeterReading::where('user_id', $validated['user_id'])
             ->latest('reading_date')
             ->first();
 
-        $consumption = $previousReading
-            ? $validated['reading'] - $previousReading->reading
-            : 0;
+        $consumption = 0;
+        $amount = 0;
 
-        $amount = $consumption * 15; // Adjust rate as needed
+        // Only calculate consumption and amount if there's a previous reading
+        if ($previousReading) {
+            $consumption = $validated['reading'] - $previousReading->reading;
+
+            // Calculate amount based on tiered pricing
+            $amount = $this->calculateBillAmount($consumption);
+        }
 
         $newReading = MeterReading::create([
             'user_id' => $validated['user_id'],
@@ -167,5 +184,38 @@ class StaffReadingController extends Controller
             'message' => 'Reading saved successfully',
             'reading' => $newReading
         ]);
+    }
+
+    /**
+     * Calculate bill amount based on tiered pricing
+     * 1-10 m³ = ₱132 (fixed)
+     * 11-20 m³ = ₱14 per m³
+     * 21-30 m³ = ₱14.85 per m³
+     * 31-40 m³ = ₱16 per m³
+     * 41+ m³ = ₱17.25 per m³
+     */
+    private function calculateBillAmount($consumption)
+    {
+        if ($consumption <= 0) {
+            return 0;
+        }
+
+        if ($consumption <= 10) {
+            return 132.00; // Fixed rate for first 10 m³
+        }
+
+        $amount = 132.00; // Base amount for first 10 m³
+
+        if ($consumption > 10 && $consumption <= 20) {
+            $amount += ($consumption - 10) * 14;
+        } elseif ($consumption > 20 && $consumption <= 30) {
+            $amount += (10 * 14) + (($consumption - 20) * 14.85);
+        } elseif ($consumption > 30 && $consumption <= 40) {
+            $amount += (10 * 14) + (10 * 14.85) + (($consumption - 30) * 16);
+        } else {
+            $amount += (10 * 14) + (10 * 14.85) + (10 * 16) + (($consumption - 40) * 17.25);
+        }
+
+        return round($amount, 2);
     }
 }

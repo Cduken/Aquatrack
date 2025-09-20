@@ -25,7 +25,7 @@ const adminLinks = ref([
     { name: 'Records', url: '/admin/records', icon: 'bi-file-earmark-text-fill' },
     { name: 'Announcements', url: '/admin/announcements', icon: 'bi-megaphone-fill' },
     { name: 'Users', url: '/admin/users', icon: 'fa-users' },
-    { name: 'Staff', url: '/admin/staff', icon: 'hi-solid-user' },
+    // { name: 'Staff', url: '/admin/staff', icon: 'hi-solid-user' },
 ]);
 
 const form = useForm({});

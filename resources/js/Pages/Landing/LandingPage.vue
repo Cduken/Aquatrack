@@ -32,10 +32,11 @@ defineProps({
 
 
     <Head title="Landing" />
-    <Navigation :can-login="canLogin" :can-register="canRegister">
+    <!-- <Navigation :can-login="canLogin" :can-register="canRegister"> -->
 
 
         <div class="overflow-hidden">
+
             <Hero />
 
             <Features />
@@ -48,6 +49,6 @@ defineProps({
 
 
         </div>
-    </Navigation>
+    <!-- </Navigation> -->
 
 </template>

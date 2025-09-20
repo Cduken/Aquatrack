@@ -6,7 +6,6 @@
                 <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <v-icon name="bi-droplet" class="text-blue-500" /> AquaTrack
                 </h1>
-
             </div>
 
             <!-- Main Content -->
@@ -20,7 +19,7 @@
                     <h3 class="text-lg font-medium mb-4">Monthly Usage and Billing</h3>
                     <div class="flex justify-between mb-2">
                         <span class="text-sm text-gray-600">Water Usage (m³)</span>
-                        <span class="text-sm text-gray-600">All Amount ($)</span>
+                        <span class="text-sm text-gray-600">Bill Amount (₱)</span>
                     </div>
 
                     <div class="h-64">
@@ -54,11 +53,13 @@
                             <tr v-for="(usage, index) in usageData" :key="index">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.month }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.usage }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ usage.amount }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱{{ usage.amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <span :class="statusClasses(usage.status)">
                                         {{ usage.status }}
                                     </span>
+
+
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div class="flex space-x-2">
@@ -82,15 +83,14 @@
 <script setup>
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import { ref, onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import Chart from 'chart.js/auto';
 
-const usageChart = ref(null);
+const page = usePage();
+const usageData = page.props.usageData ?? [];
+const chartData = page.props.chartData ?? [];
 
-const usageData = [
-    { month: 'June 2023', usage: 25, amount: '120.50', status: 'Pending' },
-    { month: 'May 2023', usage: 22, amount: '105.75', status: 'Paid' },
-    { month: 'April 2023', usage: 18, amount: '95.20', status: 'Paid' }
-];
+const usageChart = ref(null);
 
 const statusClasses = (status) => {
     return {
@@ -101,20 +101,25 @@ const statusClasses = (status) => {
 };
 
 onMounted(() => {
-    // Usage Chart with static data
+    // Prepare labels and data for chart
+    const labels = chartData.map(item => item.month);
+    const usageValues = chartData.map(item => item.usage);
+    const amountValues = chartData.map(item => item.amount);
+
+    // Usage Chart with dynamic data
     new Chart(usageChart.value, {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: labels,
             datasets: [{
                 label: 'Water Usage (m³)',
-                data: [15, 18, 20, 18, 22, 25],
+                data: usageValues,
                 backgroundColor: 'rgba(59, 130, 246, 0.7)',
                 borderColor: 'rgb(59, 130, 246)',
                 borderWidth: 1
             }, {
-                label: 'Bill Amount ($)',
-                data: [75, 90, 100, 95, 105, 120],
+                label: 'Bill Amount (₱)',
+                data: amountValues,
                 backgroundColor: 'rgba(156, 163, 175, 0.7)',
                 borderColor: 'rgb(156, 163, 175)',
                 borderWidth: 1
@@ -126,6 +131,15 @@ onMounted(() => {
             plugins: {
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const label = context.dataset.label || '';
+                            const value = context.raw;
+                            return `${label}: ${label.includes('Usage') ? value + ' m³' : '₱' + value}`;
+                        }
+                    }
                 }
             },
             scales: {

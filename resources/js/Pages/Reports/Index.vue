@@ -1,6 +1,8 @@
 <template>
-    <Navigation>
+    <!-- <Navigation> -->
         <div class="relative w-full min-h-screen overflow-hidden">
+
+        <Navigation/>
             <!-- Background elements - image with gradient overlay -->
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style="background-image: url('/images/AquatrackIMG.jpg')"></div>
@@ -251,7 +253,7 @@
 
         <TrackReportModal :show="showTrackModal" :initialTrackingCode="trackingCodeToShow"
             @close="showTrackModal = false" />
-    </Navigation>
+    <!-- </Navigation> -->
 </template>
 
 <script setup>

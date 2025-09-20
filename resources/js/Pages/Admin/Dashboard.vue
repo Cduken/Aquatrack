@@ -54,30 +54,6 @@
                 <p class="text-xs text-green-500 mt-2">85% of capacity</p>
             </div>
 
-            <!-- Reports Card -->
-            <div
-                class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all duration-200 group">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-amber-600 mb-1">Reports</p>
-                        <p class="text-3xl font-bold text-gray-800">{{ totalReports }}</p>
-                    </div>
-                    <div
-                        class="p-3 rounded-xl bg-white/50 text-amber-600 shadow-inner group-hover:bg-white transition-all">
-                        <v-icon name="bi-flag" class="w-6 h-6" />
-                    </div>
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center gap-1">
-                        <v-icon name="bi-arrow-down" class="w-4 h-4 text-red-500" />
-                        <span class="text-sm font-medium text-red-600">1.2%</span>
-                    </div>
-                    <div class="w-24 h-2 bg-amber-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-amber-500 rounded-full" style="width: 42%"></div>
-                    </div>
-                </div>
-                <p class="text-xs text-amber-500 mt-2">42% resolved</p>
-            </div>
 
             <!-- Customers Card -->
             <div
@@ -102,6 +78,31 @@
                     </div>
                 </div>
                 <p class="text-xs text-purple-500 mt-2">63% growth target</p>
+            </div>
+
+             <!-- Reports Card -->
+            <div
+                class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 shadow-sm border border-amber-100 hover:shadow-md transition-all duration-200 group">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-amber-600 mb-1">Reports</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ totalReports }}</p>
+                    </div>
+                    <div
+                        class="p-3 rounded-xl bg-white/50 text-amber-600 shadow-inner group-hover:bg-white transition-all">
+                        <v-icon name="bi-flag" class="w-6 h-6" />
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <v-icon name="bi-arrow-down" class="w-4 h-4 text-red-500" />
+                        <span class="text-sm font-medium text-red-600">1.2%</span>
+                    </div>
+                    <div class="w-24 h-2 bg-amber-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 rounded-full" style="width: 42%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-amber-500 mt-2">42% resolved</p>
             </div>
         </div>
 
