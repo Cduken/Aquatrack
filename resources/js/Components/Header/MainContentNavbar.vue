@@ -19,88 +19,43 @@
                     <XMarkIcon v-else class="w-6 h-6" />
                 </button>
 
-                <!-- Search Bar -->
-                <div class="relative w-full ml-2">
-                    <div
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                <!-- Breadcrumbs -->
+                <div
+                    class="hidden md:flex items-center text-sm text-gray-500 dark:text-gray-400 mr-4"
+                >
+                    <Link
+                        :href="dashboardRoute"
+                        class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                     >
-                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-900" />
-                    </div>
-                    <input
-                        type="text"
-                        v-model="searchQuery"
-                        @focus="isSearchFocused = true"
-                        @blur="isSearchFocused = false"
-                        class="bg-gray-50 border border-gray-300 shadow-lg w-[38%]  text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block pl-10 pr-4 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                        placeholder="Search reports, announcements"
+                        {{
+                            userRole.charAt(0).toUpperCase() + userRole.slice(1)
+                        }}
+                    </Link>
+                    <ChevronRightIcon
+                        v-for="(item, index) in breadcrumbs"
+                        :key="index"
+                        class="w-3 h-3 mx-2"
                     />
-                    <div
-                        v-if="searchQuery"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3"
+                    <span
+                        v-for="(item, index) in breadcrumbs"
+                        :key="'text-' + index"
+                        :class="[
+                            'transition-colors',
+                            index === breadcrumbs.length - 1
+                                ? 'text-gray-700 dark:text-gray-300 font-medium'
+                                : 'hover:text-gray-700 dark:hover:text-gray-300',
+                        ]"
                     >
-                        <button
-                            @click="clearSearch"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                        <Link
+                            v-if="item.link && index !== breadcrumbs.length - 1"
+                            :href="item.link"
                         >
-                            <XMarkIcon class="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    <!-- Search suggestions dropdown -->
-                    <div
-                        v-if="isSearchFocused && searchQuery.length > 0"
-                        class="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-lg dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden"
-                    >
-                        <div class="py-2">
-                            <div
-                                v-if="isLoadingSearch"
-                                class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center"
-                            >
-                                <div
-                                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"
-                                ></div>
-                                Searching...
-                            </div>
-                            <div
-                                v-else-if="searchSuggestions.length === 0"
-                                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                No results found for "{{ searchQuery }}"
-                            </div>
-                            <div v-else>
-                                <div
-                                    v-for="suggestion in searchSuggestions"
-                                    :key="suggestion.id"
-                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors"
-                                    @mousedown="selectSuggestion(suggestion)"
-                                >
-                                    <div
-                                        class="flex justify-between items-center"
-                                    >
-                                        <span
-                                            class="text-sm font-medium text-gray-900 dark:text-white"
-                                            >{{ suggestion.title }}</span
-                                        >
-                                        <span
-                                            class="text-xs px-2 py-1 rounded-full"
-                                            :class="
-                                                getSuggestionBadgeClass(
-                                                    suggestion
-                                                )
-                                            "
-                                        >
-                                            {{ suggestion.type }}
-                                        </span>
-                                    </div>
-                                    <p
-                                        class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"
-                                    >
-                                        {{ suggestion.description }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            {{ item.title }}
+                        </Link>
+                        <template v-else>
+                            {{ item.title }}
+                        </template>
+                    </span>
                 </div>
             </div>
 
@@ -427,7 +382,8 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted, watch } from "vue";
-import { usePage, Link } from "@inertiajs/vue3";
+import { usePage, Link, router } from "@inertiajs/vue3";
+
 import {
     HomeIcon,
     ChevronRightIcon,
@@ -838,32 +794,48 @@ const handleNotificationClick = async (notification) => {
         const response = await notificationService.markAsRead(notification.id);
         if (response.success) {
             notification.unread = false;
+        } else {
+            console.error('Failed to mark as read:', response.message || 'Unknown error');
+            // Optional: Add user feedback (e.g., toast) if desired
         }
     }
+
+    const basePath = dashboardRoute.value.replace('/dashboard', '');
+    let url = '';
 
     switch (notification.type) {
         case "new_report":
         case "report_update":
             if (notification.report_id) {
-                window.location.href = `${dashboardRoute.value.replace(
-                    "/dashboard",
-                    ""
-                )}/reports/${notification.report_id}`;
+                // Determine the correct reports URL based on user role
+                if (userRole.value === 'admin') {
+                    url = route('admin.reports'); // Use named route with Ziggy
+                } else if (userRole.value === 'staff') {
+                    url = route('staff.reports'); // Add this route if it exists
+                } else { // customer
+                    url = route('customer.reports'); // Add this route if it exists
+                }
+                // Navigate with report_to_open query param to trigger modal
+                router.get(url, {
+                    report_to_open: notification.report_id
+                }, {
+                    preserveState: true,
+                    preserveScroll: true
+                });
             } else {
-                window.location.href = `${dashboardRoute.value.replace(
-                    "/dashboard",
-                    ""
-                )}/reports`;
+                // Fallback to the generic reports page if no report_id
+                url = userRole.value === 'admin' ? route('admin.reports') :
+                      userRole.value === 'staff' ? route('staff.reports') :
+                      route('customer.reports');
+                router.get(url);
             }
             break;
         case "announcement":
-            window.location.href = `${dashboardRoute.value.replace(
-                "/dashboard",
-                ""
-            )}/announcements`;
+            url = `${basePath}/announcements`;
+            router.get(url);
             break;
         default:
-            window.location.href = notificationRoute.value;
+            router.get(notificationRoute.value);
     }
 
     closeNotificationDropdown();
@@ -973,6 +945,37 @@ const stopNotificationPolling = () => {
         notificationInterval = null;
     }
 };
+
+const breadcrumbs = computed(() => {
+    const path = window.location.pathname;
+    const segments = path.split("/").filter((segment) => segment);
+
+    // Remove the role segment (admin, staff, customer) as we're already showing it
+    const roleIndex = segments.findIndex((segment) =>
+        ["admin", "staff", "customer"].includes(segment)
+    );
+    if (roleIndex !== -1) {
+        segments.splice(roleIndex, 1);
+    }
+
+    // Generate breadcrumb items
+    const items = [];
+    let accumulatedPath = "";
+
+    segments.forEach((segment, index) => {
+        accumulatedPath += "/" + segment;
+        const isLast = index === segments.length - 1;
+
+        items.push({
+            title:
+                segment.charAt(0).toUpperCase() +
+                segment.slice(1).replace(/-/g, " "),
+            link: isLast ? null : accumulatedPath,
+        });
+    });
+
+    return items;
+});
 
 // Watch for search query changes
 watch(searchQuery, () => {

@@ -411,12 +411,26 @@ class ReportController extends Controller
             $reports = $query->paginate(5)
                 ->appends($request->query());
 
+            // Handle report_to_open query parameter for auto-opening modal
+            $reportToOpen = null;
+            $autoOpenModal = false;
+            if ($request->filled('report_to_open')) {
+                $reportToOpen = Report::with(['photos', 'user'])->find($request->input('report_to_open'));
+                if ($reportToOpen) {
+                    $autoOpenModal = true;
+                } else {
+                    Log::warning('Report not found for auto-open', ['report_id' => $request->input('report_to_open')]);
+                }
+            }
+
             return Inertia::render('Admin/Reports', [
                 'reports' => $reports,
                 'filters' => $request->only(['userType', 'status', 'search']),
                 'canEdit' => true,
                 'canDelete' => true,
                 'swal' => $request->session()->get('swal'),
+                'reportToOpen' => $reportToOpen, // Pass the selected report
+                'autoOpenModal' => $autoOpenModal, // Flag to trigger modal open
             ]);
         } catch (\Exception $e) {
             Log::error('Admin reports fetch failed', ['error' => $e->getMessage()]);
@@ -430,6 +444,8 @@ class ReportController extends Controller
                     'title' => 'Error',
                     'text' => 'Failed to load reports.',
                 ],
+                'reportToOpen' => null,
+                'autoOpenModal' => false,
             ]);
         }
     }

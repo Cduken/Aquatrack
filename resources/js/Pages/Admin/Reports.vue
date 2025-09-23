@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout title="Reports">
+    <AdminLayout>
         <div class="mx-auto w-full">
             <div class="lg:items-center lg:flex mb-4 hidden">
                 <v-icon
@@ -643,6 +643,9 @@ const props = defineProps({
     filters: Object,
     canEdit: Boolean,
     canDelete: Boolean,
+    swal: Object,
+    reportToOpen: Object, // New prop
+    autoOpenModal: Boolean,
 });
 
 const filters = ref({
@@ -747,6 +750,17 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
+    if (props.autoOpenModal && props.reportToOpen) {
+        selectedReport.value = props.reportToOpen;
+        showModal.value = true;
+        // Clear query param from URL
+        router.get(route('admin.reports'), {}, {
+            replace: true,
+            preserveState: true,
+            preserveScroll: true
+        });
+    }
+    // Existing click outside handler
     document.addEventListener("click", handleClickOutside);
 });
 

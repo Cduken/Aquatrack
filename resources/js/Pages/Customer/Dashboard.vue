@@ -50,7 +50,7 @@
             </div>
 
             <!-- Main Content -->
-            <div class="p-6">
+            <div class="">
                 <!-- Key Metrics Grid with improved visual hierarchy -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
                     <!-- Monthly Usage Card -->

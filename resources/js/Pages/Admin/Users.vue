@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout title="Users">
+    <AdminLayout>
         <div class="mx-auto w-full">
             <div class="lg:items-center lg:flex mb-4 hidden">
                 <v-icon

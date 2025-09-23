@@ -373,7 +373,7 @@ const isVideoFile = (media) => {
             class="fixed inset-0 z-[500] flex items-center justify-center p-3"
         >
             <div
-                class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-all duration-300"
+                class="fixed inset-0 bg-black/70 transition-all duration-300"
                 @click="closeModal"
             ></div>
 

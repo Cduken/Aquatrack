@@ -167,7 +167,8 @@ import {
     BiStars,
     BiCheck,
     BiSend,
-    BiRecordCircle
+    BiRecordCircle,
+
 } from "oh-vue-icons/icons";
 
 // Heroicons
@@ -231,6 +232,7 @@ import {
     HiPaperAirplane,
     HiBell,
     HiSolidCalendar
+
 } from "oh-vue-icons/icons";
 
 // Font Awesome

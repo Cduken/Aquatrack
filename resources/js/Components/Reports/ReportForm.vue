@@ -39,7 +39,6 @@
                         class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                     />
                 </div>
-
                 <div class="space-y-2">
                     <label
                         for="province"
@@ -82,7 +81,6 @@
                         {{ form.errors.reporter_name }}
                     </p>
                 </div>
-
                 <div class="space-y-2">
                     <label
                         for="reporter_phone"
@@ -142,7 +140,6 @@
                         {{ form.errors.barangay }}
                     </p>
                 </div>
-
                 <div class="space-y-2">
                     <label
                         for="zone"
@@ -209,7 +206,6 @@
                     </option>
                     <option value="others">Others (please specify)</option>
                 </select>
-
                 <div v-if="form.water_issue_type === 'others'" class="mt-3">
                     <input
                         type="text"
@@ -220,7 +216,6 @@
                         required
                     />
                 </div>
-
                 <p
                     v-if="form.errors.water_issue_type"
                     class="text-xs text-red-500 mt-1"
@@ -303,7 +298,6 @@
                 <div
                     class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-inner"
                 >
-                    <!-- Camera Not Active State -->
                     <div v-if="!isCameraActive" class="p-8 text-center">
                         <div class="mb-6">
                             <div
@@ -327,7 +321,6 @@
                                 issues faster.
                             </p>
                         </div>
-
                         <button
                             type="button"
                             @click="initializeCamera"
@@ -350,7 +343,6 @@
                                     : "Open Camera"
                             }}
                         </button>
-
                         <div class="mt-6 text-xs text-gray-400 space-y-1">
                             <p>Your browser will ask for camera permission</p>
                             <p>
@@ -359,10 +351,7 @@
                             </p>
                         </div>
                     </div>
-
-                    <!-- Active Camera View -->
                     <div v-else class="relative">
-                        <!-- Video Element Container -->
                         <div
                             class="relative bg-black rounded-lg overflow-hidden"
                             style="aspect-ratio: 4/3"
@@ -374,8 +363,6 @@
                                 playsinline
                                 muted
                             ></video>
-
-                            <!-- Camera Loading Overlay -->
                             <div
                                 v-if="!isCameraReady"
                                 class="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center"
@@ -397,8 +384,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Camera Ready Indicator -->
                             <div
                                 v-if="isCameraReady"
                                 class="absolute top-4 left-4"
@@ -412,8 +397,6 @@
                                     LIVE
                                 </div>
                             </div>
-
-                            <!-- Recording Indicator -->
                             <div
                                 v-if="isRecording"
                                 class="absolute top-4 left-1/2 transform -translate-x-1/2"
@@ -427,8 +410,6 @@
                                     REC {{ formatTime(recordingTime) }}
                                 </div>
                             </div>
-
-                            <!-- Media Counter -->
                             <div
                                 v-if="isCameraReady"
                                 class="absolute bottom-4 left-4"
@@ -467,11 +448,8 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Enhanced Camera Controls -->
                         <div class="bg-white p-6 border-t border-gray-200">
                             <div class="flex items-center justify-center gap-6">
-                                <!-- Switch Camera Button -->
                                 <button
                                     type="button"
                                     @click="switchCamera"
@@ -497,8 +475,6 @@
                                         class="w-6 h-6"
                                     />
                                 </button>
-
-                                <!-- Photo Capture Button -->
                                 <button
                                     type="button"
                                     @click="capturePhoto"
@@ -516,14 +492,11 @@
                                         name="hi-camera"
                                         class="w-7 h-7 text-white"
                                     />
-                                    <!-- Capture animation ring -->
                                     <div
                                         v-if="isCapturing"
                                         class="absolute inset-0 border-4 border-white rounded-full animate-ping"
                                     ></div>
                                 </button>
-
-                                <!-- Video Recording Button -->
                                 <button
                                     type="button"
                                     @click="
@@ -555,8 +528,6 @@
                                         class="w-7 h-7 text-white"
                                     />
                                 </button>
-
-                                <!-- Close Camera Button -->
                                 <button
                                     type="button"
                                     @click="stopCamera"
@@ -567,8 +538,6 @@
                                     <v-icon name="hi-solid-x" class="w-6 h-6" />
                                 </button>
                             </div>
-
-                            <!-- Camera Instructions -->
                             <div
                                 v-if="isCameraReady"
                                 class="mt-4 text-center text-xs text-gray-500"
@@ -624,7 +593,6 @@
                             Clear All
                         </button>
                     </div>
-
                     <div
                         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
                     >
@@ -633,7 +601,6 @@
                             :key="'media-' + index"
                             class="relative group aspect-square"
                         >
-                            <!-- Photo -->
                             <div
                                 v-if="
                                     form.photos[index].type.startsWith('image')
@@ -674,7 +641,6 @@
                                     }}
                                 </div>
                             </div>
-                            <!-- Video -->
                             <div v-else>
                                 <video
                                     :src="preview"
@@ -733,7 +699,6 @@
                     </div>
                 </div>
 
-                <!-- Media requirement message -->
                 <div
                     v-if="form.photos.length === 0"
                     class="p-4 bg-blue-50 border border-blue-200 rounded-lg"
@@ -747,7 +712,6 @@
                         report
                     </div>
                 </div>
-
                 <p v-if="form.errors.photos" class="text-xs text-red-500 mt-2">
                     {{ form.errors.photos }}
                 </p>
@@ -816,7 +780,6 @@ const emit = defineEmits([
 ]);
 
 const isSubmitting = ref(false);
-const locationStatus = ref("idle");
 const isCameraActive = ref(false);
 const isCameraReady = ref(false);
 const isCameraLoading = ref(false);
@@ -854,8 +817,6 @@ const form = useForm({
     description: "",
     photos: [],
     photo_previews: [],
-    videos: [],
-    video_previews: [],
     reporter_name: "",
     reporter_phone: "",
     latitude: null,
@@ -871,25 +832,9 @@ const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 25 * 1024 * 1024;
 const MAX_VIDEO_DURATION = 30;
 
-const currentDate = ref("");
-const currentTime = ref("");
+const currentDate = ref("Monday, September 22, 2025");
+const currentTime = ref("06:56 PM PST");
 const currentLocation = ref("Clarin, Bohol");
-
-const updateTimeDisplay = () => {
-    const now = new Date();
-    currentDate.value = now.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-    currentTime.value = now.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-    });
-};
 
 const waterIssueTypes = ref([
     "Burst pipe",
@@ -988,26 +933,20 @@ const getCameras = async () => {
         availableCameras.value = devices.filter(
             (device) => device.kind === "videoinput"
         );
-
         if (
             availableCameras.value.length > 0 &&
             !availableCameras.value[0].label
         ) {
-            try {
-                const tempStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                });
-                tempStream.getTracks().forEach((track) => track.stop());
-                const devicesWithLabels =
-                    await navigator.mediaDevices.enumerateDevices();
-                availableCameras.value = devicesWithLabels.filter(
-                    (device) => device.kind === "videoinput"
-                );
-            } catch (e) {
-                console.warn("Could not get camera labels:", e);
-            }
+            const tempStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+            tempStream.getTracks().forEach((track) => track.stop());
+            const devicesWithLabels =
+                await navigator.mediaDevices.enumerateDevices();
+            availableCameras.value = devicesWithLabels.filter(
+                (device) => device.kind === "videoinput"
+            );
         }
-
         console.log("Available cameras:", availableCameras.value);
         return availableCameras.value;
     } catch (error) {
@@ -1022,34 +961,24 @@ const initializeCamera = async (retryCount = 0, maxRetries = 3) => {
             "Failed to access camera after multiple attempts. Please close other applications using the camera or restart your browser.";
         return;
     }
-
     cameraError.value = "";
     isCameraLoading.value = true;
     startLoadingProgress();
-
     try {
         cameraStatus.value = "Requesting camera permission...";
-
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error("Camera not supported by this browser");
         }
-
         await getCameras();
-
         if (availableCameras.value.length === 0) {
             throw new Error("No camera devices found");
         }
-
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
             stream = null;
             await nextTick();
         }
-
         await startCameraStream();
-
-        updateTimeDisplay();
-        timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
     } catch (error) {
         console.error("Camera initialization failed:", error);
         handleCameraError(error, retryCount, maxRetries);
@@ -1062,19 +991,15 @@ const initializeCamera = async (retryCount = 0, maxRetries = 3) => {
 const startCameraStream = async () => {
     try {
         cameraStatus.value = "Starting camera...";
-
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
             stream = null;
         }
-
         isCameraActive.value = true;
         await nextTick();
-
         if (!videoElement.value) {
             throw new Error("Video element not available");
         }
-
         const constraints = {
             video: {
                 width: { ideal: 1280, max: 1920 },
@@ -1083,7 +1008,6 @@ const startCameraStream = async () => {
             },
             audio: true,
         };
-
         if (availableCameras.value.length > 0) {
             if (currentCameraIndex.value < availableCameras.value.length) {
                 constraints.video.deviceId = {
@@ -1092,15 +1016,11 @@ const startCameraStream = async () => {
                 };
             }
         }
-
         console.log("Starting camera with constraints:", constraints);
         cameraStatus.value = "Connecting to camera...";
-
         stream = await navigator.mediaDevices.getUserMedia(constraints);
-
         cameraStatus.value = "Loading video stream...";
         videoElement.value.srcObject = stream;
-
         await new Promise((resolve, reject) => {
             const timeout = setTimeout(
                 () => reject(new Error("Video load timeout")),
@@ -1132,7 +1052,6 @@ const startCameraStream = async () => {
             const playPromise = videoElement.value.play();
             if (playPromise) playPromise.catch(console.warn);
         });
-
         isCameraReady.value = true;
         cameraStatus.value = "Camera ready";
         console.log("Camera started successfully");
@@ -1145,14 +1064,11 @@ const startCameraStream = async () => {
 const handleCameraError = (error, retryCount, maxRetries) => {
     isCameraActive.value = false;
     isCameraReady.value = false;
-
     if (stream) {
         stream.getTracks().forEach((track) => track.stop());
         stream = null;
     }
-
     let errorMessage = "Camera initialization failed";
-
     if (
         error.name === "NotAllowedError" ||
         error.message.includes("permission")
@@ -1179,14 +1095,12 @@ const handleCameraError = (error, retryCount, maxRetries) => {
     } else if (error.message.includes("not supported")) {
         errorMessage = "Camera not supported by this browser.";
     }
-
     cameraError.value = errorMessage;
-
     if (error.name === "NotReadableError" && retryCount >= maxRetries - 1) {
         Swal.fire({
             icon: "error",
             title: "Camera Busy",
-            text: `${errorMessage} If the issue persists, reset camera permissions in your browser settings (e.g., chrome://settings/content/camera) and refresh the page.`,
+            text: `${errorMessage} If the issue persists, reset camera permissions in your browser settings and refresh the page.`,
             confirmButtonColor: "#3085d6",
         });
     }
@@ -1201,12 +1115,10 @@ const stopCamera = () => {
     if (isRecording.value) {
         stopVideoRecording();
     }
-
     if (timeUpdateInterval) {
         clearInterval(timeUpdateInterval);
         timeUpdateInterval = null;
     }
-
     if (stream) {
         stream.getTracks().forEach((track) => track.stop());
         if (videoElement.value) {
@@ -1215,7 +1127,6 @@ const stopCamera = () => {
         stream = null;
         console.log("Camera stopped and stream released");
     }
-
     isCameraActive.value = false;
     isCameraReady.value = false;
     isCameraLoading.value = false;
@@ -1230,16 +1141,13 @@ const switchCamera = async () => {
         isRecording.value
     )
         return;
-
     try {
         isSwitchingCamera.value = true;
         isCameraReady.value = false;
         cameraStatus.value = "Switching camera...";
-
         currentCameraIndex.value =
             (currentCameraIndex.value + 1) % availableCameras.value.length;
         console.log("Switching to camera:", currentCameraName.value);
-
         await startCameraStream();
     } catch (error) {
         console.error("Camera switch failed:", error);
@@ -1258,15 +1166,12 @@ const startVideoRecording = async () => {
     ) {
         return;
     }
-
     try {
         recordedChunks = [];
         recordingTime.value = 0;
-
         const options = {
             mimeType: "video/webm;codecs=vp9,opus",
         };
-
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
             options.mimeType = "video/webm;codecs=vp8,opus";
             if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -1276,18 +1181,14 @@ const startVideoRecording = async () => {
                 }
             }
         }
-
         mediaRecorder = new MediaRecorder(stream, options);
-
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
                 recordedChunks.push(event.data);
             }
         };
-
         mediaRecorder.onstop = async () => {
             const blob = new Blob(recordedChunks, { type: "video/webm" });
-
             if (blob.size > MAX_VIDEO_SIZE) {
                 Swal.fire({
                     icon: "error",
@@ -1299,53 +1200,40 @@ const startVideoRecording = async () => {
                 });
                 return;
             }
-
             const filename = `water-report-video-${Date.now()}.webm`;
             const file = new File([blob], filename, {
                 type: "video/webm",
                 lastModified: Date.now(),
             });
-
             file.duration = recordingTime.value;
-
             form.photos.push(file);
             form.photo_previews.push(URL.createObjectURL(blob));
-
             console.log(
                 `Video ${
                     form.photos.filter((file) => file.type.startsWith("video"))
                         .length
                 } recorded successfully`
             );
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-            });
-
-            Toast.fire({
+            Swal.fire({
                 icon: "success",
                 title: `Video ${
                     form.photos.filter((file) => file.type.startsWith("video"))
                         .length
                 } recorded!`,
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
             });
         };
-
         mediaRecorder.start();
         isRecording.value = true;
-
         recordingInterval = setInterval(() => {
             recordingTime.value++;
-
             if (recordingTime.value >= MAX_VIDEO_DURATION) {
                 stopVideoRecording();
             }
         }, 1000);
-
         console.log("Video recording started");
     } catch (error) {
         console.error("Failed to start recording:", error);
@@ -1360,16 +1248,13 @@ const startVideoRecording = async () => {
 
 const stopVideoRecording = () => {
     if (!isRecording.value || !mediaRecorder) return;
-
     try {
         mediaRecorder.stop();
         isRecording.value = false;
-
         if (recordingInterval) {
             clearInterval(recordingInterval);
             recordingInterval = null;
         }
-
         console.log("Video recording stopped");
     } catch (error) {
         console.error("Failed to stop recording:", error);
@@ -1386,80 +1271,52 @@ const capturePhoto = async () => {
     ) {
         return;
     }
-
     try {
         isCapturing.value = true;
-
         const video = videoElement.value;
         if (!video || !video.videoWidth || !video.videoHeight) {
             throw new Error("Video not ready for capture");
         }
-
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const now = new Date();
-        const timestamp = now.toLocaleString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true,
-        });
-
+        const timestamp = "Monday, September 22, 2025, 06:56 PM PST";
         const timestampPadding = 10;
         const fontSize = Math.max(16, Math.floor(canvas.width / 60));
         ctx.font = `bold ${fontSize}px Arial`;
-
         const textMetrics = ctx.measureText(timestamp);
         const textWidth = textMetrics.width;
         const textHeight = fontSize;
-
         const bgX = timestampPadding;
         const bgY = canvas.height - timestampPadding - textHeight - 10;
         const bgWidth = textWidth + 20;
         const bgHeight = textHeight + 20;
-
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
         ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.strokeRect(bgX, bgY, bgWidth, bgHeight);
-
         const textX = bgX + 10;
         const textY = bgY + textHeight + 5;
-
         ctx.lineWidth = 6;
         ctx.strokeStyle = "black";
         ctx.strokeText(timestamp, textX, textY);
-
         ctx.lineWidth = 4;
         ctx.strokeStyle = "white";
         ctx.strokeText(timestamp, textX, textY);
-
         ctx.lineWidth = 2;
         ctx.strokeStyle = "black";
         ctx.strokeText(timestamp, textX, textY);
-
         ctx.fillStyle = "white";
         ctx.fillText(timestamp, textX, textY);
-
         const locationText = currentLocation.value;
         ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
         const locationY = textY + fontSize + 5;
-
         const locTextMetrics = ctx.measureText(locationText);
         const locBgWidth = locTextMetrics.width + 16;
         const locBgHeight = Math.floor(fontSize * 0.8) + 16;
-
         ctx.fillStyle = "rgba(0, 100, 200, 0.8)";
         ctx.fillRect(
             textX,
@@ -1467,7 +1324,6 @@ const capturePhoto = async () => {
             locBgWidth,
             locBgHeight
         );
-
         ctx.strokeStyle = "white";
         ctx.lineWidth = 1;
         ctx.strokeRect(
@@ -1476,56 +1332,43 @@ const capturePhoto = async () => {
             locBgWidth,
             locBgHeight
         );
-
         ctx.fillStyle = "white";
         ctx.fillText(locationText, textX + 8, locationY);
-
         const blob = await new Promise((resolve) => {
             canvas.toBlob(resolve, "image/jpeg", 0.95);
         });
-
         if (!blob) {
             throw new Error("Failed to create image blob");
         }
-
         if (blob.size > MAX_PHOTO_SIZE) {
             throw new Error("Photo size too large");
         }
-
         const filename = `water-report-${Date.now()}.jpg`;
         const file = new File([blob], filename, {
             type: "image/jpeg",
             lastModified: Date.now(),
         });
-
         form.photos.push(file);
         form.photo_previews.push(URL.createObjectURL(blob));
-
         console.log(
             `Photo ${
                 form.photos.filter((file) => file.type.startsWith("image"))
                     .length
             } captured successfully`
         );
-
-        const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-        });
-
-        Toast.fire({
+        Swal.fire({
             icon: "success",
             title: `Photo ${
                 form.photos.filter((file) => file.type.startsWith("image"))
                     .length
             } captured!`,
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
         });
     } catch (error) {
         console.error("Photo capture failed:", error);
-
         Swal.fire({
             icon: "error",
             title: "Capture Failed",
@@ -1549,7 +1392,6 @@ const removeMedia = (index) => {
 const clearAllMedia = () => {
     const totalMedia = form.photos.length;
     if (totalMedia === 0) return;
-
     Swal.fire({
         title: "Clear All Media?",
         text: `This will remove all ${form.photos.length} media files.`,
@@ -1562,12 +1404,8 @@ const clearAllMedia = () => {
     }).then((result) => {
         if (result.isConfirmed) {
             form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
-
             form.photos = [];
             form.photo_previews = [];
-            form.videos = [];
-            form.video_previews = [];
-
             Swal.fire({
                 icon: "success",
                 title: "Media Cleared",
@@ -1589,64 +1427,44 @@ const restrictPhoneInput = (event) => {
 };
 
 const submitReport = async () => {
-    if (!form.water_issue_type) {
-        Swal.fire({
-            icon: "error",
-            title: "Water Issue Required",
-            text: "Please select a water issue type.",
-            confirmButtonColor: "#3085d6",
-        });
-        return;
-    }
-    if (form.water_issue_type === "others" && !form.custom_water_issue) {
-        Swal.fire({
-            icon: "error",
-            title: "Custom Issue Required",
-            text: "Please specify the water issue when selecting 'Others'.",
-            confirmButtonColor: "#3085d6",
-        });
-        return;
-    }
-    if (form.photos.length === 0) {
-        Swal.fire({
-            icon: "error",
-            title: "Media Required",
-            text: "Please capture at least one photo or video for your report.",
-            confirmButtonColor: "#3085d6",
-        });
-        return;
-    }
-
-    isSubmitting.value = true;
-
-    console.log("Form data before submission:", form.data());
-
-    const formData = new FormData();
-    Object.keys(form.data()).forEach((key) => {
-        if (key !== "photos" && key !== "photo_previews") {
-            formData.append(key, form[key]);
-        }
-    });
-
-    form.photos.forEach((file, index) => {
-        formData.append(`photos[${index}]`, file);
-    });
-
     try {
-        const response = await axios.post(route("reports.store"), formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
+        if (!navigator.onLine) {
+            await saveReportOffline(form.data());
+            isSubmitting.value = false;
+            Swal.fire({
+                position: "top-end",
+                title: "Report Saved Offline",
+                text: "Your report will be synced automatically when you’re back online.",
+                icon: "info",
+                toast: true,
+                showConfirmButton: false,
+                timer: 4000,
+            });
+            form.reset();
+            form.photos = [];
+            form.photo_previews = [];
+            return;
+        }
+        isSubmitting.value = true;
+        const formData = new FormData();
+        Object.entries(form.data()).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+                value.forEach((item, index) => {
+                    formData.append(`${key}[${index}]`, item);
+                });
+            } else {
+                formData.append(key, value);
+            }
         });
-
+        const response = await axios.post(route("reports.store"), formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
         isSubmitting.value = false;
         console.log("Report submitted successfully", response.data);
-
         emit("submitted", {
             trackingCode: response.data.trackingCode,
             dateSubmitted: response.data.dateSubmitted,
         });
-
         Swal.fire({
             position: "top-end",
             title: "Report Submitted Successfully!",
@@ -1655,25 +1473,25 @@ const submitReport = async () => {
             toast: true,
             showConfirmButton: false,
             timer: 5000,
-            timerProgressBar: true,
         });
-
         form.reset();
         form.photos = [];
         form.photo_previews = [];
     } catch (error) {
         isSubmitting.value = false;
-        console.log("Submission errors:", error.response?.data);
-
-        if (error.response?.data?.errors) {
-            form.errors = error.response.data.errors;
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-
+        console.error(
+            "Submission error:",
+            error.response?.data || error.message
+        );
+        form.errors = error.response?.data?.errors || {
+            general: "An unexpected error occurred. Please try again.",
+        };
         Swal.fire({
             icon: "error",
             title: "Submission Failed",
-            text: "Please check the form for errors.",
+            text:
+                form.errors.general ||
+                "Please check the form for errors or try again.",
             confirmButtonColor: "#3085d6",
         });
     }
@@ -1681,44 +1499,91 @@ const submitReport = async () => {
 
 const getLocation = () => {
     if (!navigator.geolocation) {
-        locationStatus.value = "error";
-        Swal.fire({
-            icon: "error",
-            title: "Geolocation Not Supported",
-            text: "Your browser does not support location services.",
-            confirmButtonColor: "#3085d6",
-        });
+        form.latitude = 9.9622;
+        form.longitude = 124.025;
+        console.log(
+            "Using approximate location due to geolocation not supported"
+        );
         return;
     }
-
-    locationStatus.value = "loading";
-
     navigator.geolocation.getCurrentPosition(
         (position) => {
             form.latitude = position.coords.latitude;
             form.longitude = position.coords.longitude;
-            locationStatus.value = "success";
             console.log("Location acquired:", {
                 latitude: form.latitude,
                 longitude: form.longitude,
             });
         },
         (error) => {
-            locationStatus.value = "error";
+            form.latitude = 9.9622;
+            form.longitude = 124.025;
             console.warn("Location error:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Location Access Denied",
-                text: "Please enable GPS/location services for your browser.",
-                confirmButtonColor: "#3085d6",
-            });
         },
         {
             enableHighAccuracy: true,
-            timeout: 15000,
+            timeout: 10000,
             maximumAge: 300000,
         }
     );
+};
+
+const updateOnlineStatus = () => {
+    if (navigator.onLine) {
+        getLocation();
+        syncOfflineReports();
+    }
+};
+
+const saveReportOffline = async (data) => {
+    const report = {
+        ...data,
+        synced: false,
+        createdAt: new Date().toISOString(),
+    };
+    localStorage.setItem(
+        `offline_report_${Date.now()}`,
+        JSON.stringify(report)
+    );
+    console.log("Report saved offline:", report);
+};
+
+const getPendingReports = async () => {
+    const reports = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith("offline_report_")) {
+            const report = JSON.parse(localStorage.getItem(key));
+            if (!report.synced) reports.push(report);
+        }
+    }
+    return reports;
+};
+
+const deleteReport = async (id) => {
+    localStorage.removeItem(id);
+};
+
+const syncOfflineReports = async () => {
+    if (!navigator.onLine) return;
+    const reports = await getPendingReports();
+    for (const report of reports) {
+        try {
+            const formData = new FormData();
+            Object.entries(report).forEach(([key, value]) => {
+                if (key !== "id" && key !== "synced" && key !== "createdAt") {
+                    formData.append(key, value);
+                }
+            });
+            await axios.post(route("reports.store"), formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            await deleteReport(`offline_report_${report.createdAt}`);
+            console.log("Offline report synced:", report);
+        } catch (err) {
+            console.error("Failed to sync offline report:", err);
+        }
+    }
 };
 
 watch(
@@ -1732,21 +1597,20 @@ watch(
 onMounted(() => {
     getLocation();
     console.log("Enhanced report form component mounted with video support");
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
 });
 
 onUnmounted(() => {
     stopCamera();
-
     form.photo_previews.forEach((url) => URL.revokeObjectURL(url));
     form.photos = [];
     form.photo_previews = [];
-    form.videos = [];
-    form.video_previews = [];
-
     if (progressInterval) clearInterval(progressInterval);
     if (recordingInterval) clearInterval(recordingInterval);
     if (timeUpdateInterval) clearInterval(timeUpdateInterval);
-
+    window.removeEventListener("online", updateOnlineStatus);
+    window.removeEventListener("offline", updateOnlineStatus);
     console.log("Component unmounted, resources cleaned up");
 });
 </script>

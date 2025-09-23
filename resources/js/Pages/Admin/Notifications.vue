@@ -1,6 +1,6 @@
 <!-- resources/js/Pages/Admin/Notifications.vue -->
 <template>
-    <AdminLayout title="Notifications">
+    <AdminLayout>
         <div class="mx-auto w-full">
             <div class="lg:items-center lg:flex mb-4 hidden">
                 <v-icon

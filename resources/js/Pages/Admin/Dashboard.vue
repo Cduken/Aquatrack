@@ -262,7 +262,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Dashboard">
+    <AdminLayout>
         <div class="lg:items-center lg:flex mb-4 hidden">
             <v-icon
                 name="md-dashboard-sharp"

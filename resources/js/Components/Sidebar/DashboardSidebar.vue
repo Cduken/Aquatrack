@@ -1,18 +1,19 @@
-```vue
 <template>
     <aside
         :class="[
-            'fixed top-0 left-0 z-50 h-screen bg-gradient-to-b from-[#062F64] to-indigo-900 border-r shadow-lg dark:bg-gradient-to-b dark:from-gray-800 dark:to-gray-700 dark:border-gray-700 transition-all duration-300 ease-in-out',
+            'fixed top-0 left-0 z-50 h-screen border-r shadow-lg transition-all duration-300 ease-in-out',
             isOpen ? 'w-[260px]' : 'w-[70px]',
             isMobileMenuOpen
-                ? 'translate-x-0'
-                : '-translate-x-full md:translate-x-0',
+                ? 'translate-x-0 bg-gradient-to-b from-[#062F64] to-indigo-900 dark:from-gray-800 dark:to-gray-900'
+                : '-translate-x-full md:translate-x-0 bg-gradient-to-b from-[#062F64] to-indigo-900 dark:from-gray-800 dark:to-gray-900',
         ]"
         aria-label="Sidebar"
         id="drawer-navigation"
     >
         <!-- Logo Section -->
-        <div class="flex items-center justify-start py-[11px] px-4 border-b border-gray-200/20">
+        <div
+            class="flex items-center justify-start py-[11px] px-4 border-b border-gray-200/20 dark:border-gray-700/50"
+        >
             <div class="flex items-center">
                 <img
                     src="/images/MainLogo.png"
@@ -26,7 +27,7 @@
                 />
                 <span
                     v-if="isOpen"
-                    class="text-lg text-white ml-3 uppercase font-semibold tracking-tighter transition-opacity duration-300"
+                    class="text-lg text-white dark:text-gray-100 ml-3 uppercase font-semibold tracking-tighter transition-opacity duration-300"
                 >
                     AquaTrack
                 </span>
@@ -38,7 +39,7 @@
             <button
                 v-if="isMobileMenuOpen"
                 @click="$emit('toggle-mobile-menu')"
-                class="absolute top-4 right-4 p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg md:hidden z-10"
+                class="absolute top-4 right-4 p-2 text-gray-300 dark:text-gray-400 hover:bg-gray-200/20 dark:hover:bg-gray-700/50 rounded-lg md:hidden z-10"
             >
                 <XMarkIcon class="w-6 h-6" />
             </button>
@@ -58,11 +59,11 @@
                     <Link
                         :href="link.url"
                         :title="!isOpen ? link.name : ''"
-                        class="flex items-center text-white px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative"
+                        class="flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative"
                         :class="{
-                            'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md transform scale-[1.02]':
+                            'bg-gradient-to-r from-blue-500 to-blue-600 text-white dark:from-blue-600 dark:to-blue-800 shadow-md transform scale-[1.02]':
                                 isActive(link.url),
-                            'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400':
+                            'text-white dark:text-gray-200 hover:bg-gray-200/20 dark:hover:bg-gray-700/50 hover:text-blue-300 dark:hover:text-blue-400':
                                 !isActive(link.url),
                         }"
                         @click="handleLinkClick"
@@ -70,15 +71,17 @@
                         <!-- Active indicator -->
                         <div
                             v-if="isActive(link.url)"
-                            class="absolute left-0 w-2 h-8 bg-white rounded-r-full opacity-80"
+                            class="absolute left-0 w-2 h-8 bg-white dark:bg-gray-200 rounded-r-full opacity-80"
                         ></div>
 
                         <component
                             :is="getIconComponent(link.icon)"
                             class="w-5 h-5 transition-all duration-200 flex-shrink-0"
                             :class="{
-                                'text-white': isActive(link.url),
-                                'text-white dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400':
+                                'text-white dark:text-gray-100': isActive(
+                                    link.url
+                                ),
+                                'text-white dark:text-gray-400 group-hover:text-blue-300 dark:group-hover:text-blue-400':
                                     !isActive(link.url),
                             }"
                         />
@@ -87,7 +90,8 @@
                             class="ml-3 transition-all duration-300"
                             :class="{
                                 'opacity-0 w-0 overflow-hidden': !isOpen,
-                                'opacity-100 w-auto': isOpen,
+                                'opacity-100 w-auto text-white dark:text-gray-100':
+                                    isOpen,
                             }"
                         >
                             {{ link.name }}
@@ -96,7 +100,7 @@
                         <!-- Tooltip for collapsed state -->
                         <div
                             v-if="!isOpen"
-                            class="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
+                            class="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-800 text-white dark:text-gray-200 text-xs rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
                         >
                             {{ link.name }}
                         </div>
@@ -104,21 +108,11 @@
                 </div>
             </nav>
 
-            <!-- General Section (if needed) -->
-            <!-- <div class="mt-8">
-                <span
-                    v-if="isOpen"
-                    class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                >
-                    GENERAL
-                </span>
-            </div> -->
-
             <!-- Collapse/Expand Button -->
             <div class="absolute bottom-4 left-0 right-0 px-3">
                 <button
                     @click="$emit('toggle-sidebar')"
-                    class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-white dark:text-gray-400 hover:bg-white hover:text-blue-500 dark:hover:bg-gray-700 rounded-xl transition-all duration-200"
+                    class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-white dark:text-gray-200 hover:bg-gray-200/20 dark:hover:bg-gray-700/50 hover:text-blue-300 dark:hover:text-blue-400 rounded-xl transition-all duration-200"
                 >
                     <ChevronDoubleLeftIcon
                         class="w-5 h-5 transition-transform duration-300"
@@ -126,9 +120,9 @@
                     />
                     <span
                         v-if="isOpen"
-                        class="ml-2 transition-opacity duration-300"
+                        class="ml-2 transition-opacity duration-300 text-white dark:text-gray-200"
                     >
-
+                        {{ isOpen ? "Collapse" : "Expand" }}
                     </span>
                 </button>
             </div>
@@ -218,11 +212,11 @@ aside::-webkit-scrollbar-thumb:hover {
 }
 
 .dark aside::-webkit-scrollbar-thumb {
-    background-color: rgba(75, 85, 99, 0.3);
+    background-color: rgba(75, 85, 99, 0.5);
 }
 
 .dark aside::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(75, 85, 99, 0.5);
+    background-color: rgba(75, 85, 99, 0.7);
 }
 
 /* Improved touch targets for mobile */
@@ -246,6 +240,9 @@ aside::-webkit-scrollbar-thumb:hover {
 .bg-gradient-to-r.from-blue-500 {
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
+.dark .bg-gradient-to-r.from-blue-600 {
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
 
 /* Smooth hover animations */
 nav a:not(.bg-gradient-to-r):hover {
@@ -262,5 +259,7 @@ nav a .absolute.left-full::before {
     border: 4px solid transparent;
     border-right-color: #1f2937;
 }
+.dark nav a .absolute.left-full::before {
+    border-right-color: #1f2937;
+}
 </style>
-```
