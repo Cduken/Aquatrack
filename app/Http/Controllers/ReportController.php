@@ -411,12 +411,24 @@ class ReportController extends Controller
             $reports = $query->paginate(5)
                 ->appends($request->query());
 
+            // Handle pre-selected report from query parameter
+            $selectedReport = null;
+            if ($request->filled('report_id')) {
+                $selectedReport = Report::with(['photos', 'user'])->find($request->input('report_id'));
+                if (!$selectedReport || $selectedReport->deleted_at) {
+                    $selectedReport = null; // Reset if not found or deleted
+                } else {
+                    Log::info('Selected report found', ['report_id' => $request->input('report_id'), 'data' => $selectedReport->toArray()]);
+                }
+            }
+
             return Inertia::render('Admin/Reports', [
                 'reports' => $reports,
                 'filters' => $request->only(['userType', 'status', 'search']),
                 'canEdit' => true,
                 'canDelete' => true,
                 'swal' => $request->session()->get('swal'),
+                'selectedReport' => $selectedReport,
             ]);
         } catch (\Exception $e) {
             Log::error('Admin reports fetch failed', ['error' => $e->getMessage()]);

@@ -643,6 +643,8 @@ const props = defineProps({
     filters: Object,
     canEdit: Boolean,
     canDelete: Boolean,
+    selectedReport: Object, // Already defined in your props
+    swal: Object,
 });
 
 const filters = ref({
@@ -652,13 +654,25 @@ const filters = ref({
 });
 
 // State
-const selectedReport = ref(null);
+
 const showModal = ref(false);
 const showFilterDropdown = ref(false);
 const updatingStatus = ref(false);
 const deletingReport = ref(false);
 const showReporterModal = ref(false);
 const selectedReportReporters = ref([]);
+
+onMounted(() => {
+    if (props.selectedReport) {
+        selectedReport.value = props.selectedReport;
+        showModal.value = true;
+    }
+    if (props.swal) {
+        Swal.fire(props.swal);
+    }
+});
+
+const selectedReport = ref(props.selectedReport || null);
 
 // Computed properties for statistics
 const pendingReportsCount = computed(() => {

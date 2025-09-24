@@ -67,30 +67,22 @@ Route::post('/admin/reports/{report}/update-status', [ReportController::class, '
     ->name('admin.reports.updateStatus');
 
 // Admin Routes
+
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
+    Route::delete('/admin/reports/{report}', [ReportController::class, 'destroy'])->name('admin.reports.destroy');
+    Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])->name('admin.reports.updateStatus');
 
-    Route::get('/admin/records/{record}/details', [AdminRecordController::class, 'details'])
-        ->name('admin.records.details');
-
+    Route::get('/admin/records/{record}/details', [AdminRecordController::class, 'details'])->name('admin.records.details');
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/admin/users/toggle-status', [AdminUsersController::class, 'toggleStatus'])->name('admin.users.toggle-status');
-
-    // For user updates
     Route::put('/admin/users/{user}', [AdminUsersController::class, 'update'])->name('admin.users.update');
-    // For password reset
     Route::post('/admin/users/{user}/reset-password', [AdminUsersController::class, 'resetPassword'])->name('admin.users.reset-password');
 
-
     Route::post('/admin/export-water-analytics', [AdminDashboardController::class, 'exportWaterAnalytics'])->name('admin.export-water-analytics');
-
-
-    Route::post('/admin/reports/{report}/update-status', [ReportController::class, 'updateStatus'])
-        ->name('admin.reports.updateStatus');
-
 
     Route::get('/admin/records', [AdminRecordController::class, 'index'])->name('admin.records.index');
     Route::get('/admin/records/{record}', [AdminRecordController::class, 'show'])->name('admin.records.show');
@@ -112,12 +104,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ]);
     })->name('admin.notifications');
 
-    // Change API routes to regular web routes
-    Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])
-        ->name('notifications.mark-read');
-
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])
-        ->name('notifications.mark-all-read');
+    Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 });
 
 

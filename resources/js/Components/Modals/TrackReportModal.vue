@@ -84,6 +84,7 @@ onMounted(() => {
     if (props.show) {
         modalVisible.value = true;
         if (props.initialTrackingCode) {
+            form.tracking_code = props.initialTrackingCode;
             trackReport();
         }
     }
@@ -100,6 +101,9 @@ watch(
         if (newVal && props.initialTrackingCode) {
             form.tracking_code = props.initialTrackingCode;
             trackReport();
+        } else if (!newVal) {
+            // Reset all state when modal is hidden
+            resetModal();
         }
     }
 );
@@ -239,10 +243,22 @@ const generateQRCode = () => {
     );
 };
 
+const resetModal = () => {
+    form.reset();
+    reportDetails.value = null;
+    errorMessage.value = null;
+    mediaModal.value.show = false;
+    mediaModal.value.src = "";
+    mediaModal.value.type = "image";
+};
+
 const resetForm = () => {
     form.reset();
     reportDetails.value = null;
     errorMessage.value = null;
+    mediaModal.value.show = false;
+    mediaModal.value.src = "";
+    mediaModal.value.type = "image";
 };
 
 watch(
@@ -259,7 +275,7 @@ watch(
 
 const closeModal = () => {
     closeQrScanner();
-    mediaModal.value.show = false;
+    resetModal();
     modalVisible.value = false;
     setTimeout(() => {
         emit("close");
@@ -373,7 +389,7 @@ const isVideoFile = (media) => {
             class="fixed inset-0 z-[500] flex items-center justify-center p-3"
         >
             <div
-                class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-all duration-300"
+                class="fixed inset-0 bg-black/70 transition-all duration-300"
                 @click="closeModal"
             ></div>
 

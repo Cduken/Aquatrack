@@ -68,7 +68,10 @@
                                                     Municipality
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.municipality }}
+                                                    {{
+                                                        report.municipality ||
+                                                        "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -84,7 +87,9 @@
                                                     Province
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.province }}
+                                                    {{
+                                                        report.province || "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -100,7 +105,9 @@
                                                     Barangay
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.barangay }}
+                                                    {{
+                                                        report.barangay || "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -116,7 +123,7 @@
                                                     Purok/Street
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.purok }}
+                                                    {{ report.purok || "N/A" }}
                                                 </p>
                                             </div>
                                         </div>
@@ -271,7 +278,10 @@
                                                     Reporter Name
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.reporter_name }}
+                                                    {{
+                                                        report.reporter_name ||
+                                                        "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -309,7 +319,10 @@
                                                     Registered User
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.user.name }}
+                                                    {{
+                                                        report.user?.name ||
+                                                        "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -344,7 +357,7 @@
                                                     Report ID
                                                 </p>
                                                 <p class="font-medium">
-                                                    #{{ report.id }}
+                                                    #{{ report.id || "N/A" }}
                                                 </p>
                                             </div>
                                         </div>
@@ -361,9 +374,11 @@
                                                 </p>
                                                 <p class="font-medium">
                                                     {{
-                                                        new Date(
-                                                            report.created_at
-                                                        ).toLocaleString()
+                                                        report.created_at
+                                                            ? new Date(
+                                                                  report.created_at
+                                                              ).toLocaleString()
+                                                            : "N/A"
                                                     }}
                                                 </p>
                                             </div>
@@ -399,7 +414,10 @@
                                                     Tracking Code
                                                 </p>
                                                 <p class="font-medium">
-                                                    {{ report.tracking_code }}
+                                                    {{
+                                                        report.tracking_code ||
+                                                        "N/A"
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>
@@ -420,7 +438,8 @@
                                                         "others"
                                                             ? report.custom_water_issue ||
                                                               "Custom Issue"
-                                                            : report.water_issue_type
+                                                            : report.water_issue_type ||
+                                                              "N/A"
                                                     }}
                                                 </p>
                                             </div>
@@ -447,7 +466,10 @@
                                         <p
                                             class="text-gray-700 whitespace-pre-line text-sm"
                                         >
-                                            {{ report.description }}
+                                            {{
+                                                report.description ||
+                                                "No description provided"
+                                            }}
                                         </p>
                                     </div>
                                 </div>
@@ -564,6 +586,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div
+                                v-else
+                                class="text-center text-gray-500 dark:text-gray-400"
+                            >
+                                No report data available.
+                            </div>
                         </div>
 
                         <!-- Footer -->
@@ -631,8 +659,6 @@ const props = defineProps({
     },
 });
 
-const report = computed(() => props.report);
-
 const emit = defineEmits(["close"]);
 const showVideoModal = ref(false);
 const currentVideo = ref(null);
@@ -644,23 +670,23 @@ const mapLoaded = ref(false);
 // Initialize Leaflet map
 const initializeMap = () => {
     if (
-        report.value &&
-        report.value.latitude !== undefined &&
-        report.value.latitude !== null &&
-        report.value.longitude !== undefined &&
-        report.value.longitude !== null &&
+        props.report &&
+        props.report.latitude !== undefined &&
+        props.report.latitude !== null &&
+        props.report.longitude !== undefined &&
+        props.report.longitude !== null &&
         mapContainer.value
     ) {
         // Convert to numbers if they are strings
-        const lat = Number(report.value.latitude);
-        const lon = Number(report.value.longitude);
+        const lat = Number(props.report.latitude);
+        const lon = Number(props.report.longitude);
 
         // Get heading if available (for arrow direction)
         if (
-            report.value.heading !== undefined &&
-            report.value.heading !== null
+            props.report.heading !== undefined &&
+            props.report.heading !== null
         ) {
-            heading.value = Number(report.value.heading);
+            heading.value = Number(props.report.heading);
         }
 
         // Validate coordinates
@@ -672,7 +698,6 @@ const initializeMap = () => {
         ) {
             const L = window.L;
             if (L && !map.value) {
-                // Small delay to ensure DOM is ready
                 setTimeout(() => {
                     if (mapContainer.value) {
                         map.value = L.map(mapContainer.value).setView(
@@ -730,19 +755,23 @@ const initializeMap = () => {
 watch(
     () => props.show,
     (newVal) => {
-        if (newVal) {
+        if (newVal && props.report) {
             // Small delay to ensure the modal is fully rendered
             setTimeout(() => {
                 initializeMap();
             }, 200);
         } else {
             mapLoaded.value = false;
+            if (map.value) {
+                map.value.remove();
+                map.value = null;
+            }
         }
     }
 );
 
 onMounted(() => {
-    if (props.show) {
+    if (props.show && props.report) {
         initializeMap();
     }
 });
@@ -753,18 +782,6 @@ onUnmounted(() => {
         map.value = null;
     }
 });
-
-// Clean up map when modal closes
-watch(
-    () => props.show,
-    (newVal) => {
-        if (!newVal && map.value) {
-            map.value.remove();
-            map.value = null;
-            mapLoaded.value = false;
-        }
-    }
-);
 
 const openVideoModal = (videoPath) => {
     currentVideo.value = "/storage/" + videoPath;
@@ -784,8 +801,8 @@ const isVideoFile = (file) => {
 };
 
 const statusClass = computed(() => {
-    if (!report.value || !report.value.status) return "";
-    switch (report.value.status.toLowerCase()) {
+    if (!props.report || !props.report.status) return "";
+    switch (props.report.status.toLowerCase()) {
         case "in_progress":
             return "bg-blue-100 text-blue-800";
         case "resolved":
@@ -798,37 +815,37 @@ const statusClass = computed(() => {
 });
 
 const statusLabel = computed(() => {
-    if (!report.value || !report.value.status) return "";
+    if (!props.report || !props.report.status) return "";
     return (
-        report.value.status.charAt(0).toUpperCase() +
-        report.value.status.slice(1)
+        props.report.status.charAt(0).toUpperCase() +
+        props.report.status.slice(1)
     );
 });
 
 // Safely get coordinates with fallback
 const getLatitude = computed(() => {
-    return report.value &&
-        report.value.latitude !== undefined &&
-        report.value.latitude !== null
-        ? Number(report.value.latitude).toFixed(6)
+    return props.report &&
+        props.report.latitude !== undefined &&
+        props.report.latitude !== null
+        ? Number(props.report.latitude).toFixed(6)
         : "N/A";
 });
 
 const getLongitude = computed(() => {
-    return report.value &&
-        report.value.longitude !== undefined &&
-        report.value.longitude !== null
-        ? Number(report.value.longitude).toFixed(6)
+    return props.report &&
+        props.report.longitude !== undefined &&
+        props.report.longitude !== null
+        ? Number(props.report.longitude).toFixed(6)
         : "N/A";
 });
 
 // Format the heading for display
 const getHeading = computed(() => {
-    if (!report.value || !report.value.heading) return "N/A";
+    if (!props.report || !props.report.heading) return "N/A";
 
     const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-    const index = Math.round((Number(report.value.heading) % 360) / 45) % 8;
-    return `${directions[index]} (${Math.round(report.value.heading)}°)`;
+    const index = Math.round((Number(props.report.heading) % 360) / 45) % 8;
+    return `${directions[index]} (${Math.round(props.report.heading)}°)`;
 });
 </script>
 
@@ -886,4 +903,3 @@ const getHeading = computed(() => {
     border: none !important;
 }
 </style>
-

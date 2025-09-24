@@ -8,7 +8,7 @@
         :style="navStyle"
     >
         <div class="flex justify-between items-center">
-            <!-- Left section with mobile menu and search -->
+            <!-- Left section with breadcrumbs, mobile menu and search -->
             <div class="flex items-center flex-1 max-w-3xl">
                 <!-- Mobile menu button -->
                 <button
@@ -19,88 +19,30 @@
                     <XMarkIcon v-else class="w-6 h-6" />
                 </button>
 
-                <!-- Search Bar -->
-                <div class="relative w-full ml-2">
-                    <div
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                <!-- Breadcrumbs -->
+                <div class="hidden md:flex items-center space-x-2 text-sm">
+                    <Link
+                        :href="dashboardRoute"
+                        class="flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
                     >
-                        <MagnifyingGlassIcon class="w-5 h-5 text-gray-900" />
-                    </div>
-                    <input
-                        type="text"
-                        v-model="searchQuery"
-                        @focus="isSearchFocused = true"
-                        @blur="isSearchFocused = false"
-                        class="bg-gray-50 border border-gray-300 shadow-lg w-[38%]  text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block pl-10 pr-4 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                        placeholder="Search reports, announcements"
-                    />
-                    <div
-                        v-if="searchQuery"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3"
+                        <HomeIcon class="w-4 h-4 mr-1" />
+                        <span class="font-medium capitalize">{{
+                            userRole
+                        }}</span>
+                    </Link>
+                    <ChevronRightIcon class="w-3 h-3 text-gray-400" />
+                    <span
+                        class="text-gray-900 dark:text-white font-semibold capitalize"
+                        >{{ currentPageName }}</span
                     >
-                        <button
-                            @click="clearSearch"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                        >
-                            <XMarkIcon class="w-4 h-4" />
-                        </button>
-                    </div>
+                </div>
 
-                    <!-- Search suggestions dropdown -->
-                    <div
-                        v-if="isSearchFocused && searchQuery.length > 0"
-                        class="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-lg dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden"
+                <!-- Mobile Breadcrumbs (simplified) -->
+                <div class="flex md:hidden items-center space-x-2 text-sm ml-2">
+                    <span
+                        class="text-gray-900 dark:text-white font-semibold capitalize"
+                        >{{ currentPageName }}</span
                     >
-                        <div class="py-2">
-                            <div
-                                v-if="isLoadingSearch"
-                                class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center"
-                            >
-                                <div
-                                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"
-                                ></div>
-                                Searching...
-                            </div>
-                            <div
-                                v-else-if="searchSuggestions.length === 0"
-                                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                No results found for "{{ searchQuery }}"
-                            </div>
-                            <div v-else>
-                                <div
-                                    v-for="suggestion in searchSuggestions"
-                                    :key="suggestion.id"
-                                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors"
-                                    @mousedown="selectSuggestion(suggestion)"
-                                >
-                                    <div
-                                        class="flex justify-between items-center"
-                                    >
-                                        <span
-                                            class="text-sm font-medium text-gray-900 dark:text-white"
-                                            >{{ suggestion.title }}</span
-                                        >
-                                        <span
-                                            class="text-xs px-2 py-1 rounded-full"
-                                            :class="
-                                                getSuggestionBadgeClass(
-                                                    suggestion
-                                                )
-                                            "
-                                        >
-                                            {{ suggestion.type }}
-                                        </span>
-                                    </div>
-                                    <p
-                                        class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"
-                                    >
-                                        {{ suggestion.description }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -145,9 +87,8 @@
                                     <span
                                         v-if="unreadCount > 0"
                                         class="ml-2 inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full"
+                                        >{{ unreadCount }}</span
                                     >
-                                        {{ unreadCount }}
-                                    </span>
                                 </h3>
                                 <button
                                     @click="closeNotificationDropdown"
@@ -255,11 +196,10 @@
                                                                     'announcement'
                                                             "
                                                             class="font-semibold"
-                                                        >
-                                                            {{
+                                                            >{{
                                                                 notification.user_name
-                                                            }}
-                                                        </span>
+                                                            }}</span
+                                                        >
                                                         {{
                                                             getNotificationTitle(
                                                                 notification
@@ -427,7 +367,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted, watch } from "vue";
-import { usePage, Link } from "@inertiajs/vue3";
+import { usePage, Link, router } from "@inertiajs/vue3";
 import {
     HomeIcon,
     ChevronRightIcon,
@@ -440,20 +380,13 @@ import {
     FlagIcon,
     SpeakerWaveIcon,
     ExclamationTriangleIcon,
-    MagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 import Swal from "sweetalert2";
 import debounce from "lodash/debounce";
 
 const props = defineProps({
-    isSidebarOpen: {
-        type: Boolean,
-        default: true,
-    },
-    isMobileMenuOpen: {
-        type: Boolean,
-        default: false,
-    },
+    isSidebarOpen: { type: Boolean, default: true },
+    isMobileMenuOpen: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["toggle-sidebar", "toggle-mobile-menu", "logout"]);
@@ -466,114 +399,48 @@ const userRole = computed(() => user.value?.role || "customer");
 const userDisplayName = computed(() => user.value?.name || "Unknown User");
 const userInitials = computed(() => {
     if (!user.value?.name) return "??";
-    const names = user.value.name.split(" ");
-    return names
+    return user.value.name
+        .split(" ")
         .map((n) => n.charAt(0))
         .slice(0, 2)
         .join("")
         .toUpperCase();
 });
 
-// Search state
-const searchQuery = ref("");
-const isSearchFocused = ref(false);
-const searchSuggestions = ref([]);
-const isLoadingSearch = ref(false);
+// Breadcrumbs data
+const currentPageName = computed(() => {
+    const path = window.location.pathname;
+    const segments = path.split("/").filter((segment) => segment);
+    const roleSegments = ["admin", "staff", "customer"];
+    const filteredSegments = segments.filter(
+        (segment) => !roleSegments.includes(segment)
+    );
 
-// Search methods
-const searchService = {
-    async search(query) {
-        if (!query || query.length < 2) {
-            return [];
-        }
-
-        try {
-            isLoadingSearch.value = true;
-            // Simulate API call - replace with actual API endpoint
-            await new Promise((resolve) => setTimeout(resolve, 500));
-
-            // Mock data - replace with actual API response
-            return [
-                {
-                    id: 1,
-                    title: "Water Quality Report - Barangay San Jose",
-                    type: "report",
-                    description:
-                        "Submitted on Oct 15, 2023 - Status: Pending Review",
-                },
-                {
-                    id: 2,
-                    title: "Monthly Maintenance Announcement",
-                    type: "announcement",
-                    description: "Scheduled maintenance on Nov 5, 2023",
-                },
-                {
-                    id: 3,
-                    title: "Billing Statement - October 2023",
-                    type: "billing",
-                    description: "Due date: Nov 15, 2023 - Amount: ₱1,250.00",
-                },
-            ];
-        } catch (error) {
-            console.error("Search error:", error);
-            return [];
-        } finally {
-            isLoadingSearch.value = false;
-        }
-    },
-};
-
-const performSearch = debounce(async () => {
-    if (searchQuery.value.length > 1) {
-        searchSuggestions.value = await searchService.search(searchQuery.value);
-    } else {
-        searchSuggestions.value = [];
-    }
-}, 300);
-
-const clearSearch = () => {
-    searchQuery.value = "";
-    searchSuggestions.value = [];
-};
-
-const getSuggestionBadgeClass = (suggestion) => {
-    const classes = {
-        report: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-        announcement:
-            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-        billing:
-            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+    if (filteredSegments.length === 0) return "Dashboard";
+    const lastSegment = filteredSegments[filteredSegments.length - 1];
+    const pageNames = {
+        dashboard: "Dashboard",
+        reports: "Reports",
+        announcements: "Announcements",
+        billing: "Billing",
+        profile: "Profile",
+        settings: "Settings",
+        users: "User Management",
+        customers: "Customers",
+        staff: "Staff Management",
+        analytics: "Analytics",
+        "water-quality": "Water Quality",
+        payments: "Payments",
+        notifications: "Notifications",
     };
     return (
-        classes[suggestion.type] ||
-        "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+        pageNames[lastSegment] ||
+        lastSegment
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
     );
-};
-
-const selectSuggestion = (suggestion) => {
-    // Handle suggestion selection based on type
-    switch (suggestion.type) {
-        case "report":
-            window.location.href = `${dashboardRoute.value.replace(
-                "/dashboard",
-                ""
-            )}/reports`;
-            break;
-        case "announcement":
-            window.location.href = `${dashboardRoute.value.replace(
-                "/dashboard",
-                ""
-            )}/announcements`;
-            break;
-        case "billing":
-            window.location.href = `${dashboardRoute.value.replace(
-                "/dashboard",
-                ""
-            )}/billing`;
-            break;
-    }
-    clearSearch();
-};
+});
 
 // Routes
 const dashboardRoute = computed(() =>
@@ -599,7 +466,6 @@ const isLoadingNotifications = ref(false);
 const isMarkingAllRead = ref(false);
 const notificationButton = ref(null);
 const userButton = ref(null);
-
 const unreadCount = computed(
     () => localNotifications.value.filter((n) => n.unread).length
 );
@@ -607,15 +473,12 @@ const unreadCount = computed(
 // Window width state
 const windowWidth = ref(
     typeof window !== "undefined" ? window.innerWidth : 1024
-); // Default to a safe value for SSR
-
-// Computed property for nav style
+);
 const navStyle = computed(() => ({
     left:
         windowWidth.value < 768 ? "0" : props.isSidebarOpen ? "16rem" : "4rem",
 }));
 
-// Handle window resize
 const handleResize = () => {
     windowWidth.value = window.innerWidth;
 };
@@ -697,11 +560,9 @@ const formatStatus = (status) => {
 
 const getRelativeTime = (dateString) => {
     if (!dateString) return "";
-
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
-
     if (diffInSeconds < 60) return "a few seconds ago";
     if (diffInSeconds < 3600)
         return `${Math.floor(diffInSeconds / 60)} minutes ago`;
@@ -709,7 +570,6 @@ const getRelativeTime = (dateString) => {
         return `${Math.floor(diffInSeconds / 3600)} hours ago`;
     if (diffInSeconds < 604800)
         return `${Math.floor(diffInSeconds / 86400)} days ago`;
-
     return date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -730,23 +590,14 @@ const notificationService = {
                     )?.content,
                 },
             });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(
-                    `HTTP error! status: ${response.status}, message: ${
-                        errorData.message || "Unknown error"
-                    }`
-                );
-            }
-
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`);
             return await response.json();
         } catch (error) {
             console.error("Error fetching notifications:", error);
             return { success: false, notifications: [], unread_count: 0 };
         }
     },
-
     async markAsRead(notificationId) {
         try {
             const response = await fetch("/api/notifications/mark-read", {
@@ -761,18 +612,14 @@ const notificationService = {
                 },
                 body: JSON.stringify({ notification_id: notificationId }),
             });
-
-            if (!response.ok) {
+            if (!response.ok)
                 throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
             return await response.json();
         } catch (error) {
             console.error("Error marking notification as read:", error);
             return { success: false };
         }
     },
-
     async markAllAsRead() {
         try {
             const response = await fetch("/api/notifications/mark-all-read", {
@@ -785,11 +632,8 @@ const notificationService = {
                     )?.content,
                 },
             });
-
-            if (!response.ok) {
+            if (!response.ok)
                 throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
             return await response.json();
         } catch (error) {
             console.error("Error marking all notifications as read:", error);
@@ -803,9 +647,8 @@ const loadNotifications = async () => {
     isLoadingNotifications.value = true;
     try {
         const response = await notificationService.getNotifications();
-        if (response.success) {
+        if (response.success)
             localNotifications.value = response.notifications || [];
-        }
     } catch (error) {
         console.error("Failed to load notifications:", error);
     } finally {
@@ -815,20 +658,16 @@ const loadNotifications = async () => {
 
 // Dropdown controls
 const toggleNotificationDropdown = async () => {
-    if (!isNotificationDropdownOpen.value) {
-        await loadNotifications();
-    }
+    if (!isNotificationDropdownOpen.value) await loadNotifications();
     isNotificationDropdownOpen.value = !isNotificationDropdownOpen.value;
 };
 
 const closeNotificationDropdown = () => {
     isNotificationDropdownOpen.value = false;
 };
-
 const toggleUserDropdown = () => {
     isUserDropdownOpen.value = !isUserDropdownOpen.value;
 };
-
 const closeUserDropdown = () => {
     isUserDropdownOpen.value = false;
 };
@@ -836,36 +675,35 @@ const closeUserDropdown = () => {
 const handleNotificationClick = async (notification) => {
     if (notification.unread) {
         const response = await notificationService.markAsRead(notification.id);
-        if (response.success) {
-            notification.unread = false;
-        }
+        if (response.success) notification.unread = false;
     }
-
     switch (notification.type) {
         case "new_report":
         case "report_update":
             if (notification.report_id) {
-                window.location.href = `${dashboardRoute.value.replace(
-                    "/dashboard",
-                    ""
-                )}/reports/${notification.report_id}`;
+                router.visit(
+                    route("admin.reports", {
+                        query: { report_id: notification.report_id },
+                    }),
+                    {
+                        preserveState: true,
+                        onSuccess: () =>
+                            console.log(
+                                "Redirected to reports with report_id:",
+                                notification.report_id
+                            ),
+                    }
+                );
             } else {
-                window.location.href = `${dashboardRoute.value.replace(
-                    "/dashboard",
-                    ""
-                )}/reports`;
+                router.visit(route("admin.reports"));
             }
             break;
         case "announcement":
-            window.location.href = `${dashboardRoute.value.replace(
-                "/dashboard",
-                ""
-            )}/announcements`;
+            router.visit(route("admin.announcements"));
             break;
         default:
-            window.location.href = notificationRoute.value;
+            router.visit(notificationRoute.value);
     }
-
     closeNotificationDropdown();
 };
 
@@ -877,7 +715,6 @@ const markAllAsRead = async () => {
             localNotifications.value.forEach((notification) => {
                 notification.unread = false;
             });
-
             Swal.fire({
                 icon: "success",
                 title: "Success!",
@@ -887,9 +724,7 @@ const markAllAsRead = async () => {
                 toast: true,
                 position: "top-end",
             });
-        } else {
-            throw new Error("Failed to mark notifications as read");
-        }
+        } else throw new Error("Failed to mark notifications as read");
     } catch (error) {
         console.error("Error marking all notifications as read:", error);
         Swal.fire({
@@ -917,7 +752,6 @@ const handleLogout = async () => {
         confirmButtonText: "Yes, log out!",
         cancelButtonText: "Cancel",
     });
-
     if (result.isConfirmed) {
         closeUserDropdown();
         emit("logout");
@@ -934,18 +768,14 @@ const handleKeydown = (e) => {
             closeNotificationDropdown();
             notificationButton.value?.focus();
         }
-        if (isSearchFocused.value) {
-            isSearchFocused.value = false;
-        }
     }
 };
 
 const vClickOutside = {
     beforeMount(el, binding) {
         el.clickOutsideEvent = (event) => {
-            if (!(el === event.target || el.contains(event.target))) {
+            if (!(el === event.target || el.contains(event.target)))
                 binding.value();
-            }
         };
         document.addEventListener("click", el.clickOutsideEvent, {
             passive: true,
@@ -961,9 +791,7 @@ let notificationInterval = null;
 const startNotificationPolling = () => {
     loadNotifications();
     notificationInterval = setInterval(() => {
-        if (!isNotificationDropdownOpen.value) {
-            loadNotifications();
-        }
+        if (!isNotificationDropdownOpen.value) loadNotifications();
     }, 30000);
 };
 
@@ -974,12 +802,6 @@ const stopNotificationPolling = () => {
     }
 };
 
-// Watch for search query changes
-watch(searchQuery, () => {
-    performSearch();
-});
-
-// Mount and unmount event listeners
 onMounted(() => {
     window.addEventListener("resize", handleResize);
     window.addEventListener("keydown", handleKeydown);
@@ -994,9 +816,7 @@ onUnmounted(() => {
 
 watch(
     () => pageProps,
-    () => {
-        loadNotifications();
-    },
+    () => loadNotifications(),
     { deep: true }
 );
 </script>
@@ -1022,7 +842,6 @@ watch(
 button:active {
     transform: scale(0.98);
 }
-
 button:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
@@ -1036,24 +855,19 @@ button:focus {
 .max-h-96::-webkit-scrollbar {
     width: 6px;
 }
-
 .max-h-96::-webkit-scrollbar-track {
     background: transparent;
 }
-
 .max-h-96::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);
     border-radius: 3px;
 }
-
 .max-h-96::-webkit-scrollbar-thumb:hover {
     background-color: rgba(156, 163, 175, 0.8);
 }
-
 .dark .max-h-96::-webkit-scrollbar-thumb {
     background-color: rgba(75, 85, 99, 0.5);
 }
-
 .dark .max-h-96::-webkit-scrollbar-thumb:hover {
     background-color: rgba(75, 85, 99, 0.8);
 }
@@ -1076,17 +890,14 @@ button:focus {
     animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Smooth dropdown transition */
 .notification-dropdown {
     transform-origin: top right;
     transition: transform 0.2s ease-out, opacity 0.2s ease-out;
 }
-
 .scale-y-100 {
     transform: scaleY(1);
     opacity: 1;
 }
-
 .scale-y-95 {
     transform: scaleY(0.95);
     opacity: 0;
