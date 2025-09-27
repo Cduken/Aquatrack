@@ -72,6 +72,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 // Staff Routes
 Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/staff/dashboard', [StaffDashboardController::class, 'index'])->name('staff.dashboard');
+    Route::get('/staff/dashboard/data', [StaffDashboardController::class, 'getDashboardData'])->name('staff.dashboard.data');
 
     // Meter reading routes
     Route::get('/staff/reading', [StaffReadingController::class, 'index'])->name('staff.reading');

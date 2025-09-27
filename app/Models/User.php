@@ -128,4 +128,9 @@ class User extends Authenticatable
         }
         return $this->phone;
     }
+
+    public function meterReadings()
+    {
+        return $this->hasMany(MeterReading::class);
+    }
 }

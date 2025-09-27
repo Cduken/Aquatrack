@@ -7,13 +7,17 @@
 
         <!-- Slide Panel -->
         <Transition name="slide">
-            <div class="fixed inset-y-0 right-0 max-w-[60%] w-full bg-white shadow-2xl flex flex-col">
+            <div class="fixed inset-y-0 right-0 w-[50vw] max-w-2xl bg-white shadow-2xl flex flex-col">
                 <!-- Header -->
-                <div
-                    class="flex items-center justify-between p-[27px] border-b border-gray-200 bg-gradient-to-r from-[#062F64] to-[#2a5298] text-white">
+                <div class="flex items-center justify-between p-6 border-b border-blue-700 bg-gradient-to-r from-[#062F64] to-[#2a5298] text-white">
                     <div class="flex items-center gap-3">
-                        <v-icon name="bi-speedometer2" scale="1.5" class="text-white text-xl" />
-                        <h3 class="text-xl font-semibold">Meter Reading Card</h3>
+                        <div class="p-2 bg-blue-700 rounded-lg">
+                            <v-icon name="bi-speedometer2" scale="1.2" class="text-white" />
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold">Meter Reading Card</h3>
+                            <p class="text-blue-100 text-sm mt-1">Record water consumption for billing</p>
+                        </div>
                     </div>
                     <button @click="closeModal" class="p-2 rounded-lg hover:bg-blue-800 transition-colors">
                         <v-icon name="bi-x-lg" class="text-white text-lg" />
@@ -23,126 +27,97 @@
                 <!-- Content -->
                 <div class="flex-1 overflow-y-auto">
                     <div class="p-6">
-                        <!-- User Information Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
-                                    <v-icon name="bi-person" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Customer Name</span>
+                        <!-- Customer Summary Card -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-100 shadow-sm mb-6">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 bg-blue-100 rounded-xl">
+                                        <v-icon name="bi-person-circle" class="text-blue-600 text-2xl" />
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-800">{{ user.name }} {{ user.lastname }}</h2>
+                                        <p class="text-gray-600 mt-1">{{ user.address }}</p>
+                                        <div class="flex gap-4 mt-2">
+                                            <span class="flex items-center gap-1 text-sm text-gray-500">
+                                                <v-icon name="bi-credit-card" class="text-blue-500" />
+                                                #{{ user.account_number }}
+                                            </span>
+                                            <span class="flex items-center gap-1 text-sm text-gray-500">
+                                                <v-icon name="bi-telephone" class="text-blue-500" />
+                                                {{ user.phone }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-lg font-semibold text-gray-800">{{ user.name }} {{ user.lastname }}
-                                </div>
-                            </div>
-
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
-                                    <v-icon name="bi-credit-card" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Account Number</span>
-                                </div>
-                                <div class="text-lg font-semibold text-gray-800">{{ user.account_number }}</div>
-                            </div>
-
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
-                                    <v-icon name="bi-geo-alt" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Address</span>
-                                </div>
-                                <div class="text-gray-800">{{ user.address }}</div>
-                            </div>
-
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
-                                    <v-icon name="bi-telephone" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Phone</span>
-                                </div>
-                                <div class="text-gray-800">{{ user.phone }}</div>
-                            </div>
-
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
-                                    <v-icon name="bi-calendar-check" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Date Installed</span>
-                                </div>
-                                <div class="text-gray-800">{{ formatDate(user.date_installed) || 'Not available' }}
+                                <div class="text-right">
+                                    <div class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
+                                        <v-icon name="bi-check-circle" class="mr-1" /> Active
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2">Installed: {{ formatDate(user.date_installed) || 'N/A' }}</p>
                                 </div>
                             </div>
+                        </div>
 
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
+                        <!-- Meter Details Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <div class="flex items-center gap-2 text-blue-600 mb-2">
                                     <v-icon name="bi-tag" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Brand</span>
+                                    <span class="text-xs font-medium">Brand</span>
                                 </div>
-                                <div class="text-gray-800">{{ user.brand || 'Not specified' }}</div>
+                                <div class="text-sm font-semibold text-gray-800">{{ user.brand || 'Not specified' }}</div>
                             </div>
 
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <div class="flex items-center gap-2 text-blue-600 mb-2">
                                     <v-icon name="bi-upc-scan" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Serial No.</span>
+                                    <span class="text-xs font-medium">Serial No.</span>
                                 </div>
-                                <div class="text-gray-800">{{ user.serial_number || 'N/A' }}</div>
+                                <div class="text-sm font-semibold text-gray-800">{{ user.serial_number || 'N/A' }}</div>
                             </div>
 
-                            <div
-                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-700 mb-2">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <div class="flex items-center gap-2 text-blue-600 mb-2">
                                     <v-icon name="bi-rulers" class="text-blue-500" />
-                                    <span class="text-sm font-medium">Size</span>
+                                    <span class="text-xs font-medium">Size</span>
                                 </div>
-                                <div class="text-gray-800">{{ user.size || 'N/A' }} mm</div>
+                                <div class="text-sm font-semibold text-gray-800">{{ user.size || 'N/A' }} mm</div>
+                            </div>
+
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <div class="flex items-center gap-2 text-blue-600 mb-2">
+                                    <v-icon name="bi-calendar-check" class="text-blue-500" />
+                                    <span class="text-xs font-medium">Last Reading</span>
+                                </div>
+                                <div class="text-sm font-semibold text-gray-800">{{ lastReadingDate || 'No records' }}</div>
                             </div>
                         </div>
 
                         <!-- Meter Reading Form -->
-                        <div class="border-t border-gray-200 pt-6">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-2 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-                                <h4 class="text-lg font-semibold text-gray-800">New Meter Reading</h4>
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-6">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800">New Meter Reading</h4>
+                                    <p class="text-sm text-gray-500">Enter current meter values</p>
+                                </div>
                             </div>
 
                             <!-- Year Transition Warning -->
-                            <div v-if="showYearTransitionWarning"
-                                class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4">
-                                <div class="flex items-center gap-2 text-yellow-800">
+                            <div v-if="showYearTransitionWarning" class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 flex items-start gap-3">
+                                <div class="p-2 bg-yellow-100 rounded-lg mt-0.5">
                                     <v-icon name="bi-exclamation-triangle" class="text-yellow-600" />
-                                    <span class="font-medium">Year Transition Detected</span>
                                 </div>
-                                <p class="text-sm text-yellow-700 mt-1">
-                                    You're entering a reading for January after December. Please ensure this is correct
-                                    as it represents a new billing year.
-                                </p>
+                                <div>
+                                    <div class="font-medium text-yellow-800">Year Transition Detected</div>
+                                    <p class="text-sm text-yellow-700 mt-1">
+                                        You're entering a reading for January after December. Please ensure this is correct
+                                        as it represents a new billing year.
+                                    </p>
+                                </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-calendar-month" class="text-blue-500" />
-                                        Billing Month
-                                    </label>
-                                    <div class="relative">
-                                        <input v-model="newReading.billing_month" type="text"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100"
-                                            disabled>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                        <v-icon name="bi-calendar-date" class="text-blue-500" />
-                                        Reading Date
-                                    </label>
-                                    <input v-model="newReading.reading_date" type="text"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100"
-                                        disabled>
-                                </div>
-
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
                                         <v-icon name="bi-123" class="text-blue-500" />
@@ -150,25 +125,29 @@
                                     </label>
                                     <div class="relative">
                                         <input v-model="newReading.previous_reading" type="number" step="0.01"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
                                             disabled>
-                                        <span
-                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
                                     </div>
+                                    <p class="text-xs text-gray-500">Last recorded reading</p>
                                 </div>
 
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
                                         <v-icon name="bi-123" class="text-blue-500" />
-                                        Current Reading (m³)
+                                        Current Reading (m³) *
                                     </label>
                                     <div class="relative">
                                         <input v-model="newReading.reading" type="number" step="0.01"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12"
-                                            :disabled="isSubmitting" @input="calculateConsumptionAndAmount">
-                                        <span
-                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12"
+                                            :class="{'border-red-300': readingError}"
+                                            :disabled="isSubmitting"
+                                            @input="calculateConsumptionAndAmount"
+                                            placeholder="Enter current reading">
+                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
                                     </div>
+                                    <p v-if="readingError" class="text-xs text-red-500">{{ readingError }}</p>
+                                    <p v-else class="text-xs text-gray-500">Must be higher than previous reading</p>
                                 </div>
 
                                 <div class="space-y-2">
@@ -178,11 +157,11 @@
                                     </label>
                                     <div class="relative">
                                         <input v-model="newReading.consumption" type="number" step="0.01"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
                                             disabled>
-                                        <span
-                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
+                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">m³</span>
                                     </div>
+                                    <p class="text-xs text-gray-500">Calculated automatically</p>
                                 </div>
 
                                 <div class="space-y-2">
@@ -192,84 +171,90 @@
                                     </label>
                                     <div class="relative">
                                         <input v-model="newReading.amount" type="number" step="0.01"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-100"
+                                            class="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-12 bg-gray-50"
                                             disabled>
-                                        <span
-                                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">₱</span>
+                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">₱</span>
                                     </div>
+                                    <p class="text-xs text-gray-500">Based on consumption rate</p>
                                 </div>
                             </div>
 
-                            <!-- Previous Readings -->
-                            <div class="mt-8">
-                                <div class="flex items-center gap-3 mb-4">
-                                    <div class="w-2 h-6 bg-gradient-to-b from-gray-400 to-gray-500 rounded-full"></div>
-                                    <h4 class="text-md font-semibold text-gray-700">Previous Readings</h4>
+                            <!-- Summary Card -->
+                            <div v-if="newReading.consumption > 0" class="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-5">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm text-blue-700 font-medium">Billing Summary</div>
+                                        <div class="text-2xl font-bold text-blue-800 mt-1">₱{{ newReading.amount.toFixed(2) }}</div>
+                                        <div class="text-sm text-blue-600 mt-1">{{ newReading.consumption }} m³ consumption</div>
+                                    </div>
+                                    <div class="p-3 bg-blue-100 rounded-xl">
+                                        <v-icon name="bi-receipt" class="text-blue-600 text-2xl" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Previous Readings Section -->
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-1 h-6 bg-gradient-to-b from-gray-400 to-gray-500 rounded-full"></div>
+                                    <h4 class="text-md font-semibold text-gray-700">Reading History</h4>
                                 </div>
 
                                 <!-- Year Filter -->
-                                <div class="mb-4">
-                                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                                        <v-icon name="bi-calendar" class="text-blue-500" />
-                                        Filter by Year
-                                    </label>
+                                <div class="flex items-center gap-2">
+                                    <v-icon name="bi-filter" class="text-gray-500" />
                                     <select v-model="selectedYear"
-                                        class="w-full max-w-[200px] px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        class="px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm">
                                         <option value="">All Years</option>
                                         <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
                                     </select>
                                 </div>
+                            </div>
 
-                                <div v-if="isLoadingPreviousReadings" class="text-center py-8">
-                                    <div class="inline-flex items-center text-blue-600">
-                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <span>Loading previous readings...</span>
-                                    </div>
+                            <div v-if="isLoadingPreviousReadings" class="text-center py-8">
+                                <div class="inline-flex items-center text-blue-600">
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    <span>Loading reading history...</span>
+                                </div>
+                            </div>
+
+                            <div v-else>
+                                <div v-if="filteredPreviousReadings.length === 0" class="text-center py-8 text-gray-500 bg-gray-50 rounded-xl">
+                                    <v-icon name="bi-clock-history" class="text-3xl mb-2 opacity-50" />
+                                    <p>No previous readings found</p>
+                                    <p class="text-sm mt-1">Start by submitting a new reading above</p>
                                 </div>
 
-                                <div v-else class="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                                    <div v-if="filteredPreviousReadings.length === 0"
-                                        class="text-center py-8 text-gray-500">
-                                        <v-icon name="bi-clock-history" class="text-3xl mb-2 opacity-50" />
-                                        <p>No previous readings found</p>
-                                    </div>
-
-                                    <div v-else class="space-y-3 max-h-[400px] overflow-y-auto">
-                                        <div v-for="(reading, index) in filteredPreviousReadings" :key="index"
-                                            class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                                            <div class="flex items-center justify-between text-sm">
+                                <div v-else class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                                    <div v-for="(reading, index) in filteredPreviousReadings" :key="index"
+                                        class="bg-gray-50 p-4 rounded-xl border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-colors group">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-4">
+                                                <div class="p-2 bg-white rounded-lg border border-gray-200 group-hover:border-blue-200">
+                                                    <v-icon name="bi-droplet" class="text-blue-500" />
+                                                </div>
                                                 <div>
-                                                    <div class="text-xs text-gray-500 font-medium">Month</div>
                                                     <div class="font-medium text-gray-800">{{ reading.billing_month }} {{ reading.year }}</div>
-                                                </div>
-                                                <div>
-                                                    <div class="text-xs text-gray-500 font-medium">Date</div>
-                                                    <div class="text-gray-700">{{ formatDate(reading.reading_date) }}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="text-xs text-gray-500 font-medium">Reading</div>
-                                                    <div class="font-medium text-blue-600">{{ reading.reading }} m³
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="text-xs text-gray-500 font-medium">Consumption</div>
-                                                    <div class="font-medium text-blue-600">{{ reading.consumption }} m³
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="text-xs text-gray-500 font-medium">Amount</div>
-                                                    <div class="font-medium text-green-600">₱{{
-                                                        reading.amount.toFixed(2) }}</div>
+                                                    <div class="text-sm text-gray-600">{{ formatDate(reading.reading_date) }}</div>
                                                 </div>
                                             </div>
+                                            <div class="text-right">
+                                                <div class="font-semibold text-blue-600">{{ reading.reading }} m³</div>
+                                                <div class="text-sm text-gray-600">{{ reading.consumption }} m³ consumed</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-200 group-hover:border-blue-200">
+                                            <div class="text-sm text-gray-600">Amount billed</div>
+                                            <div class="font-medium text-green-600">₱{{ reading.amount.toFixed(2) }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -279,7 +264,7 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="border-t border-gray-200 p-6 bg-white">
+                <div class="border-t border-gray-200 p-6 bg-white sticky bottom-0 shadow-lg">
                     <div class="flex gap-3 justify-end">
                         <button @click="closeModal" type="button"
                             class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 font-medium"
@@ -345,7 +330,7 @@ const previousReadings = ref([]);
 const selectedYear = ref('');
 const availableYears = computed(() => {
     const years = new Set(previousReadings.value.map(reading => reading.year));
-    return [...years].sort((a, b) => b - a); // Sort years in descending order
+    return [...years].sort((a, b) => b - a);
 });
 
 const filteredPreviousReadings = computed(() => {
@@ -358,13 +343,33 @@ const sortedPreviousReadings = computed(() => {
     return [...previousReadings.value].sort((a, b) => {
         const dateA = new Date(`${a.billing_month} 1, ${a.year}`);
         const dateB = new Date(`${b.billing_month} 1, ${b.year}`);
-        return dateB - dateA; // Descending order
+        return dateB - dateA;
     });
 });
 
 const isLoadingPreviousReadings = ref(false);
 const isSubmitting = ref(false);
 const showYearTransitionWarning = ref(false);
+
+// Computed property for last reading date
+const lastReadingDate = computed(() => {
+    if (previousReadings.value.length === 0) return null;
+    const latest = sortedPreviousReadings.value[0];
+    return formatDate(latest.reading_date);
+});
+
+// Computed property for reading validation error
+const readingError = computed(() => {
+    if (!newReading.value.reading) return '';
+    const current = parseFloat(newReading.value.reading);
+    const previous = parseFloat(newReading.value.previous_reading);
+
+    if (current < previous) {
+        return `Current reading must be higher than previous reading (${previous} m³)`;
+    }
+
+    return '';
+});
 
 // Watch for changes in previous readings to update the previous reading value
 watch(previousReadings, (newVal) => {

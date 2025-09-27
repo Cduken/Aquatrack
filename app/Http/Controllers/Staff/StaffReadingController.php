@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\MeterReading;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class StaffReadingController extends Controller
@@ -47,7 +49,8 @@ class StaffReadingController extends Controller
                     'date_installed',
                     'brand',
                     'serial_number',
-                    'size'
+                    'size',
+                    'avatar',
                 ])
                 ->limit(10)
                 ->get()
@@ -67,7 +70,8 @@ class StaffReadingController extends Controller
                         'date_installed' => $user->date_installed,
                         'brand' => $user->brand,
                         'serial_number' => $user->serial_number,
-                        'size' => $user->size
+                        'size' => $user->size,
+                        'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null
                     ];
                 });
 
@@ -134,6 +138,7 @@ class StaffReadingController extends Controller
         }
     }
 
+    // In StaffReadingController.php
     public function storeReading(Request $request)
     {
         $validated = $request->validate([
@@ -163,21 +168,20 @@ class StaffReadingController extends Controller
         $consumption = 0;
         $amount = 0;
 
-        // Only calculate consumption and amount if there's a previous reading
         if ($previousReading) {
             $consumption = $validated['reading'] - $previousReading->reading;
-
-            // Calculate amount based on tiered pricing
             $amount = $this->calculateBillAmount($consumption);
         }
 
         $newReading = MeterReading::create([
             'user_id' => $validated['user_id'],
+            'staff_id' => Auth::id(), // Add this line
             'billing_month' => $validated['billing_month'],
             'reading_date' => $validated['reading_date'],
             'reading' => $validated['reading'],
             'consumption' => $consumption,
-            'amount' => $amount
+            'amount' => $amount,
+            'status' => 'Pending'
         ]);
 
         return response()->json([

@@ -1,12 +1,7 @@
 <template>
     <CustomerLayout title="Dashboard">
         <div class="w-full bg-white rounded-lg">
-            <!-- Header Section -->
-            <div class="border-b p-6">
-                <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <v-icon name="bi-droplet" class="text-blue-500" /> AquaTrack
-                </h1>
-            </div>
+
 
             <!-- Main Content -->
             <div class="p-6">

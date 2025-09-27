@@ -11,6 +11,7 @@ class MeterReading extends Model
 
     protected $fillable = [
         'user_id',
+        'staff_id',
         'billing_month',
         'reading_date',
         'reading',
@@ -30,6 +31,11 @@ class MeterReading extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+     public function staff()
+    {
+        return $this->belongsTo(User::class, 'staff_id');
     }
 
     public function getStatusAttribute()

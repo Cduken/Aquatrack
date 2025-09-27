@@ -157,6 +157,16 @@ addIcons(
     BiIcons.BiTag,
     BiIcons.BiInbox,
     BiIcons.BiArrowDownCircleFill,
+    BiIcons.BiClipboardData,
+    BiIcons.BiHourglassSplit,
+    BiIcons.BiLightningCharge,
+    BiIcons.BiCurrencyDollar,
+    BiIcons.BiCalendarWeek,
+    BiIcons.BiClock,
+    BiIcons.BiSearchHeart,
+    BiIcons.BiPersonCircle,
+    BiIcons.BiFilter,
+
 
 
     // Heroicons
@@ -185,6 +195,7 @@ addIcons(
     HiIcons.HiArrowsExpand,
     HiIcons.HiUserCircle,
     HiIcons.HiCube,
+    HiIcons.HiSolidSearch,
 
     // Font Awesome
     FaIcons.FaBuilding,
@@ -199,6 +210,7 @@ addIcons(
     FaIcons.FaTrash,
     FaIcons.FaFolderOpen,
     FaIcons.FaWater,
+    FaIcons.FaRegularTrashAlt,
 
 
     // Remix Icons
@@ -209,6 +221,7 @@ addIcons(
     RiIcons.RiEditBoxFill,
     RiIcons.RiSave3Fill,
     RiIcons.RiEdit2Fill,
+    RiIcons.RiEditBoxLine,
 
 
     // Material Design
@@ -223,6 +236,7 @@ addIcons(
     //Ionic Icons
     IoIcons.IoDesktop,
     IoIcons.IoSearch,
+    IoIcons.IoSpeedometer,
 );
 
 createInertiaApp({
