@@ -237,7 +237,7 @@ const userPercentage = computed(() => {
 </script>
 
 <template>
-    <AdminLayout title="Activity Logs">
+    <AdminLayout>
         <div class="mx-auto w-full">
             <div class="lg:items-center lg:flex mb-4 hidden">
                 <v-icon

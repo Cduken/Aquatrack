@@ -42,14 +42,10 @@ addIcons(
 );
 
 const props = defineProps({
-    show: {
-        type: Boolean,
-        default: false,
-    },
-    initialTrackingCode: {
-        type: String,
-        default: "",
-    },
+    show: { type: Boolean, default: false },
+    initialTrackingCode: { type: String, default: "" },
+    isDeleted: { type: Boolean, default: false },
+    deletionReason: { type: String, default: null },
 });
 
 const emit = defineEmits(["close"]);
@@ -70,17 +66,15 @@ const scanning = ref(false);
 const scannerError = ref(null);
 
 // Media modal state
-const mediaModal = ref({
-    show: false,
-    src: "",
-    type: "image",
-});
+const mediaModal = ref({ show: false, src: "", type: "image" });
 
-const form = useForm({
-    tracking_code: props.initialTrackingCode,
-});
+const form = useForm({ tracking_code: props.initialTrackingCode });
 
 onMounted(() => {
+    console.log(
+        "Modal mounted, initialTrackingCode:",
+        props.initialTrackingCode
+    );
     if (props.show) {
         modalVisible.value = true;
         if (props.initialTrackingCode) {
@@ -88,58 +82,105 @@ onMounted(() => {
             trackReport();
         }
     }
+    if (props.isDeleted && props.deletionReason) {
+        errorMessage.value = props.deletionReason;
+        reportDetails.value = null;
+    }
 });
 
-onUnmounted(() => {
-    stopCamera();
-});
+onUnmounted(() => stopCamera());
 
 watch(
     () => props.show,
     (newVal) => {
+        console.log("Show prop changed to:", newVal);
         modalVisible.value = newVal;
         if (newVal && props.initialTrackingCode) {
             form.tracking_code = props.initialTrackingCode;
             trackReport();
-        } else if (!newVal) {
-            // Reset all state when modal is hidden
-            resetModal();
+        } else if (!newVal) resetModal();
+    }
+);
+
+watch(
+    () => props.isDeleted,
+    (newVal) => {
+        if (newVal && props.deletionReason) {
+            errorMessage.value = props.deletionReason;
+            reportDetails.value = null;
         }
     }
 );
 
 const trackReport = async () => {
-    if (!form.tracking_code) return;
+    if (!form.tracking_code || !form.tracking_code.trim()) {
+        errorMessage.value = "Please enter a valid tracking code.";
+        console.log("Invalid tracking code:", form.tracking_code);
+        return;
+    }
 
     isLoading.value = true;
     showLoadingDelay.value = true;
     errorMessage.value = null;
     reportDetails.value = null;
+    console.log("Tracking report with code:", form.tracking_code);
 
     try {
-        const [response] = await Promise.all([
-            axios.get(route("reports.find"), {
-                params: { tracking_code: form.tracking_code },
-            }),
-            new Promise((resolve) => setTimeout(resolve, 800)),
-        ]);
+        const response = await axios.get(route("reports.find"), {
+            params: { tracking_code: form.tracking_code },
+        });
+        console.log("API Response:", response.data);
 
-        reportDetails.value = response.data;
-        if (reportDetails.value.additional_tracking_codes) {
-            reportDetails.value.allTrackingCodes = [
-                reportDetails.value.tracking_code,
-                ...JSON.parse(reportDetails.value.additional_tracking_codes),
-            ];
+        if (response.data.success === false) {
+            if (response.data.deleted) {
+                errorMessage.value =
+                    response.data.reason || "This report has been deleted.";
+            } else {
+                errorMessage.value =
+                    response.data.message || "Report not found.";
+            }
+        } else if (response.data.success === true && response.data.data) {
+            reportDetails.value = response.data.data;
+            if (response.data.data.additional_tracking_codes) {
+                reportDetails.value.allTrackingCodes = [
+                    reportDetails.value.tracking_code,
+                    ...JSON.parse(response.data.data.additional_tracking_codes),
+                ];
+            } else {
+                reportDetails.value.allTrackingCodes = [
+                    reportDetails.value.tracking_code,
+                ];
+            }
+            console.log("Report details loaded:", reportDetails.value);
         } else {
-            reportDetails.value.allTrackingCodes = [
-                reportDetails.value.tracking_code,
-            ];
+            errorMessage.value =
+                "Unexpected response structure. Response: " +
+                JSON.stringify(response.data);
         }
     } catch (error) {
-        if (error.response && error.response.status === 404) {
-            errorMessage.value = "Report not found with this tracking code.";
+        console.error("Track report error:", error);
+        if (error.response) {
+            console.log(
+                "Response status:",
+                error.response.status,
+                "Data:",
+                error.response.data
+            );
+            if (error.response.status === 404) {
+                errorMessage.value =
+                    "Report not found with this tracking code.";
+            } else if (error.response.status === 410) {
+                errorMessage.value =
+                    error.response.data.reason ||
+                    "This report has been deleted.";
+            } else {
+                errorMessage.value = `Search failed. Status: ${
+                    error.response.status
+                }, Message: ${error.response.data.message || "Unknown error"}`;
+            }
         } else {
-            errorMessage.value = "Search failed. Please try again.";
+            errorMessage.value = "Network error. Please check your connection.";
+            console.log("Network error details:", error.message);
         }
     } finally {
         isLoading.value = false;
@@ -475,7 +516,9 @@ const isVideoFile = (media) => {
                                     </div>
                                     <Transition name="error-slide">
                                         <div
-                                            v-if="errorMessage"
+                                            v-if="
+                                                errorMessage || props.isDeleted
+                                            "
                                             class="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg"
                                         >
                                             <v-icon
@@ -485,8 +528,12 @@ const isVideoFile = (media) => {
                                             />
                                             <span
                                                 class="text-red-700 text-sm font-medium"
-                                                >{{ errorMessage }}</span
                                             >
+                                                {{
+                                                    errorMessage ||
+                                                    props.deletionReason
+                                                }}
+                                            </span>
                                         </div>
                                     </Transition>
                                 </div>
@@ -519,7 +566,10 @@ const isVideoFile = (media) => {
                             </Transition>
 
                             <Transition name="content-slide">
-                                <div v-if="reportDetails" class="space-y-6">
+                                <div
+                                    v-if="reportDetails && !props.isDeleted"
+                                    class="space-y-6"
+                                >
                                     <div
                                         class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200"
                                     >
@@ -550,36 +600,12 @@ const isVideoFile = (media) => {
                                                         Code:
                                                         <span
                                                             class="font-mono font-semibold"
-                                                            >{{
+                                                        >
+                                                            {{
                                                                 reportDetails.tracking_code
-                                                            }}</span
-                                                        >
+                                                            }}
+                                                        </span>
                                                     </p>
-                                                    <!-- <p
-                                                        v-if="
-                                                            reportDetails.allTrackingCodes &&
-                                                            reportDetails
-                                                                .allTrackingCodes
-                                                                .length > 1
-                                                        "
-                                                        class="text-sm text-slate-600"
-                                                    >
-                                                        Additional Codes:
-                                                        <span
-                                                            class="font-mono font-semibold"
-                                                            >{{
-                                                                reportDetails.allTrackingCodes
-                                                                    .filter(
-                                                                        (
-                                                                            code
-                                                                        ) =>
-                                                                            code !==
-                                                                            reportDetails.tracking_code
-                                                                    )
-                                                                    .join(", ")
-                                                            }}</span
-                                                        >
-                                                    </p> -->
                                                 </div>
                                             </div>
                                             <span
@@ -621,8 +647,9 @@ const isVideoFile = (media) => {
                                                         />
                                                         <span
                                                             class="text-xs font-semibold text-slate-500 uppercase"
-                                                            >Reporter</span
                                                         >
+                                                            Reporter
+                                                        </span>
                                                     </div>
                                                     <p
                                                         class="font-semibold text-slate-800"
@@ -645,8 +672,9 @@ const isVideoFile = (media) => {
                                                         />
                                                         <span
                                                             class="text-xs font-semibold text-slate-500 uppercase"
-                                                            >Priority</span
                                                         >
+                                                            Priority
+                                                        </span>
                                                     </div>
                                                     <span
                                                         class="inline-flex px-2 py-1 rounded-lg text-sm font-semibold"
@@ -680,9 +708,9 @@ const isVideoFile = (media) => {
                                                     />
                                                     <span
                                                         class="text-xs font-semibold text-slate-500 uppercase"
-                                                        >Report
-                                                        Description</span
                                                     >
+                                                        Report Description
+                                                    </span>
                                                 </div>
                                                 <p
                                                     class="text-slate-700 text-sm leading-relaxed whitespace-pre-line"
@@ -706,8 +734,9 @@ const isVideoFile = (media) => {
                                                     />
                                                     <span
                                                         class="text-xs font-semibold text-slate-500 uppercase"
-                                                        >Location</span
                                                     >
+                                                        Location
+                                                    </span>
                                                 </div>
                                                 <p
                                                     class="text-slate-700 text-sm"
@@ -721,7 +750,8 @@ const isVideoFile = (media) => {
                                                     }},
                                                     {{
                                                         reportDetails.province
-                                                    }}, {{ reportDetails.zone }}
+                                                    }},
+                                                    {{ reportDetails.zone }}
                                                 </p>
                                             </div>
 
@@ -742,8 +772,9 @@ const isVideoFile = (media) => {
                                                     />
                                                     <span
                                                         class="text-xs font-semibold text-slate-500 uppercase"
-                                                        >Media</span
                                                     >
+                                                        Media
+                                                    </span>
                                                 </div>
                                                 <div
                                                     class="grid grid-cols-3 sm:grid-cols-4 gap-3"
@@ -846,8 +877,9 @@ const isVideoFile = (media) => {
                                                     />
                                                     <span
                                                         class="text-sm font-semibold"
-                                                        >QR Code</span
                                                     >
+                                                        QR Code
+                                                    </span>
                                                 </div>
                                                 <div
                                                     class="bg-white p-3 rounded-lg mb-3"
@@ -887,7 +919,7 @@ const isVideoFile = (media) => {
                     >
                         <div class="flex justify-between items-center">
                             <button
-                                v-if="reportDetails"
+                                v-if="reportDetails || props.isDeleted"
                                 @click="resetForm"
                                 class="reset-btn flex items-center space-x-2 px-4 py-2 border-2 border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-all"
                             >
@@ -903,7 +935,7 @@ const isVideoFile = (media) => {
                                 <span class="text-sm">Cancel</span>
                             </button>
                             <button
-                                v-if="!reportDetails"
+                                v-if="!reportDetails && !props.isDeleted"
                                 @click="trackReport"
                                 :disabled="
                                     isLoading || !form.tracking_code.trim()

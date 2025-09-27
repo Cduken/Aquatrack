@@ -118,7 +118,7 @@ const layout = computed(() => {
 </script>
 
 <template>
-    <component :is="layout" title="Profile Settings">
+    <component :is="layout">
         <Head title="Profile Settings" />
 
         <div class="px-4 sm:px-0">

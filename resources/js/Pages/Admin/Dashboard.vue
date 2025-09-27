@@ -262,7 +262,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout title="Dashboard">
+
+    <AdminLayout>
         <div class="lg:items-center lg:flex mb-4 hidden">
             <v-icon
                 name="md-dashboard-sharp"
@@ -277,14 +278,14 @@ onMounted(() => {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <!-- Total Users Card -->
             <div
-                class="rounded-xl p-6 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="rounded-md p-6 bg-gradient-to-b from-blue-700 to-blue-900 border border-blue-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
             >
                 <div class="flex items-start justify-between z-10 relative">
                     <div>
-                        <p class="text-sm font-semibold text-blue-700 mb-2">
+                        <p class="text-sm font-semibold text-gray-300 mb-2">
                             Total Users
                         </p>
-                        <p class="text-3xl font-extrabold text-gray-900">
+                        <p class="text-3xl font-extrabold text-white">
                             {{ totalUsers }}
                         </p>
                     </div>
@@ -314,14 +315,14 @@ onMounted(() => {
 
             <!-- Active Staff Card -->
             <div
-                class="rounded-xl p-6 bg-gradient-to-br from-green-50 to-green-100 border border-green-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="rounded-md p-6 bg-gradient-to-b from-green-700 to-green-900 border border-green-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
             >
                 <div class="flex items-start justify-between z-10 relative">
                     <div>
-                        <p class="text-sm font-semibold text-green-700 mb-2">
+                        <p class="text-sm font-semibold text-gray-300 mb-2">
                             Active Staff
                         </p>
-                        <p class="text-3xl font-extrabold text-gray-900">
+                        <p class="text-3xl font-extrabold text-white">
                             {{ totalStaffs }}
                         </p>
                     </div>
@@ -351,14 +352,14 @@ onMounted(() => {
 
             <!-- Customers Card -->
             <div
-                class="rounded-xl p-6 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="rounded-md p-6 bg-gradient-to-b from-purple-700 to-purple-900 border border-purple-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
             >
                 <div class="flex items-start justify-between z-10 relative">
                     <div>
-                        <p class="text-sm font-semibold text-purple-700 mb-2">
+                        <p class="text-sm font-semibold text-gray-300 mb-2">
                             Customers
                         </p>
-                        <p class="text-3xl font-extrabold text-gray-900">
+                        <p class="text-3xl font-extrabold text-white">
                             {{ totalCustomers }}
                         </p>
                     </div>
@@ -389,14 +390,14 @@ onMounted(() => {
 
             <!-- Reports Card -->
             <div
-                class="rounded-xl p-6 bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="rounded-md p-6 bg-gradient-to-b from-amber-700 to-amber-900 border border-amber-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
             >
                 <div class="flex items-start justify-between z-10 relative">
                     <div>
-                        <p class="text-sm font-semibold text-amber-700 mb-2">
+                        <p class="text-sm font-semibold text-gray-300 mb-2">
                             Reports
                         </p>
-                        <p class="text-3xl font-extrabold text-gray-900">
+                        <p class="text-3xl font-extrabold text-white">
                             {{ totalReports }}
                         </p>
                     </div>

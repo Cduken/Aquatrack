@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Report extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'municipality',
@@ -35,19 +36,18 @@ class Report extends Model
         'viewed_by_user',
         'update_viewed_by_admin',
         'assigned_to'
-
     ];
 
     protected $attributes = [
         'status' => 'pending',
         'priority' => 'medium',
-
     ];
 
     protected $casts = [
         'status' => 'string',
-
     ];
+
+    protected $dates = ['deleted_at']; // Ensure deleted_at is treated as a date
 
     /**
      * Get all photos for this report
@@ -56,7 +56,6 @@ class Report extends Model
     {
         return $this->hasMany(ReportPhoto::class);
     }
-
 
     /**
      * Get the user who created this report
@@ -84,20 +83,16 @@ class Report extends Model
      */
     public function getReporterNameAttribute(): string
     {
-        // Access the raw attribute value
         $reporterName = $this->attributes['reporter_name'] ?? null;
 
-        // First try the explicitly provided reporter name
         if ($reporterName) {
             return $reporterName;
         }
 
-        // Then fall back to user name if available
         if ($this->user_id) {
             return $this->user->name;
         }
 
-        // Finally fall back to Guest
         return 'Guest';
     }
 }

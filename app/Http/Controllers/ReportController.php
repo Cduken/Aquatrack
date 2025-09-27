@@ -447,38 +447,57 @@ class ReportController extends Controller
     }
 
     public function track(Request $request)
-    {
-        try {
-            if ($request->isMethod('get')) {
-                return Inertia::render('Reports/Track');
-            }
+{
+    try {
+        if ($request->isMethod('get')) {
+            return Inertia::render('Reports/Track');
+        }
 
-            $request->validate([
-                'tracking_code' => 'required|string',
-            ]);
+        $request->validate([
+            'tracking_code' => 'required|string',
+        ]);
 
-            $report = Report::with(['photos'])
-                ->whereNull('deleted_at')
-                ->where(function ($query) use ($request) {
-                    $query->where('tracking_code', $request->tracking_code)
-                        ->orWhereJsonContains('additional_tracking_codes', $request->tracking_code);
-                })
-                ->firstOrFail();
+        $report = Report::with(['photos'])
+            ->withTrashed() // Include soft-deleted reports
+            ->where(function ($query) use ($request) {
+                $query->where('tracking_code', $request->tracking_code)
+                    ->orWhereJsonContains('additional_tracking_codes', $request->tracking_code);
+            })
+            ->first();
 
-            return Inertia::render('Reports/Track', [
-                'report' => $report,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Report tracking failed', ['error' => $e->getMessage()]);
+        if (!$report) {
             return Inertia::render('Reports/Track', [
                 'swal' => [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Report not found or an error occurred.',
+                    'text' => 'Report not found with this tracking code.',
                 ],
             ]);
         }
+
+        // If the report is deleted, pass the deletion reason to the view
+        if ($report->trashed()) {
+            return Inertia::render('Reports/Track', [
+                'report' => null,
+                'isDeleted' => true,
+                'deletionReason' => $report->status, // Pass the deletion reason
+            ]);
+        }
+
+        return Inertia::render('Reports/Track', [
+            'report' => $report,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Report tracking failed', ['error' => $e->getMessage()]);
+        return Inertia::render('Reports/Track', [
+            'swal' => [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'Report not found or an error occurred.',
+            ],
+        ]);
     }
+}
 
     public function findByTrackingCode(Request $request)
     {
@@ -488,7 +507,7 @@ class ReportController extends Controller
             ]);
 
             $report = Report::with(['photos'])
-                ->whereNull('deleted_at')
+                ->withTrashed() // Include soft-deleted reports
                 ->where(function ($query) use ($request) {
                     $query->where('tracking_code', $request->tracking_code)
                         ->orWhereJsonContains('additional_tracking_codes', $request->tracking_code);
@@ -497,11 +516,25 @@ class ReportController extends Controller
 
             if (!$report) {
                 return response()->json([
+                    'success' => false,
                     'message' => 'No report found with this tracking code.',
                 ], 404);
             }
 
-            return response()->json($report);
+            // If the report is soft-deleted, return a specific response
+            if ($report->trashed()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This report has been deleted.',
+                    'deleted' => true,
+                    'reason' => $report->status, // Return the deletion reason (e.g., "Deleted: [reason]")
+                ], 410); // HTTP 410 Gone is appropriate for deleted resources
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $report
+            ]);
         } catch (\Exception $e) {
             Log::error('Find by tracking code failed', ['error' => $e->getMessage()]);
             return response()->json([
