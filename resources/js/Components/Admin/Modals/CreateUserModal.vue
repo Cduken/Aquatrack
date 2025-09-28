@@ -1,3 +1,4 @@
+//CreateUserModal.vue
 <template>
     <transition name="modal">
         <div v-if="show" class="fixed inset-0 z-[1000] overflow-hidden">
@@ -42,6 +43,61 @@
                         <div class="flex-1 overflow-y-auto p-6">
                             <form @submit.prevent="handleSubmit">
                                 <div class="space-y-6">
+                                    <!-- Role Selection Section -->
+                                    <div
+                                        class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
+                                    >
+                                        <h3
+                                            class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center"
+                                        >
+                                            <v-icon
+                                                name="hi-user-group"
+                                                class="mr-2"
+                                            />
+                                            User Type
+                                        </h3>
+                                        <div class="flex space-x-4">
+                                            <label
+                                                class="inline-flex items-center space-x-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    v-model="userData.role"
+                                                    value="staff"
+                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                />
+                                                <span
+                                                    class="text-gray-900 dark:text-white flex items-center gap-1"
+                                                >
+                                                    <v-icon
+                                                        name="hi-user-group"
+                                                        class="w-4 h-4"
+                                                    />
+                                                    Staff
+                                                </span>
+                                            </label>
+                                            <label
+                                                class="inline-flex items-center space-x-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    v-model="userData.role"
+                                                    value="customer"
+                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                />
+                                                <span
+                                                    class="text-gray-900 dark:text-white flex items-center gap-1"
+                                                >
+                                                    <v-icon
+                                                        name="hi-user"
+                                                        class="w-4 h-4"
+                                                    />
+                                                    Customer
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+
                                     <!-- Personal Information Section -->
                                     <div
                                         class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
@@ -109,35 +165,9 @@
                                                     />
                                                 </div>
                                             </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Account Number</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                                                    >
-                                                        <v-icon
-                                                            name="hi-credit-card"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                        />
-                                                    </div>
-                                                    <input
-                                                        v-model="
-                                                            userData.accountNumber
-                                                        "
-                                                        type="text"
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="123-45-678"
-                                                        @input="
-                                                            formatAccountNumber
-                                                        "
-                                                    />
-                                                </div>
-                                            </div>
-                                            <!-- <div>
+                                            <div
+                                                v-if="userData.role === 'staff'"
+                                            >
                                                 <label
                                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                                                     >Email</label
@@ -154,12 +184,15 @@
                                                     <input
                                                         v-model="userData.email"
                                                         type="email"
-                                                        required
+                                                        :required="
+                                                            userData.role ===
+                                                            'staff'
+                                                        "
                                                         class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
                                                         placeholder="name@company.com"
                                                     />
                                                 </div>
-                                            </div> -->
+                                            </div>
                                             <div>
                                                 <label
                                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
@@ -189,285 +222,278 @@
                                         </div>
                                     </div>
 
-                                    <!-- Equipment Information Section -->
+                                    <!-- Customer Specific Fields -->
                                     <div
-                                        class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
+                                        v-if="userData.role === 'customer'"
+                                        class="space-y-6"
                                     >
-                                        <h3
-                                            class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center"
-                                        >
-                                            <v-icon
-                                                name="hi-cube"
-                                                class="mr-2"
-                                            />
-                                            Equipment Information
-                                        </h3>
+                                        <!-- Equipment Information Section -->
                                         <div
-                                            class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                            class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
                                         >
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Date Installed</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                            <h3
+                                                class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center"
+                                            >
+                                                <v-icon
+                                                    name="hi-cube"
+                                                    class="mr-2"
+                                                />
+                                                Equipment Information
+                                            </h3>
+                                            <div
+                                                class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                            >
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Account Number</label
                                                     >
-                                                        <v-icon
-                                                            name="hi-calendar"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                        >
+                                                            <v-icon
+                                                                name="hi-credit-card"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                            />
+                                                        </div>
+                                                        <input
+                                                            v-model="
+                                                                userData.accountNumber
+                                                            "
+                                                            type="text"
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="123-45-678"
+                                                            @input="
+                                                                formatAccountNumber
+                                                            "
                                                         />
-                                                    </div>
-                                                    <input
-                                                        v-model="
-                                                            userData.date_installed
-                                                        "
-                                                        type="date"
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Brand</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                                                    >
-                                                        <v-icon
-                                                            name="hi-tag"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                        />
-                                                    </div>
-                                                    <input
-                                                        v-model="userData.brand"
-                                                        type="text"
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="Brand name"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Serial Number</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                                                    >
-                                                        <v-icon
-                                                            name="hi-document-text"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                        />
-                                                    </div>
-                                                    <input
-                                                        v-model="
-                                                            userData.serial_number
-                                                        "
-                                                        type="text"
-                                                        required
-                                                        class="w-full p-2 pl-10 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="123456789"
-                                                        @input="
-                                                            validateSerialNumber
-                                                        "
-                                                        maxlength="9"
-                                                    />
-                                                    <div
-                                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-gray-500"
-                                                    >
-                                                        {{
-                                                            userData.serial_number
-                                                                ? userData
-                                                                      .serial_number
-                                                                      .length
-                                                                : 0
-                                                        }}/9
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Size</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Date Installed</label
                                                     >
-                                                        <v-icon
-                                                            name="hi-arrows-expand"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                        >
+                                                            <v-icon
+                                                                name="hi-calendar"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                            />
+                                                        </div>
+                                                        <input
+                                                            v-model="
+                                                                userData.date_installed
+                                                            "
+                                                            type="date"
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
                                                         />
                                                     </div>
-                                                    <input
-                                                        v-model="userData.size"
-                                                        type="text"
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="Size"
-                                                    />
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Brand</label
+                                                    >
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                        >
+                                                            <v-icon
+                                                                name="hi-tag"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                            />
+                                                        </div>
+                                                        <input
+                                                            v-model="
+                                                                userData.brand
+                                                            "
+                                                            type="text"
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="Brand name"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Serial Number</label
+                                                    >
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                        >
+                                                            <v-icon
+                                                                name="hi-document-text"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                            />
+                                                        </div>
+                                                        <input
+                                                            v-model="
+                                                                userData.serial_number
+                                                            "
+                                                            type="text"
+                                                            required
+                                                            class="w-full p-2 pl-10 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="123456789"
+                                                            @input="
+                                                                validateSerialNumber
+                                                            "
+                                                            maxlength="9"
+                                                        />
+                                                        <div
+                                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-gray-500"
+                                                        >
+                                                            {{
+                                                                userData.serial_number
+                                                                    ? userData
+                                                                          .serial_number
+                                                                          .length
+                                                                    : 0
+                                                            }}/9
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Size</label
+                                                    >
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                                                        >
+                                                            <v-icon
+                                                                name="hi-arrows-expand"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                            />
+                                                        </div>
+                                                        <input
+                                                            v-model="
+                                                                userData.size
+                                                            "
+                                                            type="text"
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="Size"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Location and Role Section -->
-                                    <div
-                                        class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
-                                    >
-                                        <h3
-                                            class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center"
-                                        >
-                                            <v-icon
-                                                name="hi-location-marker"
-                                                class="mr-2"
-                                            />
-                                            Location & Role
-                                        </h3>
+                                        <!-- Location Section -->
                                         <div
-                                            class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                            class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-5 rounded-lg"
                                         >
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Zone</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                                                    >
-                                                        <v-icon
-                                                            name="hi-location-marker"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                        />
-                                                    </div>
-                                                    <select
-                                                        v-model="userData.zone"
-                                                        @change="
-                                                            updateBarangays
-                                                        "
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                    >
-                                                        <option
-                                                            value=""
-                                                            disabled
-                                                            selected
-                                                        >
-                                                            Select zone
-                                                        </option>
-                                                        <option
-                                                            v-for="(
-                                                                zone, index
-                                                            ) in Object.keys(
-                                                                zones
-                                                            )"
-                                                            :key="index"
-                                                            :value="zone"
-                                                        >
-                                                            {{ zone }}
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                                                    >Barangay</label
-                                                >
-                                                <div class="relative">
-                                                    <div
-                                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                                                    >
-                                                        <v-icon
-                                                            name="hi-location-marker"
-                                                            class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                                        />
-                                                    </div>
-                                                    <select
-                                                        v-model="
-                                                            userData.barangay
-                                                        "
-                                                        required
-                                                        class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                                        :disabled="
-                                                            !userData.zone
-                                                        "
-                                                    >
-                                                        <option
-                                                            value=""
-                                                            disabled
-                                                            selected
-                                                        >
-                                                            Select barangay
-                                                        </option>
-                                                        <option
-                                                            v-for="(
-                                                                barangay, index
-                                                            ) in filteredBarangays"
-                                                            :key="index"
-                                                            :value="barangay"
-                                                        >
-                                                            {{ barangay }}
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label
-                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                                                    >Role</label
-                                                >
-                                                <div class="flex space-x-4">
+                                            <h3
+                                                class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center"
+                                            >
+                                                <v-icon
+                                                    name="hi-location-marker"
+                                                    class="mr-2"
+                                                />
+                                                Location
+                                            </h3>
+                                            <div
+                                                class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                            >
+                                                <div>
                                                     <label
-                                                        class="inline-flex items-center space-x-2 cursor-pointer"
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Zone</label
                                                     >
-                                                        <input
-                                                            type="radio"
-                                                            v-model="
-                                                                userData.role
-                                                            "
-                                                            value="staff"
-                                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        />
-                                                        <span
-                                                            class="text-gray-900 dark:text-white flex items-center gap-1"
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                                                         >
                                                             <v-icon
-                                                                name="hi-user-group"
-                                                                class="w-4 h-4"
+                                                                name="hi-location-marker"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                                             />
-                                                            Staff
-                                                        </span>
-                                                    </label>
-                                                    <label
-                                                        class="inline-flex items-center space-x-2 cursor-pointer"
-                                                    >
-                                                        <input
-                                                            type="radio"
+                                                        </div>
+                                                        <select
                                                             v-model="
-                                                                userData.role
+                                                                userData.zone
                                                             "
-                                                            value="customer"
-                                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        />
-                                                        <span
-                                                            class="text-gray-900 dark:text-white flex items-center gap-1"
+                                                            @change="
+                                                                updateBarangays
+                                                            "
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                        >
+                                                            <option
+                                                                value=""
+                                                                disabled
+                                                                selected
+                                                            >
+                                                                Select zone
+                                                            </option>
+                                                            <option
+                                                                v-for="(
+                                                                    zone, index
+                                                                ) in Object.keys(
+                                                                    zones
+                                                                )"
+                                                                :key="index"
+                                                                :value="zone"
+                                                            >
+                                                                {{ zone }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                                        >Barangay</label
+                                                    >
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                                                         >
                                                             <v-icon
-                                                                name="hi-user"
-                                                                class="w-4 h-4"
+                                                                name="hi-location-marker"
+                                                                class="w-4 h-4 text-gray-500 dark:text-gray-400"
                                                             />
-                                                            Customer
-                                                        </span>
-                                                    </label>
+                                                        </div>
+                                                        <select
+                                                            v-model="
+                                                                userData.barangay
+                                                            "
+                                                            required
+                                                            class="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"
+                                                            :disabled="
+                                                                !userData.zone
+                                                            "
+                                                        >
+                                                            <option
+                                                                value=""
+                                                                disabled
+                                                                selected
+                                                            >
+                                                                Select barangay
+                                                            </option>
+                                                            <option
+                                                                v-for="(
+                                                                    barangay,
+                                                                    index
+                                                                ) in filteredBarangays"
+                                                                :key="index"
+                                                                :value="
+                                                                    barangay
+                                                                "
+                                                            >
+                                                                {{ barangay }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -721,20 +747,68 @@ const resetForm = () => {
 const handleSubmit = async () => {
     isSubmitting.value = true;
 
-    if (userData.value.serial_number.length !== 9) {
-        alert("Serial number must be exactly 9 digits");
-        isSubmitting.value = false;
-        return;
+    // Validate required fields based on role
+    if (userData.value.role === "customer") {
+        if (userData.value.serial_number.length !== 9) {
+            alert("Serial number must be exactly 9 digits");
+            isSubmitting.value = false;
+            return;
+        }
+
+        if (
+            !userData.value.accountNumber ||
+            !userData.value.date_installed ||
+            !userData.value.brand ||
+            !userData.value.size ||
+            !userData.value.zone ||
+            !userData.value.barangay
+        ) {
+            alert("Please fill all required customer fields");
+            isSubmitting.value = false;
+            return;
+        }
+    } else if (userData.value.role === "staff") {
+        // Validate staff fields
+        if (!userData.value.email) {
+            alert("Email is required for staff members");
+            isSubmitting.value = false;
+            return;
+        }
     }
 
     // Show spinner for 2 seconds before proceeding
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
+    // Prepare data - explicitly set customer fields to null for staff
     const submitData = {
-        ...userData.value,
-        account_number: userData.value.accountNumber,
+        name: userData.value.name,
+        lastname: userData.value.lastname,
+        email: userData.value.email,
         phone: userData.value.phone.replace(/\D/g, ""),
+        role: userData.value.role,
     };
+
+    // Handle fields based on role
+    if (userData.value.role === "customer") {
+        submitData.account_number = userData.value.accountNumber;
+        submitData.zone = userData.value.zone;
+        submitData.barangay = userData.value.barangay;
+        submitData.date_installed = userData.value.date_installed;
+        submitData.brand = userData.value.brand;
+        submitData.serial_number = userData.value.serial_number;
+        submitData.size = userData.value.size;
+    } else {
+        // For staff, don't send account_number at all instead of sending null
+        submitData.zone = null;
+        submitData.barangay = null;
+        submitData.date_installed = null;
+        submitData.brand = null;
+        submitData.serial_number = null;
+        submitData.size = null;
+        // Don't include account_number for staff
+    }
+
+    console.log('Submitting data:', submitData); // Debug log
 
     emit("submit", submitData);
     resetForm();
