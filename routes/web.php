@@ -159,6 +159,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/notifications/mark-read', [NotificationController::class, 'markAsRead']);
     Route::post('/api/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    // Add the delete notification route
+    Route::delete('/api/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 // Report Routes (Public and Authenticated)

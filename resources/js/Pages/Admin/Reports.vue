@@ -633,7 +633,7 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import ReportDetailsModal from "@/Components/Modals/ReportDetailsModal.vue";
 import Pagination from "@/Components/Pagination.vue";
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { router } from "@inertiajs/vue3";
 import { debounce } from "lodash";
 import Swal from "sweetalert2";
@@ -643,8 +643,9 @@ const props = defineProps({
     filters: Object,
     canEdit: Boolean,
     canDelete: Boolean,
-    selectedReport: Object, // Already defined in your props
+    selectedReport: Object,
     swal: Object,
+    report_id: [String, Number], // Add this prop to handle the report_id parameter
 });
 
 const filters = ref({
@@ -654,25 +655,75 @@ const filters = ref({
 });
 
 // State
-
 const showModal = ref(false);
 const showFilterDropdown = ref(false);
 const updatingStatus = ref(false);
 const deletingReport = ref(false);
 const showReporterModal = ref(false);
 const selectedReportReporters = ref([]);
+const selectedReport = ref(props.selectedReport || null);
 
-onMounted(() => {
+// Watch for report_id changes and open modal if present
+watch(
+    () => props.report_id,
+    async (newReportId) => {
+        if (newReportId) {
+            await openReportById(newReportId);
+        }
+    }
+);
+
+// Also check on component mount
+onMounted(async () => {
     if (props.selectedReport) {
         selectedReport.value = props.selectedReport;
         showModal.value = true;
     }
+
+    // Check if report_id is provided via URL parameter
+    if (props.report_id) {
+        await openReportById(props.report_id);
+    }
+
     if (props.swal) {
         Swal.fire(props.swal);
     }
 });
 
-const selectedReport = ref(props.selectedReport || null);
+// Method to open report by ID
+const openReportById = async (reportId) => {
+    // Find the report in the current reports data
+    const report = props.reports.data.find((r) => r.id == reportId);
+
+    if (report) {
+        selectedReport.value = report;
+        // Use nextTick to ensure the modal component is ready
+        await nextTick();
+        showModal.value = true;
+
+        // Clear the URL parameter after opening the modal
+        clearReportIdParameter();
+    } else {
+        console.warn("Report not found in current data:", reportId);
+        // Optionally, you could fetch the specific report from the server
+        // if it's not in the current paginated data
+    }
+};
+
+// Method to clear the report_id parameter from URL
+const clearReportIdParameter = () => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("report_id")) {
+        url.searchParams.delete("report_id");
+        window.history.replaceState({}, "", url.toString());
+    }
+};
+
+// Update the closeModal method to also clear the parameter
+const closeModal = () => {
+    showModal.value = false;
+    clearReportIdParameter();
+};
 
 // Computed properties for statistics
 const pendingReportsCount = computed(() => {
@@ -804,10 +855,6 @@ const resetFilters = () => {
 const openModal = (report) => {
     selectedReport.value = report;
     showModal.value = true;
-};
-
-const closeModal = () => {
-    showModal.value = false;
 };
 
 // Reporter Modal Functions

@@ -148,7 +148,51 @@
                                         handleNotificationClick(notification)
                                     "
                                 >
-                                    <div class="flex items-start space-x-3">
+                                    <!-- Three dots menu -->
+                                    <div class="absolute top-3 right-3">
+                                        <button
+                                            @click.stop="
+                                                toggleNotificationMenu(
+                                                    notification.id
+                                                )
+                                            "
+                                            class="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            :class="{
+                                                'opacity-100':
+                                                    activeNotificationMenu ===
+                                                    notification.id,
+                                            }"
+                                        >
+                                            <EllipsisVerticalIcon
+                                                class="w-4 h-4 text-gray-500"
+                                            />
+                                        </button>
+
+                                        <!-- Delete menu -->
+                                        <div
+                                            v-if="
+                                                activeNotificationMenu ===
+                                                notification.id
+                                            "
+                                            class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 min-w-[120px]"
+                                        >
+                                            <button
+                                                @click.stop="
+                                                    deleteNotification(
+                                                        notification
+                                                    )
+                                                "
+                                                class="w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-left flex items-center gap-2"
+                                            >
+                                                <TrashIcon class="w-4 h-4" />
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="flex items-start space-x-3 pr-8"
+                                    >
                                         <!-- Avatar/Icon -->
                                         <div class="flex-shrink-0 relative">
                                             <img
@@ -380,6 +424,8 @@ import {
     FlagIcon,
     SpeakerWaveIcon,
     ExclamationTriangleIcon,
+    EllipsisVerticalIcon,
+    TrashIcon,
 } from "@heroicons/vue/24/outline";
 import Swal from "sweetalert2";
 import debounce from "lodash/debounce";
@@ -464,6 +510,7 @@ const isNotificationDropdownOpen = ref(false);
 const isUserDropdownOpen = ref(false);
 const isLoadingNotifications = ref(false);
 const isMarkingAllRead = ref(false);
+const activeNotificationMenu = ref(null);
 const notificationButton = ref(null);
 const userButton = ref(null);
 const unreadCount = computed(
@@ -640,6 +687,29 @@ const notificationService = {
             return { success: false };
         }
     },
+    async deleteNotification(notificationId) {
+        try {
+            const response = await fetch(
+                `/api/notifications/${notificationId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Accept: "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]'
+                        )?.content,
+                    },
+                }
+            );
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.error("Error deleting notification:", error);
+            return { success: false };
+        }
+    },
 };
 
 // Load notifications
@@ -656,55 +726,139 @@ const loadNotifications = async () => {
     }
 };
 
+// Three dots menu methods
+const toggleNotificationMenu = (notificationId) => {
+    activeNotificationMenu.value =
+        activeNotificationMenu.value === notificationId ? null : notificationId;
+};
+
+const deleteNotification = async (notification) => {
+    const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const response = await notificationService.deleteNotification(
+                notification.id
+            );
+            if (response.success) {
+                // Remove notification from local list
+                localNotifications.value = localNotifications.value.filter(
+                    (n) => n.id !== notification.id
+                );
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Deleted!",
+                    text: "Notification has been deleted.",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: "top-end",
+                });
+            } else {
+                throw new Error("Failed to delete notification");
+            }
+        } catch (error) {
+            console.error("Error deleting notification:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Failed to delete notification. Please try again.",
+                timer: 3000,
+                showConfirmButton: false,
+                toast: true,
+                position: "top-end",
+            });
+        }
+    }
+
+    activeNotificationMenu.value = null;
+};
+
+// Auto-mark as read when opening dropdown
+const markAllAsReadSilent = async () => {
+    try {
+        const response = await notificationService.markAllAsRead();
+        if (response.success) {
+            localNotifications.value.forEach((notification) => {
+                notification.unread = false;
+            });
+        }
+    } catch (error) {
+        console.error("Error marking all notifications as read:", error);
+    }
+};
+
 // Dropdown controls
 const toggleNotificationDropdown = async () => {
-    if (!isNotificationDropdownOpen.value) await loadNotifications();
+    if (!isNotificationDropdownOpen.value) {
+        await loadNotifications();
+        // Auto-mark all as read when opening dropdown
+        if (unreadCount.value > 0) {
+            await markAllAsReadSilent();
+        }
+    }
     isNotificationDropdownOpen.value = !isNotificationDropdownOpen.value;
 };
 
 const closeNotificationDropdown = () => {
     isNotificationDropdownOpen.value = false;
+    activeNotificationMenu.value = null;
 };
+
 const toggleUserDropdown = () => {
     isUserDropdownOpen.value = !isUserDropdownOpen.value;
 };
+
 const closeUserDropdown = () => {
     isUserDropdownOpen.value = false;
 };
 
 const handleNotificationClick = async (notification) => {
+    activeNotificationMenu.value = null; // Close menu if open
+
     if (notification.unread) {
         const response = await notificationService.markAsRead(notification.id);
         if (response.success) notification.unread = false;
     }
+
+    // Close notification dropdown
+    closeNotificationDropdown();
+
+    // Handle redirection based on notification type
     switch (notification.type) {
         case "new_report":
         case "report_update":
             if (notification.report_id) {
-                router.visit(
-                    route("admin.reports", {
-                        query: { report_id: notification.report_id },
-                    }),
-                    {
-                        preserveState: true,
-                        onSuccess: () =>
-                            console.log(
-                                "Redirected to reports with report_id:",
-                                notification.report_id
-                            ),
+                // Redirect to admin reports page with the specific report ID
+                router.visit(route('admin.reports', {
+                    report_id: notification.report_id
+                }), {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        console.log('Redirected to reports with report_id:', notification.report_id);
                     }
-                );
+                });
             } else {
-                router.visit(route("admin.reports"));
+                router.visit(route('admin.reports'));
             }
             break;
         case "announcement":
-            router.visit(route("admin.announcements"));
+            router.visit(route('admin.announcements'));
             break;
         default:
             router.visit(notificationRoute.value);
     }
-    closeNotificationDropdown();
 };
 
 const markAllAsRead = async () => {
@@ -768,6 +922,13 @@ const handleKeydown = (e) => {
             closeNotificationDropdown();
             notificationButton.value?.focus();
         }
+        activeNotificationMenu.value = null;
+    }
+};
+
+const handleClickOutside = (event) => {
+    if (activeNotificationMenu.value && !event.target.closest(".relative")) {
+        activeNotificationMenu.value = null;
     }
 };
 
@@ -805,12 +966,14 @@ const stopNotificationPolling = () => {
 onMounted(() => {
     window.addEventListener("resize", handleResize);
     window.addEventListener("keydown", handleKeydown);
+    document.addEventListener("click", handleClickOutside);
     startNotificationPolling();
 });
 
 onUnmounted(() => {
     window.removeEventListener("resize", handleResize);
     window.removeEventListener("keydown", handleKeydown);
+    document.removeEventListener("click", handleClickOutside);
     stopNotificationPolling();
 });
 
@@ -901,5 +1064,37 @@ button:focus {
 .scale-y-95 {
     transform: scaleY(0.95);
     opacity: 0;
+}
+
+/* Three dots menu animations */
+.opacity-0 {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.opacity-100 {
+    opacity: 1;
+}
+.group:hover .opacity-0 {
+    opacity: 1;
+}
+
+/* Smooth transitions for menu */
+button:active {
+    transform: scale(0.95);
+}
+
+/* Ensure menu stays on top */
+.relative .absolute {
+    z-index: 60;
+}
+
+/* Menu styling */
+.min-w-\[120px\] {
+    min-width: 120px;
+}
+
+/* Smooth transitions */
+.transition-all {
+    transition: all 0.2s ease-in-out;
 }
 </style>

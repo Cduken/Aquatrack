@@ -143,17 +143,17 @@ onMounted(() => {
 
             <!-- Modal container -->
             <div
-                class="inline-block w-full max-w-xl bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all my-8 relative"
+                class="inline-block w-full max-w-xl  bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all relative"
             >
                 <!-- Modal content -->
                 <div class="bg-white px-6 py-6">
                     <div class="text-center">
                         <!-- Success icon -->
                         <div
-                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4"
+                            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-900 mb-2"
                         >
                             <svg
-                                class="h-6 w-6 text-emerald-600"
+                                class="h-6 w-6 text-white"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"

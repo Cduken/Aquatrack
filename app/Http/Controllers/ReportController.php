@@ -429,6 +429,7 @@ class ReportController extends Controller
                 'canDelete' => true,
                 'swal' => $request->session()->get('swal'),
                 'selectedReport' => $selectedReport,
+                'report_id' => $request->input('report_id'), // Pass the report_id to the frontend
             ]);
         } catch (\Exception $e) {
             Log::error('Admin reports fetch failed', ['error' => $e->getMessage()]);
@@ -442,62 +443,63 @@ class ReportController extends Controller
                     'title' => 'Error',
                     'text' => 'Failed to load reports.',
                 ],
+                'report_id' => $request->input('report_id'),
             ]);
         }
     }
 
     public function track(Request $request)
-{
-    try {
-        if ($request->isMethod('get')) {
-            return Inertia::render('Reports/Track');
-        }
+    {
+        try {
+            if ($request->isMethod('get')) {
+                return Inertia::render('Reports/Track');
+            }
 
-        $request->validate([
-            'tracking_code' => 'required|string',
-        ]);
+            $request->validate([
+                'tracking_code' => 'required|string',
+            ]);
 
-        $report = Report::with(['photos'])
-            ->withTrashed() // Include soft-deleted reports
-            ->where(function ($query) use ($request) {
-                $query->where('tracking_code', $request->tracking_code)
-                    ->orWhereJsonContains('additional_tracking_codes', $request->tracking_code);
-            })
-            ->first();
+            $report = Report::with(['photos'])
+                ->withTrashed() // Include soft-deleted reports
+                ->where(function ($query) use ($request) {
+                    $query->where('tracking_code', $request->tracking_code)
+                        ->orWhereJsonContains('additional_tracking_codes', $request->tracking_code);
+                })
+                ->first();
 
-        if (!$report) {
+            if (!$report) {
+                return Inertia::render('Reports/Track', [
+                    'swal' => [
+                        'icon' => 'error',
+                        'title' => 'Error',
+                        'text' => 'Report not found with this tracking code.',
+                    ],
+                ]);
+            }
+
+            // If the report is deleted, pass the deletion reason to the view
+            if ($report->trashed()) {
+                return Inertia::render('Reports/Track', [
+                    'report' => null,
+                    'isDeleted' => true,
+                    'deletionReason' => $report->status, // Pass the deletion reason
+                ]);
+            }
+
+            return Inertia::render('Reports/Track', [
+                'report' => $report,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Report tracking failed', ['error' => $e->getMessage()]);
             return Inertia::render('Reports/Track', [
                 'swal' => [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Report not found with this tracking code.',
+                    'text' => 'Report not found or an error occurred.',
                 ],
             ]);
         }
-
-        // If the report is deleted, pass the deletion reason to the view
-        if ($report->trashed()) {
-            return Inertia::render('Reports/Track', [
-                'report' => null,
-                'isDeleted' => true,
-                'deletionReason' => $report->status, // Pass the deletion reason
-            ]);
-        }
-
-        return Inertia::render('Reports/Track', [
-            'report' => $report,
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Report tracking failed', ['error' => $e->getMessage()]);
-        return Inertia::render('Reports/Track', [
-            'swal' => [
-                'icon' => 'error',
-                'title' => 'Error',
-                'text' => 'Report not found or an error occurred.',
-            ],
-        ]);
     }
-}
 
     public function findByTrackingCode(Request $request)
     {

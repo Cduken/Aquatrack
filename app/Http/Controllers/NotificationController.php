@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Report;
-
 use App\Models\Announcements;
+use App\Models\DismissedNotification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -145,6 +145,10 @@ class NotificationController extends Controller
                 'created_at' => $announcement->created_at ? $announcement->created_at->toISOString() : now()->toISOString()
             ]);
         }
+
+        $notifications = $notifications->filter(function ($notification) {
+            return !$this->isNotificationDismissed($notification['id']);
+        });
 
         return $notifications;
     }
@@ -382,5 +386,60 @@ class NotificationController extends Controller
         foreach ($announcements as $announcement) {
             $this->markAnnouncementAsRead($announcement->id);
         }
+    }
+
+    /**
+     * Delete a notification (NEW METHOD)
+     */
+    public function destroy($id)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            Log::info('Dismissing notification', ['notification_id' => $id, 'user_id' => $user->id]);
+
+            // Store the dismissed notification
+            DismissedNotification::create([
+                'user_id' => $user->id,
+                'notification_id' => $id,
+                'type' => $this->getNotificationType($id)
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Notification dismissed successfully']);
+        } catch (\Exception $e) {
+            Log::error('Notification dismissal failed: ' . $e->getMessage(), [
+                'notification_id' => $id,
+                'user_id' => Auth::id()
+            ]);
+            return response()->json(['error' => 'Failed to dismiss notification'], 500);
+        }
+    }
+
+    private function getNotificationType($notificationId)
+    {
+        if (str_starts_with($notificationId, 'new_report_')) {
+            return 'new_report';
+        } elseif (
+            str_starts_with($notificationId, 'report_update_') ||
+            str_starts_with($notificationId, 'assigned_report_') ||
+            str_starts_with($notificationId, 'my_report_')
+        ) {
+            return 'report_update';
+        } elseif (str_starts_with($notificationId, 'announcement_')) {
+            return 'announcement';
+        }
+
+        return 'unknown';
+    }
+
+    private function isNotificationDismissed($notificationId)
+    {
+        return DismissedNotification::where('user_id', Auth::id())
+            ->where('notification_id', $notificationId)
+            ->exists();
     }
 }
