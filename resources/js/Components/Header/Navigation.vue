@@ -85,7 +85,7 @@ const scrollToSection = (sectionId) => {
                     <Link
                         v-if="showBackToHome"
                         href="/"
-                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/20 text-white rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/50 transition duration-300"
+                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-300/30 text-black rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-300/50 transition duration-300"
                     >
                         <v-icon name="bi-arrow-bar-left" class="h-6 w-6" />
                         <span class="hidden md:inline ">Back to Home</span>
@@ -95,7 +95,7 @@ const scrollToSection = (sectionId) => {
                     <Link
                         v-else
                         :href="route('select-roles')"
-                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-200/30 text-gray-900  rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-200/90 transition duration-300"
+                        class="inline-flex items-center px-4 py-[10px] text-sm bg-white/20 border border-gray-300/30 text-gray-900  rounded-[50px] hover:bg-white/40 hover:text-gray-700 hover:border-gray-300/90 transition duration-300"
                     >
                         <!-- Right arrow icon (visible only on small screens) -->
                         <v-icon

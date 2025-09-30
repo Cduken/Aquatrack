@@ -113,13 +113,13 @@ onMounted(() => {
         "-=0.6"
     );
 
-    gsap.to(".hero-image", {
-        y: -10,
-        duration: 3,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-    });
+    // gsap.to(".hero-image", {
+    //     y: -10,
+    //     duration: 3,
+    //     repeat: -1,
+    //     yoyo: true,
+    //     ease: "sine.inOut",
+    // });
 });
 
 const handleTrackReport = () => {
@@ -153,13 +153,13 @@ const handleReportSuccess = (data) => {
 
 <template>
     <main id="home" class="relative w-full min-h-screen overflow-hidden">
-        <div
+        <!-- <div
             class="purple-float absolute left-[300px] top-0 w-72 h-72 rounded-full bg-[#00D4FF]/10 blur-3xl"
         ></div>
         <div
             class="purple-float absolute left-40 bottom-40 w-48 h-48 rounded-full bg-purple-400/20 blur-3xl"
             style="animation-delay: 1s"
-        ></div>
+        ></div> -->
 
         <Navigation />
 
@@ -214,7 +214,7 @@ const handleReportSuccess = (data) => {
                 class="hero-image w-full lg:w-2/5 flex items-center justify-center order-1 lg:order-2"
             >
                 <div
-                    class="max-w-[500px] max-h-[500px] w-full bg-gray-200 rounded-2xl shadow-2xl floating-image"
+                    class="max-w-[500px] max-h-[500px] w-full bg-gray-200 rounded-2xl shadow-2xl"
                 >
                     <div class="p-4 sm:p-6">
                         <img
@@ -326,7 +326,7 @@ const handleReportSuccess = (data) => {
 </template>
 
 <style scoped>
-@keyframes floatUp {
+/* @keyframes floatUp {
     0% {
         opacity: 0;
         transform: translateY(20px);
@@ -335,9 +335,9 @@ const handleReportSuccess = (data) => {
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
-@keyframes imageFloat {
+/* @keyframes imageFloat {
     0%,
     100% {
         transform: translateY(0px);
@@ -345,16 +345,16 @@ const handleReportSuccess = (data) => {
     50% {
         transform: translateY(-10px);
     }
-}
+} */
 
 .floating-text {
     animation: floatUp 1s ease-out forwards;
     opacity: 0;
 }
-
+/*
 .floating-image {
     animation: imageFloat 6s ease-in-out infinite;
-}
+} */
 
 .slide-enter-active,
 .slide-leave-active {
