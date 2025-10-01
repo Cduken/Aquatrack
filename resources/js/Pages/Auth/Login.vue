@@ -1,9 +1,11 @@
+//Login.vue
 <script setup>
 import { useForm, Link, usePage } from "@inertiajs/vue3";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { OhVueIcon } from "oh-vue-icons";
 import Swal from "sweetalert2";
 import axios from "axios";
+import gsap from "gsap";
 
 const props = defineProps({
     selectedRole: { type: String, default: "" },
@@ -19,6 +21,7 @@ const codeVerified = ref(false);
 const verificationCode = ref("");
 const verificationError = ref("");
 const isVerifying = ref(false);
+const isSubmitting = ref(false); // Added for login submission
 
 const securedRoles = ["admin", "staff"];
 const requiresVerification = computed(() =>
@@ -70,6 +73,15 @@ watch(
     { immediate: true }
 );
 
+// Animate form content when mounted
+onMounted(() => {
+    gsap.fromTo(
+        ".login-form-content",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+    );
+});
+
 const updateCsrfToken = (newToken) => {
     const metaTag = document.querySelector('meta[name="csrf-token"]');
     if (metaTag && newToken) metaTag.setAttribute("content", newToken);
@@ -84,6 +96,9 @@ const verifyCode = async () => {
     const startTime = Date.now();
 
     try {
+        // Add minimum 2-second delay for realistic feel
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         const response = await axios.post(
             route("verify-code"),
             {
@@ -165,23 +180,35 @@ const verifyCode = async () => {
 };
 
 const formatAccountNumber = (event) => {
-  let input = event.target.value.replace(/\D/g, ''); // Remove non-digits
+    let input = event.target.value.replace(/\D/g, ""); // Remove non-digits
 
-  // Format as XXX-XX-XXX
-  if (input.length > 5) {
-    form.account_number = input.slice(0, 3) + '-' + input.slice(3, 5) + '-' + input.slice(5, 8);
-  } else if (input.length > 3) {
-    form.account_number = input.slice(0, 3) + '-' + input.slice(3, 5);
-  } else {
-    form.account_number = input;
-  }
+    // Format as XXX-XX-XXX
+    if (input.length > 5) {
+        form.account_number =
+            input.slice(0, 3) +
+            "-" +
+            input.slice(3, 5) +
+            "-" +
+            input.slice(5, 8);
+    } else if (input.length > 3) {
+        form.account_number = input.slice(0, 3) + "-" + input.slice(3, 5);
+    } else {
+        form.account_number = input;
+    }
 };
 
-const submit = () => {
+const submit = async () => {
+    // Add 2-second delay before processing
+    isSubmitting.value = true;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     form.post(route("login"), {
         preserveState: true,
         preserveScroll: true,
-        onFinish: () => form.reset("password"),
+        onFinish: () => {
+            form.reset("password");
+            isSubmitting.value = false;
+        },
         onSuccess: () => {
             const userName = page.props.auth?.user?.name || "there";
             Swal.fire({
@@ -205,6 +232,8 @@ const submit = () => {
             }).then(() => emit("login-success"));
         },
         onError: (errors) => {
+            isSubmitting.value = false;
+
             if (errors.throttle) {
                 lockoutSeconds.value = errors.remaining_time || 30;
                 formDisabled.value = true;
@@ -247,7 +276,7 @@ const submit = () => {
     <div class="flex flex-col md:flex-row h-full bg-white">
         <!-- Left Side -->
         <div
-            class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#062F64]/80 to-[#1E4272]/80 items-center justify-center p-12"
+            class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#062F64] to-[#1E4272] items-center justify-center p-12"
         >
             <div class="text-center space-y-6">
                 <img
@@ -257,18 +286,18 @@ const submit = () => {
                 />
                 <div class="space-y-2">
                     <h1
-                        class="text-transparent text-4xl font-bold bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200"
+                        class="text-transparent text-3xl font-semibold uppercase tracking-tighter bg-clip-text bg-gradient-to-r from-blue-300 to-teal-200"
                     >
                         AquaTrack
                     </h1>
-                    <p class="text-blue-100 text-xl">Water Management System</p>
+                    <p class="text-blue-100 text-lg">Water Management System</p>
                 </div>
             </div>
         </div>
 
         <!-- Right Side -->
         <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 login-form-content">
                 <h2 class="text-2xl text-gray-800 mb-2">
                     Login as {{ selectedRole || "Customer" }}
                 </h2>
@@ -276,7 +305,10 @@ const submit = () => {
             </div>
 
             <!-- Verification -->
-            <div v-if="requiresVerification && !codeVerified" class="space-y-6">
+            <div
+                v-if="requiresVerification && !codeVerified"
+                class="space-y-6 login-form-content"
+            >
                 <div class="relative">
                     <input
                         id="verificationCode"
@@ -303,7 +335,10 @@ const submit = () => {
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
                     :class="{ 'opacity-75 cursor-not-allowed': isVerifying }"
                 >
-                    <template v-if="isVerifying"> Verifying... </template>
+                    <template v-if="isVerifying">
+                        <div class="spinner-small"></div>
+                        Verifying...
+                    </template>
                     <template v-else> Verify Code </template>
                 </button>
             </div>
@@ -312,7 +347,7 @@ const submit = () => {
             <form
                 v-if="!requiresVerification || codeVerified"
                 @submit.prevent="submit"
-                class="space-y-6"
+                class="space-y-6 login-form-content"
             >
                 <div class="relative">
                     <template v-if="form.role !== 'customer'">
@@ -419,14 +454,17 @@ const submit = () => {
                 <!-- Submit -->
                 <button
                     type="submit"
-                    :disabled="form.processing || formDisabled"
+                    :disabled="form.processing || formDisabled || isSubmitting"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
                     :class="{
                         'opacity-75 cursor-not-allowed':
-                            form.processing || formDisabled,
+                            form.processing || formDisabled || isSubmitting,
                     }"
                 >
-                    <template v-if="form.processing"> Signing in... </template>
+                    <template v-if="form.processing || isSubmitting">
+                        <div class="spinner-small"></div>
+                        Signing in...
+                    </template>
                     <template v-else>
                         <OhVueIcon name="md-login-outlined" class="text-lg" />
                         Sign In
@@ -435,7 +473,7 @@ const submit = () => {
             </form>
 
             <div
-                class="mt-6 text-sm text-[#1C606A] border border-[#D7F1F5] p-4 bg-[#D7F1F5] rounded-md"
+                class="mt-6 text-sm text-[#1C606A] border border-[#D7F1F5] p-4 bg-[#D7F1F5] rounded-md login-form-content"
             >
                 If you do not know your account credentials, or if you have
                 forgotten your password, please contact the Systems Development
@@ -453,5 +491,24 @@ input:not(:placeholder-shown) ~ label {
 }
 input::placeholder {
     color: transparent;
+}
+
+/* Spinner styles */
+.spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>

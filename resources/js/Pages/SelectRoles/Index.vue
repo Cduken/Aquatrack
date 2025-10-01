@@ -24,7 +24,7 @@
                     >
                         Welcome to
                         <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500 font-md"
+                            class="text-transparent bg-clip-text bg-[#0650A7] font-md"
                             >AquaTrack</span
                         >
                     </h1>
@@ -181,7 +181,7 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { HiUser, HiCog, HiUsers, HiArrowRight, HiX } from "oh-vue-icons/icons";
 import Login from "@/Pages/Auth/Login.vue";
 import Navigation from "@/Components/Header/Navigation.vue";
-import gsap from "gsap"; // Import GSAP
+import gsap from "gsap";
 
 addIcons(HiUser, HiCog, HiUsers, HiArrowRight, HiX);
 
@@ -198,179 +198,95 @@ const modalClasses = computed(() => {
 const showLoginModal = async (role) => {
     selectedRole.value = role.charAt(0).toUpperCase() + role.slice(1);
 
-    // Animate the clicked card
+    // Quick card animation
     const clickedCard = event?.currentTarget;
     if (clickedCard) {
         gsap.to(clickedCard, {
             scale: 0.95,
-            duration: 0.2,
+            duration: 0.15,
             ease: "power2.out",
         });
     }
 
-    // Show modal with animation
     showModal.value = true;
-
     await nextTick();
 
-    // Animate modal entrance
+    // Faster modal animation
     if (modalAnimation.value) modalAnimation.value.kill();
 
-    modalAnimation.value = gsap.timeline().fromTo(
-        ".modal-container",
+    modalAnimation.value = gsap.fromTo(".modal-container",
         {
             opacity: 0,
-            scale: 0.8,
-            y: 20,
+            scale: 0.9,
+            y: 10,
         },
         {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 0.5,
-            ease: "back.out(1.2)",
+            duration: 0.3,
+            ease: "power2.out",
         }
     );
 };
 
 const hideLoginModal = async () => {
-    // Animate modal exit
     if (modalAnimation.value) modalAnimation.value.kill();
 
-    modalAnimation.value = gsap.timeline().to(".modal-container", {
+    modalAnimation.value = gsap.to(".modal-container", {
         opacity: 0,
-        scale: 0.9,
-        y: -10,
-        duration: 0.3,
+        scale: 0.95,
+        y: 5,
+        duration: 0.2,
         ease: "power2.in",
     });
 
-    // Reset card animation
+    // Reset cards quickly
     gsap.to(".role-card", {
         scale: 1,
-        duration: 0.3,
+        duration: 0.2,
         ease: "power2.out",
     });
 
-    // Wait for animation to complete before hiding
     setTimeout(() => {
         showModal.value = false;
-    }, 300);
+    }, 200);
 };
 
 const handleLoginSuccess = () => {
     hideLoginModal();
 };
 
-// GSAP animations on page load
+// OPTIMIZED GSAP animations - Much faster and performance focused
 onMounted(() => {
-    // Set initial state for all animated elements
-    gsap.set(".select-roles-drop-top, .select-roles-drop-bottom", {
-        scale: 0,
-        opacity: 0,
-    });
+    // Set initial states - minimal setup
+    gsap.set(".select-roles-header", { y: 20, opacity: 0 });
+    gsap.set(".role-card", { y: 20, opacity: 0 });
 
-    gsap.set(".select-roles-header", {
-        y: 30,
-        opacity: 0,
-    });
+    // Remove complex background animations that slow things down
+    gsap.set([".select-roles-drop-top", ".select-roles-drop-bottom"], { opacity: 0 });
 
-    gsap.set(".select-roles-headline span", {
-        backgroundPosition: "100% 50%",
-    });
-
-    gsap.set(".select-roles-subheadline", {
-        y: 15,
-        opacity: 0,
-    });
-
-    gsap.set(".role-card", {
-        y: 30,
-        opacity: 0,
-        scale: 1,
-    });
-
-    gsap.set(".card-glow", {
-        scale: 0.8,
-        opacity: 0,
-    });
-
+    // Faster timeline with reduced duration and fewer animations
     const tl = gsap.timeline();
 
-    // Animate background elements
-    tl.to(".select-roles-drop-top, .select-roles-drop-bottom", {
-        scale: 1,
-        opacity: 0.4,
-        duration: 1.2,
+    // Animate header quickly
+    tl.to(".select-roles-header", {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
         ease: "power2.out",
     });
 
-    // Animate header content
-    tl.to(
-        ".select-roles-header",
-        {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power2.out",
-        },
-        "-=0.8"
-    );
+    // Animate cards with minimal stagger
+    tl.to(".role-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.1, // Reduced stagger
+        ease: "power2.out",
+    }, "-=0.2"); // Overlap with previous animation
 
-    // Animate headline with gradient text reveal
-    tl.to(
-        ".select-roles-headline span",
-        {
-            backgroundPosition: "0% 50%",
-            duration: 1.5,
-            ease: "power2.inOut",
-        },
-        "-=0.5"
-    );
-
-    // Animate subheadline
-    tl.to(
-        ".select-roles-subheadline",
-        {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "power2.out",
-        },
-        "-=0.5"
-    );
-
-    // Animate role cards with stagger effect
-    tl.to(
-        ".role-card",
-        {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: "back.out(1.4)",
-        },
-        "-=0.4"
-    );
-
-    // Add continuous subtle animations to background elements
-    gsap.to(".select-roles-drop-top", {
-        y: 20,
-        duration: 6,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 1,
-    });
-
-    gsap.to(".select-roles-drop-bottom", {
-        y: -20,
-        duration: 7,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 1.2,
-    });
+    // Remove continuous background animations that cause performance issues
 });
 </script>
 

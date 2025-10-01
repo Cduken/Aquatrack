@@ -1,5 +1,5 @@
 <template>
-    <CustomerLayout title="Dashboard">
+    <CustomerLayout>
         <div class="w-full min-h-screen bg-gray-50">
             <!-- Header Section with subtle gradient -->
             <div

@@ -1,10 +1,10 @@
 <template>
-    <CustomerLayout title="Customer Reports">
+    <CustomerLayout>
         <div
             class="w-full bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100"
         >
             <!-- Header Section - Redesigned to match announcement style -->
-            <!-- <div class=" px-6 py-5">
+           <div class=" px-6 py-5">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-black">
@@ -15,7 +15,7 @@
                         </p>
                     </div>
                 </div>
-            </div> -->
+            </div>
 
             <!-- Stats Overview - Redesigned to match announcement style -->
             <div

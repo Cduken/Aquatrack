@@ -1,11 +1,9 @@
 <template>
-    <div
-        class="w-full p-6 rounded-xl bg-white/95 backdrop-blur-lg border border-white/20 shadow-xl"
-    >
+    <div class="w-full p-6 bg-white">
         <!-- Form Errors Indicator -->
         <div
             v-if="hasErrors"
-            class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+            class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
         >
             <div class="flex items-center mb-2">
                 <v-icon name="hi-exclamation-triangle" class="w-5 h-5 mr-2" />
@@ -24,36 +22,26 @@
             <!-- Location Fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label
-                        for="municipality"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Municipality <span class="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        id="municipality"
                         v-model="form.municipality"
                         readonly
-                        value="Clarin"
-                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                     />
                 </div>
 
                 <div class="space-y-2">
-                    <label
-                        for="province"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Province
                     </label>
                     <input
                         type="text"
-                        id="province"
                         v-model="form.province"
                         readonly
-                        value="Bohol"
-                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                     />
                 </div>
             </div>
@@ -61,18 +49,14 @@
             <!-- Reporter Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label
-                        for="reporter_name"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Full Name <span class="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        id="reporter_name"
                         v-model="form.reporter_name"
                         required
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                         placeholder="Enter your full name"
                     />
                     <p
@@ -84,18 +68,14 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label
-                        for="reporter_phone"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Phone Number
                     </label>
                     <input
                         type="tel"
-                        id="reporter_phone"
                         v-model="form.reporter_phone"
                         @input="restrictPhoneInput"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                         pattern="[0-9]{1,11}"
                         maxlength="11"
                         placeholder="Your contact number"
@@ -112,17 +92,13 @@
             <!-- Area Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label
-                        for="barangay"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Barangay <span class="text-red-500">*</span>
                     </label>
                     <select
-                        id="barangay"
                         v-model="form.barangay"
                         required
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                     >
                         <option value="" disabled selected>
                             Select Barangay
@@ -144,18 +120,14 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label
-                        for="zone"
-                        class="block text-sm font-medium text-gray-700"
-                    >
+                    <label class="block text-sm font-semibold text-gray-700">
                         Zone <span class="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        id="zone"
                         v-model="form.zone"
                         readonly
-                        class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 cursor-not-allowed focus:outline-none text-sm font-medium"
                         placeholder="Zone will be auto-filled"
                     />
                     <p
@@ -168,19 +140,15 @@
             </div>
 
             <!-- Purok -->
-            <div class="space-y-2 mb-2">
-                <label
-                    for="purok"
-                    class="block text-sm font-medium text-gray-700"
-                >
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700">
                     Purok/Street <span class="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
-                    id="purok"
                     v-model="form.purok"
                     required
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                     placeholder="Enter purok number or street name"
                 />
                 <p v-if="form.errors.purok" class="text-xs text-red-500 mt-1">
@@ -190,13 +158,13 @@
 
             <!-- Water Issue Type -->
             <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-gray-700">
                     Water Issue Type <span class="text-red-500">*</span>
                 </label>
                 <select
                     v-model="form.water_issue_type"
                     @change="selectWaterIssue"
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                     required
                 >
                     <option disabled value="">Select water issue type</option>
@@ -214,7 +182,7 @@
                     <input
                         type="text"
                         v-model="form.custom_water_issue"
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white"
                         placeholder="Please specify the water issue"
                         maxlength="100"
                         required
@@ -231,17 +199,14 @@
 
             <!-- Description -->
             <div class="space-y-2">
-                <label
-                    for="description"
-                    class="block text-sm font-medium text-gray-700"
-                    >Description <span class="text-red-500">*</span></label
-                >
+                <label class="block text-sm font-semibold text-gray-700">
+                    Description <span class="text-red-500">*</span>
+                </label>
                 <textarea
-                    id="description"
                     v-model="form.description"
                     rows="4"
                     required
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm resize-none"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm bg-white resize-none"
                     placeholder="Describe the water quality issue in detail..."
                 ></textarea>
                 <p
@@ -252,36 +217,24 @@
                 </p>
             </div>
 
-            <!-- Enhanced Camera Section with Video -->
+            <!-- Enhanced Camera Section -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <label class="block text-sm font-medium text-gray-700">
+                    <label class="block text-sm font-semibold text-gray-700">
                         Capture Evidence
                         <span class="text-red-500">*</span>
                     </label>
-                    <div class="text-xs text-gray-500">
+                    <div
+                        class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full"
+                    >
                         {{ form.photos.length }}/{{ MAX_TOTAL }} files
-                        <span class="text-gray-400">•</span>
-                        Photos:
-                        {{
-                            form.photos.filter((file) =>
-                                file.type.startsWith("image")
-                            ).length
-                        }}/{{ MAX_PHOTOS }}
-                        <span class="text-gray-400">•</span>
-                        Videos:
-                        {{
-                            form.photos.filter((file) =>
-                                file.type.startsWith("video")
-                            ).length
-                        }}/{{ MAX_VIDEOS }}
                     </div>
                 </div>
 
                 <!-- Camera Status Banner -->
                 <div
                     v-if="cameraError"
-                    class="p-4 bg-red-50 border border-red-200 rounded-lg"
+                    class="p-4 bg-red-50 border border-red-200 rounded-xl"
                 >
                     <div class="flex items-center text-red-700 text-sm">
                         <v-icon
@@ -301,7 +254,7 @@
 
                 <!-- Camera Interface -->
                 <div
-                    class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-inner"
+                    class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200"
                 >
                     <!-- Camera Not Active State -->
                     <div v-if="!isCameraActive" class="p-8 text-center">
@@ -332,7 +285,7 @@
                             type="button"
                             @click="initializeCamera"
                             :disabled="isCameraLoading"
-                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:transform-none"
+                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                         >
                             <v-icon
                                 v-if="isCameraLoading"
@@ -385,16 +338,6 @@
                                         class="inline-block animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mb-3"
                                     ></div>
                                     <p class="text-sm">{{ cameraStatus }}</p>
-                                    <div
-                                        class="mt-2 w-48 bg-gray-700 rounded-full h-1"
-                                    >
-                                        <div
-                                            class="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                                            :style="{
-                                                width: loadingProgress + '%',
-                                            }"
-                                        ></div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -427,50 +370,11 @@
                                     REC {{ formatTime(recordingTime) }}
                                 </div>
                             </div>
-
-                            <!-- Media Counter -->
-                            <div
-                                v-if="isCameraReady"
-                                class="absolute bottom-4 left-4"
-                            >
-                                <div
-                                    class="bg-black bg-opacity-60 text-white px-3 py-2 rounded-lg text-xs backdrop-blur-sm"
-                                >
-                                    <div class="space-y-1">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-2 h-2 bg-blue-400 rounded-full mr-2"
-                                            ></div>
-                                            Photos:
-                                            {{
-                                                form.photos.filter((file) =>
-                                                    file.type.startsWith(
-                                                        "image"
-                                                    )
-                                                ).length
-                                            }}/{{ MAX_PHOTOS }}
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-2 h-2 bg-red-400 rounded-full mr-2"
-                                            ></div>
-                                            Videos:
-                                            {{
-                                                form.photos.filter((file) =>
-                                                    file.type.startsWith(
-                                                        "video"
-                                                    )
-                                                ).length
-                                            }}/{{ MAX_VIDEOS }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Enhanced Camera Controls -->
                         <div class="bg-white p-6 border-t border-gray-200">
-                            <div class="flex items-center justify-center gap-6">
+                            <div class="flex items-center justify-center gap-4">
                                 <!-- Switch Camera Button -->
                                 <button
                                     type="button"
@@ -480,11 +384,10 @@
                                         isCameraReady &&
                                         !isRecording
                                     "
-                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 text-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg"
+                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 text-gray-700 disabled:opacity-50"
                                     :disabled="
                                         !isCameraReady || isSwitchingCamera
                                     "
-                                    :title="'Switch to ' + getNextCameraName()"
                                 >
                                     <v-icon
                                         v-if="isSwitchingCamera"
@@ -510,17 +413,12 @@
                                         isCapturing ||
                                         isRecording
                                     "
-                                    class="relative p-5 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 active:scale-95 shadow-xl"
+                                    class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                                 >
                                     <v-icon
                                         name="hi-camera"
-                                        class="w-7 h-7 text-white"
+                                        class="w-6 h-6 text-white"
                                     />
-                                    <!-- Capture animation ring -->
-                                    <div
-                                        v-if="isCapturing"
-                                        class="absolute inset-0 border-4 border-white rounded-full animate-ping"
-                                    ></div>
                                 </button>
 
                                 <!-- Video Recording Button -->
@@ -538,7 +436,7 @@
                                         ).length >= MAX_VIDEOS &&
                                             !isRecording)
                                     "
-                                    class="relative p-5 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 active:scale-95 shadow-xl"
+                                    class="p-4 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                                     :class="
                                         isRecording
                                             ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
@@ -547,12 +445,12 @@
                                 >
                                     <div
                                         v-if="isRecording"
-                                        class="w-7 h-7 bg-white rounded-sm"
+                                        class="w-6 h-6 bg-white rounded-sm"
                                     ></div>
                                     <v-icon
                                         v-else
                                         name="hi-video-camera"
-                                        class="w-7 h-7 text-white"
+                                        class="w-6 h-6 text-white"
                                     />
                                 </button>
 
@@ -561,50 +459,10 @@
                                     type="button"
                                     @click="stopCamera"
                                     :disabled="isRecording"
-                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 text-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg"
-                                    title="Close Camera"
+                                    class="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 text-gray-700 disabled:opacity-50"
                                 >
                                     <v-icon name="hi-solid-x" class="w-6 h-6" />
                                 </button>
-                            </div>
-
-                            <!-- Camera Instructions -->
-                            <div
-                                v-if="isCameraReady"
-                                class="mt-4 text-center text-xs text-gray-500"
-                            >
-                                <p v-if="form.photos.length === 0">
-                                    Tap the blue button for photos or red button
-                                    for videos
-                                </p>
-                                <p
-                                    v-else-if="
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith('image')
-                                        ).length < MAX_PHOTOS ||
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith('video')
-                                        ).length < MAX_VIDEOS
-                                    "
-                                >
-                                    {{
-                                        MAX_PHOTOS -
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith("image")
-                                        ).length
-                                    }}
-                                    photos and
-                                    {{
-                                        MAX_VIDEOS -
-                                        form.photos.filter((file) =>
-                                            file.type.startsWith("video")
-                                        ).length
-                                    }}
-                                    videos remaining
-                                </p>
-                                <p v-else class="text-amber-600">
-                                    Maximum media reached
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -613,13 +471,13 @@
                 <!-- Media Gallery -->
                 <div v-if="form.photo_previews.length > 0" class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-sm font-medium text-gray-700">
+                        <h4 class="text-sm font-semibold text-gray-700">
                             Captured Media ({{ form.photo_previews.length }})
                         </h4>
                         <button
                             type="button"
                             @click="clearAllMedia"
-                            class="text-sm text-red-600 hover:text-red-800 font-medium underline"
+                            class="text-sm text-red-600 hover:text-red-800 font-medium"
                         >
                             Clear All
                         </button>
@@ -633,7 +491,7 @@
                             :key="'media-' + index"
                             class="relative group aspect-square"
                         >
-                            <!-- Photo -->
+                            <!-- Media display logic remains the same -->
                             <div
                                 v-if="
                                     form.photos[index].type.startsWith('image')
@@ -641,25 +499,11 @@
                             >
                                 <img
                                     :src="preview"
-                                    class="w-full h-full object-cover rounded-lg border border-gray-200 group-hover:border-blue-400 transition-all duration-200 shadow-md hover:shadow-lg"
+                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-200 group-hover:border-blue-400 transition-all duration-200"
                                     :alt="'Photo ' + (index + 1)"
                                 />
                                 <div
-                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center"
-                                >
-                                    <button
-                                        @click="removeMedia(index)"
-                                        type="button"
-                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 shadow-lg"
-                                    >
-                                        <v-icon
-                                            name="hi-trash"
-                                            class="w-4 h-4"
-                                        />
-                                    </button>
-                                </div>
-                                <div
-                                    class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md"
+                                    class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center"
                                 >
                                     <v-icon
                                         name="hi-photograph"
@@ -674,42 +518,16 @@
                                     }}
                                 </div>
                             </div>
-                            <!-- Video -->
+                            <!-- Video display logic remains the same -->
                             <div v-else>
                                 <video
                                     :src="preview"
-                                    class="w-full h-full object-cover rounded-lg border border-gray-200 group-hover:border-green-400 transition-all duration-200 shadow-md hover:shadow-lg"
+                                    class="w-full h-full object-cover rounded-lg border-2 border-gray-200 group-hover:border-green-400 transition-all duration-200"
                                     muted
                                     preload="metadata"
                                 ></video>
                                 <div
-                                    class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center rounded-lg"
-                                >
-                                    <div
-                                        class="bg-white bg-opacity-90 rounded-full p-3 shadow-lg"
-                                    >
-                                        <v-icon
-                                            name="hi-play"
-                                            class="w-6 h-6 text-gray-800"
-                                        />
-                                    </div>
-                                </div>
-                                <div
-                                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center"
-                                >
-                                    <button
-                                        @click="removeMedia(index)"
-                                        type="button"
-                                        class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transform scale-75 hover:scale-100 transition-all duration-200 ml-auto mt-2 mr-2 absolute top-0 right-0 shadow-lg"
-                                    >
-                                        <v-icon
-                                            name="hi-trash"
-                                            class="w-4 h-4"
-                                        />
-                                    </button>
-                                </div>
-                                <div
-                                    class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md"
+                                    class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center"
                                 >
                                     <v-icon
                                         name="hi-video-camera"
@@ -723,12 +541,14 @@
                                             .indexOf(form.photos[index]) + 1
                                     }}
                                 </div>
-                                <div
-                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded shadow-md"
-                                >
-                                    {{ getVideoDuration(form.photos[index]) }}s
-                                </div>
                             </div>
+                            <button
+                                @click="removeMedia(index)"
+                                type="button"
+                                class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                            >
+                                <v-icon name="hi-trash" class="w-3 h-3" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -736,7 +556,7 @@
                 <!-- Media requirement message -->
                 <div
                     v-if="form.photos.length === 0"
-                    class="p-4 bg-blue-50 border border-blue-200 rounded-lg"
+                    class="p-4 bg-blue-50 border border-blue-200 rounded-xl"
                 >
                     <div class="flex items-center text-blue-700 text-sm">
                         <v-icon
@@ -754,7 +574,7 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="pt-6">
+            <div class="pt-6 border-t border-gray-200">
                 <button
                     type="submit"
                     :disabled="
@@ -763,7 +583,7 @@
                         isRecording ||
                         !isFormValid
                     "
-                    class="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                    class="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                 >
                     <span
                         v-if="isSubmitting"

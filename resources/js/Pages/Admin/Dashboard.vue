@@ -1,3 +1,4 @@
+//Admin/Dashboard.vue
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { ref, onMounted, computed } from "vue";
@@ -26,61 +27,61 @@ const activityConfig = {
     created: {
         icon: "plus-circle",
         bg: "bg-blue-50",
-        text: "blue-500",
+        text: "text-blue-500",
         title: "New record created",
     },
     updated: {
         icon: "pencil-square",
         bg: "bg-green-50",
-        text: "green-500",
+        text: "text-green-500",
         title: "Record updated",
     },
     deleted: {
         icon: "trash",
         bg: "bg-red-50",
-        text: "red-500",
+        text: "text-red-500",
         title: "Record deleted",
     },
     logged_in: {
         icon: "arrow-right-on-rectangle",
         bg: "bg-purple-50",
-        text: "purple-500",
+        text: "text-purple-500",
         title: "User login",
     },
     logged_out: {
         icon: "arrow-left-on-rectangle",
         bg: "bg-gray-50",
-        text: "gray-500",
+        text: "text-gray-500",
         title: "User logout",
     },
     verification_success: {
         icon: "shield-check",
         bg: "bg-teal-50",
-        text: "teal-500",
+        text: "text-teal-500",
         title: "Verification passed",
     },
     verification_failed: {
         icon: "shield-exclamation",
         bg: "bg-amber-50",
-        text: "amber-500",
+        text: "text-amber-500",
         title: "Verification failed",
     },
     default: {
         icon: "sparkles",
         bg: "bg-indigo-50",
-        text: "indigo-500",
+        text: "text-indigo-500",
         title: "System activity",
     },
     report_created: {
         icon: "flag",
         bg: "bg-amber-50",
-        text: "amber-500",
+        text: "text-amber-500",
         title: "New Report Submitted",
     },
     report_status_changed: {
         icon: "arrow-path",
         bg: "bg-blue-50",
-        text: "blue-500",
+        text: "text-blue-500",
         title: "Report Status Updated",
     },
 };
@@ -208,16 +209,16 @@ onMounted(() => {
                     {
                         label: "Water Consumption (m³)",
                         data: monthlyConsumption,
-                        borderColor: "rgb(59, 130, 246)",
-                        backgroundColor: "rgba(59, 130, 246, 0.05)",
+                        borderColor: "rgb(79, 70, 229)",
+                        backgroundColor: "rgba(79, 70, 229, 0.05)",
                         tension: 0.4,
                         fill: true,
-                        borderWidth: 2,
+                        borderWidth: 3,
                         pointBackgroundColor: "white",
-                        pointBorderColor: "rgb(59, 130, 246)",
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
+                        pointBorderColor: "rgb(79, 70, 229)",
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
                     },
                 ],
             },
@@ -262,36 +263,46 @@ onMounted(() => {
 </script>
 
 <template>
-
     <AdminLayout>
-        <div class="lg:items-center lg:flex mb-4 hidden">
-            <v-icon
-                name="md-dashboard-sharp"
-                class="mr-2 text-green-500"
-                scale="1.5"
-            />
-            <h1 class="text-2xl font-bold text-gray-800">
-                Dashboard Management
-            </h1>
+        <!-- Header Section -->
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <!-- <div class="p-2 rounded-lg bg-indigo-50 mr-3">
+                    <v-icon
+                        name="md-dashboard-sharp"
+                        class="text-indigo-600"
+                        scale="1.2"
+                    />
+                </div> -->
+                <h1 class="text-2xl font-bold text-gray-900">
+                    Dashboard Overview
+                </h1>
+            </div>
+            <p class="text-gray-500">
+                Welcome back! Here's what's happening with your water management
+                system today.
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             <!-- Total Users Card -->
             <div
-                class="rounded-md p-6 bg-gradient-to-b from-blue-700 to-blue-900 border border-blue-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300"
             >
-                <div class="flex items-start justify-between z-10 relative">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-gray-300 mb-2">
+                        <p class="text-sm font-medium text-gray-500 mb-1">
                             Total Users
                         </p>
-                        <p class="text-3xl font-extrabold text-white">
+                        <p class="text-2xl font-bold text-gray-900">
                             {{ totalUsers }}
                         </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            All system users
+                        </p>
                     </div>
-                    <div
-                        class="p-3 rounded-full bg-white/70 text-blue-600 shadow-md group-hover:bg-white transition-all"
-                    >
+                    <div class="p-3 rounded-lg bg-blue-50 text-blue-500">
                         <svg
                             class="w-6 h-6"
                             fill="none"
@@ -308,27 +319,25 @@ onMounted(() => {
                         </svg>
                     </div>
                 </div>
-                <div
-                    class="absolute top-0 right-0 w-24 h-24 bg-blue-200/50 rounded-full -mr-12 -mt-12 opacity-50 animate-pulse"
-                ></div>
             </div>
 
             <!-- Active Staff Card -->
             <div
-                class="rounded-md p-6 bg-gradient-to-b from-green-700 to-green-900 border border-green-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300"
             >
-                <div class="flex items-start justify-between z-10 relative">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-gray-300 mb-2">
+                        <p class="text-sm font-medium text-gray-500 mb-1">
                             Active Staff
                         </p>
-                        <p class="text-3xl font-extrabold text-white">
+                        <p class="text-2xl font-bold text-gray-900">
                             {{ totalStaffs }}
                         </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            System staffs
+                        </p>
                     </div>
-                    <div
-                        class="p-3 rounded-full bg-white/70 text-green-600 shadow-md group-hover:bg-white transition-all"
-                    >
+                    <div class="p-3 rounded-lg bg-green-50 text-green-500">
                         <svg
                             class="w-6 h-6"
                             fill="none"
@@ -345,27 +354,25 @@ onMounted(() => {
                         </svg>
                     </div>
                 </div>
-                <div
-                    class="absolute top-0 right-0 w-24 h-24 bg-green-200/50 rounded-full -mr-12 -mt-12 opacity-50 animate-pulse"
-                ></div>
             </div>
 
             <!-- Customers Card -->
             <div
-                class="rounded-md p-6 bg-gradient-to-b from-purple-700 to-purple-900 border border-purple-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300"
             >
-                <div class="flex items-start justify-between z-10 relative">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-gray-300 mb-2">
+                        <p class="text-sm font-medium text-gray-500 mb-1">
                             Customers
                         </p>
-                        <p class="text-3xl font-extrabold text-white">
+                        <p class="text-2xl font-bold text-gray-900">
                             {{ totalCustomers }}
                         </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Water service customers
+                        </p>
                     </div>
-                    <div
-                        class="p-3 rounded-full bg-white/70 text-purple-600 shadow-md group-hover:bg-white transition-all"
-                    >
+                    <div class="p-3 rounded-lg bg-purple-50 text-purple-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -383,120 +390,95 @@ onMounted(() => {
                         </svg>
                     </div>
                 </div>
-                <div
-                    class="absolute top-0 right-0 w-24 h-24 bg-purple-200/50 rounded-full -mr-12 -mt-12 opacity-50 animate-pulse"
-                ></div>
             </div>
 
             <!-- Reports Card -->
             <div
-                class="rounded-md p-6 bg-gradient-to-b from-amber-700 to-amber-900 border border-amber-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all duration-300"
             >
-                <div class="flex items-start justify-between z-10 relative">
+                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-semibold text-gray-300 mb-2">
+                        <p class="text-sm font-medium text-gray-500 mb-1">
                             Reports
                         </p>
-                        <p class="text-3xl font-extrabold text-white">
+                        <p class="text-2xl font-bold text-gray-900">
                             {{ totalReports }}
                         </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Water service reports
+                        </p>
                     </div>
-                    <div
-                        class="p-3 rounded-full bg-white/70 text-amber-600 shadow-md group-hover:bg-white transition-all"
-                    >
+                    <div class="p-3 rounded-lg bg-amber-50 text-amber-500">
                         <v-icon name="bi-flag" />
                     </div>
                 </div>
-                <div
-                    class="absolute top-0 right-0 w-24 h-24 bg-amber-200/50 rounded-full -mr-12 -mt-12 opacity-50 animate-pulse"
-                ></div>
             </div>
         </div>
 
-        <!-- Water Analytics Section -->
-        <div
-            class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden h-full mb-6"
-        >
+        <!-- Analytics Section -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+            <!-- Water Consumption Chart -->
             <div
-                class="p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                class="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6"
             >
-                <div>
-                    <h2
-                        class="text-xl font-semibold text-gray-800 flex items-center gap-2"
-                    >
-                        <svg
-                            class="w-6 h-6 text-blue-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6"
+                >
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 mb-1">
+                            Water Consumption Analytics
+                        </h2>
+                        <p class="text-sm text-gray-500">
+                            Monthly water consumption trends for
+                            {{ currentYear }}
+                        </p>
+                    </div>
+                    <div class="flex items-center mt-2 sm:mt-0">
+                        <div class="flex items-center mr-4">
+                            <div
+                                class="w-3 h-3 rounded-full bg-indigo-500 mr-2"
+                            ></div>
+                            <span class="text-sm text-gray-600"
+                                >Consumption (m³)</span
+                            >
+                        </div>
+                        <div
+                            class="bg-gray-50 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                            ></path>
-                        </svg>
-                        Water Consumption Analytics
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Last 12 months water consumption trends and metrics
-                    </p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button
-                        class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-lg px-4 py-2 transition-colors text-blue-600 font-medium shadow-sm hover:shadow-md"
-                    >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            ></path>
-                        </svg>
-                        {{ currentYear }}
-                    </button>
-                </div>
-            </div>
-            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Chart Area -->
-                <div class="lg:col-span-2">
-                    <div class="h-64 bg-gray-50 rounded-lg p-4">
-                        <canvas ref="waterChart"></canvas>
+                            {{ currentYear }}
+                        </div>
                     </div>
                 </div>
-                <!-- Key Metrics -->
-                <div class="space-y-4">
-                    <div
-                        class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-blue-700">
-                                    Current Month ({{ currentMonthName }})
-                                </p>
-                                <p
-                                    class="text-2xl font-extrabold text-gray-900 mt-1"
-                                >
-                                    {{ currentMonthConsumption }}
-                                    <span
-                                        class="text-sm font-normal text-gray-600"
-                                        >m³</span
-                                    >
-                                </p>
-                            </div>
-                            <div class="bg-white rounded-full p-2 shadow-inner">
+                <div class="h-80">
+                    <canvas ref="waterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="space-y-5">
+                <!-- Current Month -->
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
+                >
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-medium text-gray-700">
+                            Current Month
+                        </h3>
+                        <div class="flex items-center">
+                            <span
+                                class="text-xs font-medium text-gray-500 mr-2"
+                                >{{ currentMonthName }}</span
+                            >
+                            <div
+                                :class="`p-1 rounded ${
+                                    growthPercentage >= 0
+                                        ? 'bg-green-100 text-green-600'
+                                        : 'bg-red-100 text-red-600'
+                                }`"
+                            >
                                 <svg
                                     v-if="growthPercentage >= 0"
-                                    class="w-5 h-5 text-green-500"
+                                    class="w-3 h-3"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -511,7 +493,7 @@ onMounted(() => {
                                 </svg>
                                 <svg
                                     v-else
-                                    class="w-5 h-5 text-red-500"
+                                    class="w-3 h-3"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -526,121 +508,153 @@ onMounted(() => {
                                 </svg>
                             </div>
                         </div>
-                        <p
-                            :class="`text-xs ${
-                                growthPercentage >= 0
-                                    ? 'text-green-600'
-                                    : 'text-red-600'
-                            } mt-2 font-medium`"
-                        >
-                            {{ growthPercentage >= 0 ? "+" : ""
-                            }}{{ growthPercentage }}% vs last month
-                        </p>
                     </div>
-                    <div
-                        class="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
+                    <div class="flex items-end">
+                        <p class="text-2xl font-bold text-gray-900 mr-2">
+                            {{ currentMonthConsumption }}
+                        </p>
+                        <span class="text-sm text-gray-500 mb-1">m³</span>
+                    </div>
+                    <p
+                        :class="`text-xs mt-2 font-medium ${
+                            growthPercentage >= 0
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                        }`"
                     >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-700">
-                                    Average
-                                </p>
-                                <p
-                                    class="text-2xl font-extrabold text-gray-900 mt-1"
-                                >
-                                    {{ averageConsumption }}
-                                    <span
-                                        class="text-sm font-normal text-gray-600"
-                                        >m³</span
-                                    >
-                                </p>
-                            </div>
-                            <div class="bg-white rounded-full p-2 shadow-inner">
-                                <svg
-                                    class="w-5 h-5 text-gray-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M20 12H4"
-                                    ></path>
-                                </svg>
-                            </div>
+                        {{ growthPercentage >= 0 ? "+" : ""
+                        }}{{ growthPercentage }}% vs last month
+                    </p>
+                </div>
+
+                <!-- Average Consumption -->
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
+                >
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-medium text-gray-700">
+                            Average Consumption
+                        </h3>
+                        <div class="p-1 rounded bg-gray-100 text-gray-500">
+                            <svg
+                                class="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M20 12H4"
+                                ></path>
+                            </svg>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2 font-medium">
-                            Monthly average consumption
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-2xl font-bold text-gray-900 mr-2">
+                            {{ averageConsumption }}
+                        </p>
+                        <span class="text-sm text-gray-500 mb-1">m³</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Monthly average</p>
+                </div>
+
+                <!-- Peak Usage -->
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
+                >
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-medium text-gray-700">
+                            Peak Usage
+                        </h3>
+                        <div class="p-1 rounded bg-amber-100 text-amber-500">
+                            <svg
+                                class="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-2xl font-bold text-gray-900 mr-2">
+                            {{ peakUsage }}
+                        </p>
+                        <span class="text-sm text-gray-500 mb-1">m³</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Recorded in {{ peakUsageMonth }}
+                    </p>
+                </div>
+
+                <!-- Resolution Rate -->
+                <div
+                    class="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
+                >
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-medium text-gray-700">
+                            Report Resolution
+                        </h3>
+                        <div class="p-1 rounded bg-blue-100 text-blue-500">
+                            <svg
+                                class="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <p class="text-2xl font-bold text-gray-900 mr-2">
+                            {{ resolutionRate }}%
                         </p>
                     </div>
-                    <div
-                        class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-amber-700">
-                                    Peak Usage
-                                </p>
-                                <p
-                                    class="text-2xl font-extrabold text-gray-900 mt-1"
-                                >
-                                    {{ peakUsage }}
-                                    <span
-                                        class="text-sm font-normal text-gray-600"
-                                        >m³</span
-                                    >
-                                </p>
-                            </div>
-                            <div class="bg-white rounded-full p-2 shadow-inner">
-                                <svg
-                                    class="w-5 h-5 text-amber-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    ></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <p class="text-xs text-amber-600 mt-2 font-medium">
-                            Recorded in {{ peakUsageMonth }}
-                            {{ new Date().getFullYear() }}
-                        </p>
-                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Reports resolved this month
+                    </p>
                 </div>
             </div>
         </div>
 
         <!-- Recent Activity Section -->
         <div
-            class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden h-full"
+            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
         >
             <div
-                class="p-6 border-b border-gray-200 flex items-center justify-between"
+                class="p-6 border-b border-gray-100 flex items-center justify-between"
             >
                 <h2
-                    class="text-xl font-semibold text-gray-800 flex items-center gap-2"
+                    class="text-lg font-semibold text-gray-900 flex items-center"
                 >
                     <v-icon
                         name="bi-clock-history"
-                        class="text-blue-500"
-                        scale="1.5"
+                        class="text-indigo-500 mr-2"
+                        scale="1.2"
                     />
                     Recent Activity
                 </h2>
                 <Link
                     v-if="canViewActivityLog"
                     :href="route('admin.activity-logs')"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1"
+                    class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
                 >
                     View All
                     <svg
@@ -659,21 +673,21 @@ onMounted(() => {
                     </svg>
                 </Link>
             </div>
-            <div class="divide-y divide-gray-200">
+            <div class="divide-y divide-gray-100">
                 <div
                     v-for="activity in recentActivities"
                     :key="activity.id"
                     class="p-4 hover:bg-gray-50 transition-colors flex items-start gap-4 group"
                 >
                     <div
-                        :class="`p-2 rounded-full ${getActivityBgColor(
+                        :class="`p-2.5 rounded-lg ${getActivityBgColor(
                             activity
-                        )} shadow-md group-hover:shadow-lg transition-shadow`"
+                        )} shadow-sm group-hover:shadow transition-all duration-200`"
                     >
                         <svg
                             v-if="getActivityIcon(activity) === 'plus-circle'"
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -691,7 +705,7 @@ onMounted(() => {
                                 getActivityIcon(activity) === 'pencil-square'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -707,7 +721,7 @@ onMounted(() => {
                         <svg
                             v-else-if="getActivityIcon(activity) === 'trash'"
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -726,7 +740,7 @@ onMounted(() => {
                                 'arrow-right-on-rectangle'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -745,7 +759,7 @@ onMounted(() => {
                                 'arrow-left-on-rectangle'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -763,7 +777,7 @@ onMounted(() => {
                                 getActivityIcon(activity) === 'shield-check'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -782,7 +796,7 @@ onMounted(() => {
                                 'shield-exclamation'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -798,7 +812,7 @@ onMounted(() => {
                         <svg
                             v-else-if="getActivityIcon(activity) === 'sparkles'"
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -814,7 +828,7 @@ onMounted(() => {
                         <svg
                             v-else-if="getActivityIcon(activity) === 'flag'"
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -832,10 +846,10 @@ onMounted(() => {
                                 getActivityIcon(activity) === 'arrow-path'
                             "
                             class="w-5 h-5"
-                            :class="`text-${getActivityTextColor(activity)}`"
+                            :class="getActivityTextColor(activity)"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 31"
+                            viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                         >
                             <path

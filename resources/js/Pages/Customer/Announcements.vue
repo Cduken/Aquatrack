@@ -1,5 +1,5 @@
 <template>
-    <CustomerLayout title="Announcements">
+    <CustomerLayout>
         <div class="w-full bg-white rounded-lg shadow-sm">
             <!-- Header Section -->
             <div class="border-b border-gray-100 p-6">

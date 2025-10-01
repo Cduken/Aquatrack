@@ -1,3 +1,4 @@
+//TrackReportModal.vue
 <script setup>
 import { useForm } from "@inertiajs/vue3";
 import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
@@ -22,6 +23,9 @@ import {
     BiZoomIn,
     FaCamera,
     BiArrowLeft,
+    BiWater,
+    FaWater,
+    BiDroplet,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -38,7 +42,10 @@ addIcons(
     BiPlayCircleFill,
     BiZoomIn,
     FaCamera,
-    BiArrowLeft
+    BiArrowLeft,
+    BiWater,
+    FaWater,
+    BiDroplet
 );
 
 const props = defineProps({
@@ -274,7 +281,7 @@ const generateQRCode = () => {
             width: 140,
             margin: 1,
             color: {
-                dark: "#1e293b",
+                dark: "#000000", // Changed to black
                 light: "#ffffff",
             },
         },
@@ -429,8 +436,9 @@ const isVideoFile = (media) => {
             v-if="modalVisible"
             class="fixed inset-0 z-[500] flex items-center justify-center p-3"
         >
+            <!-- Softer background -->
             <div
-                class="fixed inset-0 bg-black/70 transition-all duration-300"
+                class="fixed inset-0 bg-gray-800/80 transition-all duration-300"
                 @click="closeModal"
             ></div>
 
@@ -438,35 +446,36 @@ const isVideoFile = (media) => {
                 <div
                     v-if="modalVisible"
                     ref="modalRef"
-                    class="relative w-full max-w-4xl max-h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300"
+                    class="relative w-full max-w-4xl max-h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 border border-gray-200"
                     @click.stop
                 >
+                    <!-- Header with softer gradient -->
                     <div
-                        class="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4"
+                        class="bg-gradient-to-r from-blue-950 to-blue-900 px-6 py-4 relative overflow-hidden"
                     >
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between relative z-10">
                             <div class="flex items-center space-x-3">
                                 <div
-                                    class="p-2 bg-blue-500/20 rounded-xl border border-blue-400/30"
+                                    class="p-2 bg-white/20 rounded-xl border border-white/30 backdrop-blur-sm"
                                 >
                                     <v-icon
-                                        name="fa-search"
-                                        class="text-blue-400"
+                                        name="bi-droplet"
+                                        class="text-white"
                                         scale="1.1"
                                     />
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-white">
-                                        Track Water Report
+                                        Water Report Tracker
                                     </h3>
-                                    <p class="text-slate-300 text-sm">
-                                        Enter tracking code to view status
+                                    <p class="text-blue-100 text-sm">
+                                        Track your water issue reports
                                     </p>
                                 </div>
                             </div>
                             <button
                                 @click="closeModal"
-                                class="p-2 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all"
+                                class="p-2 hover:bg-white/20 rounded-xl text-white/80 hover:text-white transition-all backdrop-blur-sm"
                             >
                                 <v-icon name="io-close" scale="1.2" />
                             </button>
@@ -475,69 +484,92 @@ const isVideoFile = (media) => {
 
                     <div class="max-h-[calc(95vh-140px)] overflow-y-auto">
                         <div class="p-6 space-y-6">
-                            <form
-                                @submit.prevent="trackReport"
-                                class="space-y-4"
-                            >
-                                <div class="space-y-2">
-                                    <label
-                                        class="block text-sm font-semibold text-slate-700"
-                                    >
-                                        Tracking Code
-                                    </label>
-                                    <div class="relative">
-                                        <input
-                                            v-model="form.tracking_code"
-                                            type="text"
-                                            required
-                                            class="w-full h-12 pl-12 pr-14 text-base bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400 font-mono"
-                                            placeholder="AQT2025080-1ABCD"
-                                        />
-                                        <div
-                                            class="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-slate-300 rounded-lg"
+                            <!-- Search Section -->
+                            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <v-icon
+                                        name="fa-search"
+                                        class="text-blue-500 mr-2"
+                                        scale="0.9"
+                                    />
+                                    Search Report
+                                </h4>
+                                <form
+                                    @submit.prevent="trackReport"
+                                    class="space-y-4"
+                                >
+                                    <div class="space-y-2">
+                                        <label
+                                            class="block text-sm font-semibold text-gray-700"
                                         >
-                                            <v-icon
-                                                name="fa-qrcode"
-                                                scale="0.9"
-                                                class="text-slate-600"
+                                            Tracking Code
+                                        </label>
+                                        <div class="relative">
+                                            <input
+                                                v-model="form.tracking_code"
+                                                type="text"
+                                                required
+                                                class="w-full h-12 pl-12 pr-14 text-base bg-gray-50 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400 font-mono focus:ring-2 focus:ring-blue-500/20"
+                                                placeholder="Enter tracking code"
                                             />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            @click="startQrScanner"
-                                            class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg transition-all hover:scale-105"
-                                            title="Scan QR Code"
-                                        >
-                                            <v-icon
-                                                name="fa-camera"
-                                                scale="0.85"
-                                            />
-                                        </button>
-                                    </div>
-                                    <Transition name="error-slide">
-                                        <div
-                                            v-if="
-                                                errorMessage || props.isDeleted
-                                            "
-                                            class="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg"
-                                        >
-                                            <v-icon
-                                                name="io-close"
-                                                class="text-red-500"
-                                                scale="0.8"
-                                            />
-                                            <span
-                                                class="text-red-700 text-sm font-medium"
+                                            <div
+                                                class="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-blue-500 rounded-lg"
                                             >
-                                                {{
-                                                    errorMessage ||
-                                                    props.deletionReason
-                                                }}
-                                            </span>
+                                                <v-icon
+                                                    name="fa-qrcode"
+                                                    scale="0.9"
+                                                    class="text-white"
+                                                />
+                                            </div>
+                                            <button
+                                                type="button"
+                                                @click="startQrScanner"
+                                                class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 shadow-sm"
+                                                title="Scan QR Code"
+                                            >
+                                                <v-icon
+                                                    name="fa-camera"
+                                                    scale="0.85"
+                                                />
+                                            </button>
                                         </div>
-                                    </Transition>
-                                </div>
-                            </form>
+                                        <Transition name="error-slide">
+                                            <div
+                                                v-if="
+                                                    errorMessage || props.isDeleted
+                                                "
+                                                class="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg"
+                                            >
+                                                <v-icon
+                                                    name="io-close"
+                                                    class="text-red-500"
+                                                    scale="0.8"
+                                                />
+                                                <span
+                                                    class="text-red-700 text-sm font-medium"
+                                                >
+                                                    {{
+                                                        errorMessage ||
+                                                        props.deletionReason
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </Transition>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        :disabled="
+                                            isLoading || !form.tracking_code.trim()
+                                        "
+                                        class="w-full py-3 bg-gradient-to-r bg-blue-900 hover:from-blue-950 hover:to-blue-900 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-sm"
+                                    >
+                                        <v-icon name="fa-search" scale="0.8" />
+                                        <span class="text-sm">{{
+                                            isLoading ? "Searching..." : "Track Report"
+                                        }}</span>
+                                    </button>
+                                </form>
+                            </div>
 
                             <Transition name="loading-bounce">
                                 <div
@@ -546,7 +578,7 @@ const isVideoFile = (media) => {
                                 >
                                     <div class="relative">
                                         <div
-                                            class="w-16 h-16 border-4 border-slate-200 rounded-full"
+                                            class="w-16 h-16 border-4 border-gray-200 rounded-full"
                                         ></div>
                                         <div
                                             class="absolute inset-0 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
@@ -554,12 +586,12 @@ const isVideoFile = (media) => {
                                     </div>
                                     <div class="text-center">
                                         <h4
-                                            class="text-base font-semibold text-slate-700"
+                                            class="text-base font-semibold text-gray-700"
                                         >
                                             Searching...
                                         </h4>
-                                        <p class="text-sm text-slate-500">
-                                            Please wait
+                                        <p class="text-sm text-gray-500">
+                                            Please wait while we find your report
                                         </p>
                                     </div>
                                 </div>
@@ -570,8 +602,9 @@ const isVideoFile = (media) => {
                                     v-if="reportDetails && !props.isDeleted"
                                     class="space-y-6"
                                 >
+                                    <!-- Success Banner -->
                                     <div
-                                        class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200"
+                                        class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200 shadow-sm"
                                     >
                                         <div
                                             class="flex items-center justify-between"
@@ -590,16 +623,16 @@ const isVideoFile = (media) => {
                                                 </div>
                                                 <div>
                                                     <h4
-                                                        class="text-lg font-bold text-slate-800"
+                                                        class="text-lg font-bold text-gray-800"
                                                     >
                                                         Report Found
                                                     </h4>
                                                     <p
-                                                        class="text-sm text-slate-600"
+                                                        class="text-sm text-gray-600"
                                                     >
-                                                        Code:
+                                                        Tracking Code:
                                                         <span
-                                                            class="font-mono font-semibold"
+                                                            class="font-mono font-semibold text-blue-600"
                                                         >
                                                             {{
                                                                 reportDetails.tracking_code
@@ -609,15 +642,15 @@ const isVideoFile = (media) => {
                                                 </div>
                                             </div>
                                             <span
-                                                class="px-3 py-1 rounded-lg text-sm font-semibold"
+                                                class="px-3 py-1 rounded-lg text-sm font-semibold shadow-sm"
                                                 :class="{
-                                                    'bg-green-100 text-green-700':
+                                                    'bg-green-100 text-green-700 border border-green-200':
                                                         reportDetails.status ===
                                                         'resolved',
-                                                    'bg-yellow-100 text-yellow-700':
+                                                    'bg-yellow-100 text-yellow-700 border border-yellow-200':
                                                         reportDetails.status ===
                                                         'pending',
-                                                    'bg-blue-100 text-blue-700':
+                                                    'bg-blue-100 text-blue-700 border border-blue-200':
                                                         reportDetails.status ===
                                                         'in_progress',
                                                 }"
@@ -631,28 +664,29 @@ const isVideoFile = (media) => {
                                         class="grid grid-cols-1 lg:grid-cols-4 gap-6"
                                     >
                                         <div class="lg:col-span-3 space-y-4">
+                                            <!-- Reporter & Priority Cards -->
                                             <div
                                                 class="grid grid-cols-1 md:grid-cols-2 gap-4"
                                             >
                                                 <div
-                                                    class="bg-slate-50 rounded-xl p-4"
+                                                    class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
                                                 >
                                                     <div
                                                         class="flex items-center space-x-2 mb-2"
                                                     >
                                                         <v-icon
-                                                            name="hi-status-online"
-                                                            class="text-slate-500"
+                                                            name="bi-droplet"
+                                                            class="text-blue-500"
                                                             scale="0.8"
                                                         />
                                                         <span
-                                                            class="text-xs font-semibold text-slate-500 uppercase"
+                                                            class="text-xs font-semibold text-gray-500 uppercase"
                                                         >
                                                             Reporter
                                                         </span>
                                                     </div>
                                                     <p
-                                                        class="font-semibold text-slate-800"
+                                                        class="font-semibold text-gray-800"
                                                     >
                                                         {{
                                                             reportDetails.reporter_name
@@ -660,32 +694,32 @@ const isVideoFile = (media) => {
                                                     </p>
                                                 </div>
                                                 <div
-                                                    class="bg-slate-50 rounded-xl p-4"
+                                                    class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
                                                 >
                                                     <div
                                                         class="flex items-center space-x-2 mb-2"
                                                     >
                                                         <v-icon
                                                             name="bi-exclamation-triangle"
-                                                            class="text-slate-500"
+                                                            class="text-amber-500"
                                                             scale="0.8"
                                                         />
                                                         <span
-                                                            class="text-xs font-semibold text-slate-500 uppercase"
+                                                            class="text-xs font-semibold text-gray-500 uppercase"
                                                         >
                                                             Priority
                                                         </span>
                                                     </div>
                                                     <span
-                                                        class="inline-flex px-2 py-1 rounded-lg text-sm font-semibold"
+                                                        class="inline-flex px-2 py-1 rounded-lg text-sm font-semibold shadow-sm"
                                                         :class="{
-                                                            'bg-red-100 text-red-700':
+                                                            'bg-red-100 text-red-700 border border-red-200':
                                                                 reportDetails.priority ===
                                                                 'high',
-                                                            'bg-yellow-100 text-yellow-700':
+                                                            'bg-amber-100 text-amber-700 border border-amber-200':
                                                                 reportDetails.priority ===
                                                                 'medium',
-                                                            'bg-green-100 text-green-700':
+                                                            'bg-green-100 text-green-700 border border-green-200':
                                                                 reportDetails.priority ===
                                                                 'low',
                                                         }"
@@ -695,25 +729,26 @@ const isVideoFile = (media) => {
                                                 </div>
                                             </div>
 
+                                            <!-- Description Card -->
                                             <div
-                                                class="bg-slate-50 rounded-xl p-4"
+                                                class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
                                             >
                                                 <div
                                                     class="flex items-center space-x-2 mb-3"
                                                 >
                                                     <v-icon
                                                         name="md-description-outlined"
-                                                        class="text-slate-500"
+                                                        class="text-blue-500"
                                                         scale="0.8"
                                                     />
                                                     <span
-                                                        class="text-xs font-semibold text-slate-500 uppercase"
+                                                        class="text-xs font-semibold text-gray-500 uppercase"
                                                     >
-                                                        Report Description
+                                                        Issue Description
                                                     </span>
                                                 </div>
                                                 <p
-                                                    class="text-slate-700 text-sm leading-relaxed whitespace-pre-line"
+                                                    class="text-gray-700 text-sm leading-relaxed whitespace-pre-line"
                                                 >
                                                     {{
                                                         reportDetails.description
@@ -721,25 +756,26 @@ const isVideoFile = (media) => {
                                                 </p>
                                             </div>
 
+                                            <!-- Location Card -->
                                             <div
-                                                class="bg-slate-50 rounded-xl p-4"
+                                                class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
                                             >
                                                 <div
                                                     class="flex items-center space-x-2 mb-3"
                                                 >
                                                     <v-icon
                                                         name="fa-map-marker-alt"
-                                                        class="text-slate-500"
+                                                        class="text-blue-500"
                                                         scale="0.8"
                                                     />
                                                     <span
-                                                        class="text-xs font-semibold text-slate-500 uppercase"
+                                                        class="text-xs font-semibold text-gray-500 uppercase"
                                                     >
-                                                        Location
+                                                        Location Details
                                                     </span>
                                                 </div>
                                                 <p
-                                                    class="text-slate-700 text-sm"
+                                                    class="text-gray-700 text-sm"
                                                 >
                                                     {{ reportDetails.purok }},
                                                     {{
@@ -755,25 +791,26 @@ const isVideoFile = (media) => {
                                                 </p>
                                             </div>
 
+                                            <!-- Media Card -->
                                             <div
                                                 v-if="
                                                     reportDetails.photos &&
                                                     reportDetails.photos.length
                                                 "
-                                                class="bg-slate-50 rounded-xl p-4"
+                                                class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
                                             >
                                                 <div
                                                     class="flex items-center space-x-2 mb-3"
                                                 >
                                                     <v-icon
                                                         name="bi-images"
-                                                        class="text-slate-500"
+                                                        class="text-blue-500"
                                                         scale="0.8"
                                                     />
                                                     <span
-                                                        class="text-xs font-semibold text-slate-500 uppercase"
+                                                        class="text-xs font-semibold text-gray-500 uppercase"
                                                     >
-                                                        Media
+                                                        Media Evidence
                                                     </span>
                                                 </div>
                                                 <div
@@ -784,7 +821,7 @@ const isVideoFile = (media) => {
                                                             media, index
                                                         ) in reportDetails.photos"
                                                         :key="index"
-                                                        class="relative group aspect-square rounded-lg overflow-hidden border-2 border-slate-200 hover:border-blue-300 transition-all hover:shadow-md"
+                                                        class="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-300 transition-all hover:shadow-md"
                                                     >
                                                         <template
                                                             v-if="
@@ -794,7 +831,7 @@ const isVideoFile = (media) => {
                                                             "
                                                         >
                                                             <div
-                                                                class="w-full h-full bg-slate-600 flex items-center justify-center"
+                                                                class="w-full h-full bg-gray-600 flex items-center justify-center"
                                                             >
                                                                 <video
                                                                     class="absolute inset-0 w-full h-full object-cover"
@@ -863,26 +900,27 @@ const isVideoFile = (media) => {
                                             </div>
                                         </div>
 
+                                        <!-- QR Code & Actions Sidebar -->
                                         <div class="space-y-4">
                                             <div
-                                                class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white"
+                                                class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 text-white shadow-md"
                                             >
                                                 <div
                                                     class="flex items-center space-x-2 mb-3"
                                                 >
                                                     <v-icon
                                                         name="fa-qrcode"
-                                                        class="text-blue-400"
+                                                        class="text-gray-200"
                                                         scale="0.9"
                                                     />
                                                     <span
                                                         class="text-sm font-semibold"
                                                     >
-                                                        QR Code
+                                                        Quick Access QR
                                                     </span>
                                                 </div>
                                                 <div
-                                                    class="bg-white p-3 rounded-lg mb-3"
+                                                    class="bg-white p-3 rounded-lg mb-3 shadow-sm"
                                                 >
                                                     <canvas
                                                         ref="qrCodeCanvas"
@@ -890,21 +928,21 @@ const isVideoFile = (media) => {
                                                     ></canvas>
                                                 </div>
                                                 <p
-                                                    class="text-xs text-slate-300 text-center"
+                                                    class="text-xs text-gray-300 text-center"
                                                 >
-                                                    Scan to view details
+                                                    Scan to view this report
                                                 </p>
                                             </div>
                                             <button
                                                 @click="downloadReportAsImage"
-                                                class="download-btn w-full py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all hover:shadow-md hover:scale-[1.02] flex items-center justify-center space-x-2"
+                                                class="download-btn w-full py-2.5 bg-blue-950 text-white font-semibold rounded-xl transition-all hover:shadow-md hover:scale-[1.02] flex items-center justify-center space-x-2 shadow-sm"
                                             >
                                                 <v-icon
                                                     name="bi-download"
                                                     scale="0.9"
                                                 />
                                                 <span class="text-sm"
-                                                    >Download</span
+                                                    >Download Report</span
                                                 >
                                             </button>
                                         </div>
@@ -914,14 +952,15 @@ const isVideoFile = (media) => {
                         </div>
                     </div>
 
+                    <!-- Footer Actions -->
                     <div
-                        class="border-t border-slate-200 px-6 py-3 bg-slate-50/80 backdrop-blur-sm"
+                        class="border-t border-gray-200 px-6 py-3 bg-gray-50/80 backdrop-blur-sm"
                     >
                         <div class="flex justify-between items-center">
                             <button
                                 v-if="reportDetails || props.isDeleted"
                                 @click="resetForm"
-                                class="reset-btn flex items-center space-x-2 px-4 py-2 border-2 border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-all"
+                                class="reset-btn flex items-center space-x-2 px-4 py-2 border-2 border-gray-300 hover:border-blue-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-all shadow-sm"
                             >
                                 <v-icon name="bi-arrow-left" scale="0.8" />
                                 <span class="text-sm">Search Again</span>
@@ -929,23 +968,10 @@ const isVideoFile = (media) => {
                             <button
                                 v-else
                                 @click="closeModal"
-                                class="flex items-center space-x-2 px-4 py-2 border-2 border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-all"
+                                class="flex items-center space-x-2 px-4 py-2 border-2 border-gray-300 hover:border-blue-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-all shadow-sm"
                             >
                                 <v-icon name="io-close" scale="0.8" />
                                 <span class="text-sm">Cancel</span>
-                            </button>
-                            <button
-                                v-if="!reportDetails && !props.isDeleted"
-                                @click="trackReport"
-                                :disabled="
-                                    isLoading || !form.tracking_code.trim()
-                                "
-                                class="track-btn flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-400 disabled:to-slate-500 text-white font-medium rounded-lg transition-all hover:shadow-md disabled:shadow-none disabled:cursor-not-allowed"
-                            >
-                                <v-icon name="fa-search" scale="0.8" />
-                                <span class="text-sm">{{
-                                    isLoading ? "Searching..." : "Track Report"
-                                }}</span>
                             </button>
                         </div>
                     </div>
@@ -954,16 +980,17 @@ const isVideoFile = (media) => {
         </div>
     </Transition>
 
+    <!-- QR Scanner Modal -->
     <Transition name="modal-backdrop">
         <div
             v-if="showQrScanner"
-            class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-gray-800/80 backdrop-blur-sm"
         >
             <div
-                class="relative w-full max-w-sm bg-white rounded-2xl overflow-hidden shadow-2xl"
+                class="relative w-full max-w-sm bg-white rounded-2xl overflow-hidden shadow-2xl border border-gray-200"
             >
                 <div
-                    class="bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-3"
+                    class="bg-gradient-to-r from-blue-950 to-blue-900 px-4 py-3"
                 >
                     <div class="flex items-center justify-between">
                         <h3
@@ -971,7 +998,7 @@ const isVideoFile = (media) => {
                         >
                             <v-icon
                                 name="fa-camera"
-                                class="text-blue-400"
+                                class="text-white"
                                 scale="0.9"
                             />
                             <span>Scan QR Code</span>
@@ -1003,7 +1030,7 @@ const isVideoFile = (media) => {
                     </div>
 
                     <div
-                        class="relative bg-slate-900 rounded-xl overflow-hidden aspect-square"
+                        class="relative bg-gray-900 rounded-xl overflow-hidden aspect-square border-2 border-gray-300"
                     >
                         <video
                             ref="videoRef"
@@ -1040,28 +1067,31 @@ const isVideoFile = (media) => {
                         <canvas ref="canvasRef" class="hidden"></canvas>
                     </div>
 
-                    <p class="mt-3 text-xs text-slate-600 text-center">
-                        Position QR code within the frame
+                    <p class="mt-3 text-xs text-gray-600 text-center">
+                        Position QR code within the frame to scan
                     </p>
                 </div>
             </div>
         </div>
     </Transition>
 
+    <!-- Media Modal -->
     <Transition name="modal-backdrop">
         <div
             v-if="mediaModal.show"
-            class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-gray-800/90 backdrop-blur-sm"
         >
             <div class="relative w-full max-w-4xl">
                 <button
                     @click="closeMediaModal"
-                    class="absolute -top-10 right-0 p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-xl transition-all"
+                    class="absolute -top-10 right-0 p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-xl transition-all backdrop-blur-sm"
                 >
                     <v-icon name="io-close" scale="1.2" />
                 </button>
 
-                <div class="bg-white rounded-xl overflow-hidden shadow-2xl">
+                <div
+                    class="bg-white rounded-xl overflow-hidden shadow-2xl border border-gray-200"
+                >
                     <div
                         v-if="mediaModal.type === 'video'"
                         class="aspect-video w-full"
@@ -1186,33 +1216,7 @@ const isVideoFile = (media) => {
     opacity: 1;
 }
 
-.group:hover .group-hover\:bg-black\/20 {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.max-h-\[calc\(95vh-140px\)\]::-webkit-scrollbar {
-    width: 4px;
-}
-
-.max-h-\[calc\(95vh-140px\)\]::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.max-h-\[calc\(95vh-140px\)\]::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 6px;
-}
-
-.max-h-\[calc\(95vh-140px\)\]::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-button:disabled {
-    cursor: not-allowed;
-}
-
-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.group:hover .group-hover\:opacity-0 {
+    opacity: 0;
 }
 </style>

@@ -1,3 +1,4 @@
+// Hero.vue (updated modal section)
 <script setup>
 import { Link } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
@@ -28,8 +29,8 @@ const props = defineProps({
 
 const showSuccessModal = ref(false);
 const showTrackModal = ref(false);
+const showReportModal = ref(false);
 const trackingInfo = ref(null);
-const showReportSlider = ref(false);
 
 const zones = {
     "Zone 1": ["Poblacion Sur"],
@@ -68,14 +69,7 @@ onMounted(() => {
 
     const tl = gsap.timeline();
 
-    gsap.to(".purple-float", {
-        y: -20,
-        x: 10,
-        duration: 5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-    });
+
 
     tl.fromTo(
         ".hero-content",
@@ -112,18 +106,9 @@ onMounted(() => {
         { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
         "-=0.6"
     );
-
-    // gsap.to(".hero-image", {
-    //     y: -10,
-    //     duration: 3,
-    //     repeat: -1,
-    //     yoyo: true,
-    //     ease: "sine.inOut",
-    // });
 });
 
 const handleTrackReport = () => {
-    // Use the trackingCode from props or default to an empty string
     const trackingCode = trackingInfo.value?.code || props.trackingCode || "";
     if (trackingCode) {
         trackingInfo.value = { code: trackingCode, date: props.dateSubmitted };
@@ -132,13 +117,22 @@ const handleTrackReport = () => {
     showTrackModal.value = true;
 };
 
-const openReportSlider = () => {
-    showReportSlider.value = true;
+const openReportModal = () => {
+    showReportModal.value = true;
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = "hidden";
+};
+
+const closeReportModal = () => {
+    showReportModal.value = false;
+    // Restore body scroll when modal is closed
+    document.body.style.overflow = "auto";
 };
 
 const handleReportSuccess = (data) => {
     console.log("Handling report success:", data);
-    showReportSlider.value = false;
+    showReportModal.value = false;
+    document.body.style.overflow = "auto";
     trackingInfo.value = {
         code: data.trackingCode,
         date: data.dateSubmitted,
@@ -153,14 +147,6 @@ const handleReportSuccess = (data) => {
 
 <template>
     <main id="home" class="relative w-full min-h-screen overflow-hidden">
-        <!-- <div
-            class="purple-float absolute left-[300px] top-0 w-72 h-72 rounded-full bg-[#00D4FF]/10 blur-3xl"
-        ></div>
-        <div
-            class="purple-float absolute left-40 bottom-40 w-48 h-48 rounded-full bg-purple-400/20 blur-3xl"
-            style="animation-delay: 1s"
-        ></div> -->
-
         <Navigation />
 
         <div
@@ -178,12 +164,11 @@ const handleReportSuccess = (data) => {
                         Clarin Water
                     </span>
                     <span
-                        class="block text-transparent leading-snug bg-clip-text bg-gradient-to-r from-[#090979] to-[#00D4FF]    floating-text"
+                        class="block text-transparent leading-snug bg-clip-text bg-gradient-to-r from-[#090979] to-[#00D4FF] floating-text"
                         style="animation-delay: 0.2s"
                     >
                         Management System
                     </span>
-
                 </h1>
 
                 <p
@@ -201,7 +186,7 @@ const handleReportSuccess = (data) => {
                     style="animation-delay: 0.8s"
                 >
                     <button
-                        @click="openReportSlider"
+                        @click="openReportModal"
                         class="inline-flex items-center gap-2 border p-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-white"
                     >
                         <v-icon name="bi-droplet" scale="1" />
@@ -227,10 +212,11 @@ const handleReportSuccess = (data) => {
             </div>
         </div>
 
+        <!-- Track Report Floating Button -->
         <div class="fixed bottom-8 right-8 z-20 group">
             <button
                 @click="handleTrackReport"
-                class="relative flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-110"
+                class="relative flex items-center justify-center w-16 h-16 rounded-full bg-[#0D3468] text-white shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-110"
                 title="Track Report"
             >
                 <v-icon name="io-search" scale="1.5" />
@@ -249,60 +235,53 @@ const handleReportSuccess = (data) => {
             </button>
         </div>
 
-        <div v-if="showReportSlider" class="fixed inset-0 z-50 overflow-hidden">
+        <!-- Clean Report Modal -->
+        <div v-if="showReportModal" class="fixed inset-0 z-50 overflow-y-auto">
+            <!-- Backdrop -->
             <div
-                class="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
-                @click="showReportSlider = false"
+                class="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+                @click="closeReportModal"
             ></div>
 
-            <div
-                class="fixed inset-y-0 right-0 max-w-full flex"
-                :class="{ 'sm:pl-10': showReportSlider }"
-            >
+            <!-- Modal Container -->
+            <div class="flex min-h-full items-center justify-center p-4">
+                <!-- Modal Panel -->
                 <div
-                    class="relative w-screen max-w-3xl md:max-w-4xl transform transition-transform duration-500 ease-in-out"
-                    :class="{
-                        'translate-x-0': showReportSlider,
-                        'translate-x-full': !showReportSlider,
-                    }"
+                    class="relative bg-white rounded-2xl shadow-2xl w-full max-w-[1000px] max-h-[100vh] overflow-hidden transform transition-all duration-300"
                 >
+                    <!-- Modal Header -->
                     <div
-                        class="h-full flex flex-col bg-white shadow-xl overflow-y-auto"
+                        class="bg-gradient-to-r from-[#062F64] to-[#1E4272] px-6 py-4 sticky top-0 z-10"
                     >
-                        <div class="bg-[#062F64] px-4 py-5 sm:px-6 sticky top-0 z-50">
-                            <div class="flex items-center justify-between">
-                                <h2
-                                    class="text-xl font-semibold text-white leading-7"
-                                >
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-md text-white">
                                     Report Water Issue
                                 </h2>
-                                <button
-                                    type="button"
-                                    class="rounded-md bg-[#062F64] text-gray-300 hover:text-white focus:outline-none"
-                                    @click="showReportSlider = false"
-                                >
-                                    <span class="sr-only">Close</span>
-                                    <v-icon
-                                        name="hi-x"
-                                        class="h-6 w-6 text-white"
-                                    />
-                                </button>
-                            </div>
-                            <div class="mt-1">
-                                <p class="text-sm text-gray-300">
+                                <p class="text-blue-100 text-sm mt-1">
                                     Report water emergencies, leaks, or other
                                     issues in your area
                                 </p>
                             </div>
+                            <button
+                                @click="closeReportModal"
+                                class="p-2 hover:bg-white/10 rounded-full transition-colors duration-200 group"
+                            >
+                                <v-icon
+                                    name="hi-x"
+                                    class="h-6 w-6 text-white group-hover:text-gray-200 transition-colors"
+                                />
+                            </button>
                         </div>
+                    </div>
 
-                        <div class="relative flex-1">
-                            <ReportForm
-                                :zones="zones"
-                                @submitted="handleReportSuccess"
-                                @cancel="showReportSlider = false"
-                            />
-                        </div>
+                    <!-- Modal Content -->
+                    <div class="overflow-y-auto max-h-[calc(85vh-80px)]">
+                        <ReportForm
+                            :zones="zones"
+                            @submitted="handleReportSuccess"
+                            @cancel="closeReportModal"
+                        />
                     </div>
                 </div>
             </div>
@@ -326,7 +305,12 @@ const handleReportSuccess = (data) => {
 </template>
 
 <style scoped>
-/* @keyframes floatUp {
+.floating-text {
+    animation: floatUp 1s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes floatUp {
     0% {
         opacity: 0;
         transform: translateY(20px);
@@ -335,35 +319,49 @@ const handleReportSuccess = (data) => {
         opacity: 1;
         transform: translateY(0);
     }
-} */
-
-/* @keyframes imageFloat {
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-} */
-
-.floating-text {
-    animation: floatUp 1s ease-out forwards;
-    opacity: 0;
-}
-/*
-.floating-image {
-    animation: imageFloat 6s ease-in-out infinite;
-} */
-
-.slide-enter-active,
-.slide-leave-active {
-    transition: transform 0.5s ease-in-out;
 }
 
-.slide-enter-from,
-.slide-leave-to {
-    transform: translateX(100%);
+/* Hide scrollbar for modal */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Hide scrollbar for the report form modal */
+.overflow-y-auto {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+.overflow-y-auto::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Responsive modal: full width/height on small screens */
+@media (max-width: 640px) {
+    .modal-panel {
+        border-radius: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+    }
+    .modal-panel > div {
+        border-radius: 0 !important;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -419,17 +417,5 @@ const handleReportSuccess = (data) => {
 
 html {
     scroll-behavior: smooth;
-}
-
-@supports (backdrop-filter: blur(10px)) {
-    .backdrop-blur-sm {
-        backdrop-filter: blur(4px);
-    }
-}
-
-@supports not (backdrop-filter: blur(10px)) {
-    .backdrop-blur-sm {
-        background-color: rgba(15, 23, 42, 0.8);
-    }
 }
 </style>

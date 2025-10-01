@@ -1,5 +1,5 @@
 <template>
-    <StaffLayout title="Meter Readings">
+    <StaffLayout>
         <div class="max-w-4xl mx-auto">
             <!-- Header Section -->
             <div class="text-center mb-6">
